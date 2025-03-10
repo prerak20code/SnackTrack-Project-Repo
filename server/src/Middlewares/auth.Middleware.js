@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import { BAD_REQUEST, FORBIDDEN } from '../Constants/errorCodes.js';
 import { COOKIE_OPTIONS } from '../Constants/options.js';
 import { extractTokens, generateAccessToken } from '../Helpers/index.js';
-import { userObject } from '../Controllers/user.Controller.js';
 
 /**
  * @param {Object} res - http response object

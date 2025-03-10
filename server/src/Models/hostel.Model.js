@@ -12,7 +12,7 @@ const hostelSchema = new Schema(
             required: true,
             unique: true,
         },
-        // could use an array: in case a hostel has multiple canteens with canteen No 
+        // could use an array: in case a hostel has multiple canteens with canteen No
         canteen: {
             type: Types.ObjectId,
             ref: 'Canteen',

@@ -1,11 +1,9 @@
-import './config/envLoader.js';
-import { httpServer } from './socket.js';
-import { dbInstance } from './DB/connectDB.js';
+import './Config/envLoader.js'; // will we available to all
+import { app } from './app.js';
+import { connectDB } from './DB/connectDB.js';
 
-const port = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4000;
 
-export const connection = await dbInstance.connect();
+await connectDB();
 
-httpServer.listen(port, () =>
-    console.log(`server is listening on port ${port}...`)
-);
+app.listen(PORT, () => console.log(`server is listening on port ${PORT}...`));

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SnackListView } from '../Components';
+import { SnackView } from '../Components';
 import { snackService } from '../Services';
 import { paginate } from '../Utils';
 import { icons } from '../Assets/icons';
@@ -37,20 +37,18 @@ export default function HomePage() {
             }
         })();
 
-        return () => {
-            controller.abort();
-        };
+        return () => controller.abort();
     }, [page]);
 
     const snackElements = snacks
         ?.filter(
             (snack) =>
                 !search ||
-                snack.snack_name.toLowerCase().includes(search.toLowerCase())
+                snack.name.toLowerCase().includes(search.toLowerCase())
         )
         .map((snack, index) => (
-            <SnackListView
-                key={snack.snack_id}
+            <SnackView
+                key={snack._id}
                 snack={snack}
                 reference={
                     index + 1 === snacks.length && snacksInfo?.hasNextPage
@@ -68,6 +66,7 @@ export default function HomePage() {
                 page === 1 ? (
                     <div className="w-full text-center">
                         loading first batch...
+                        {/* pulses */}
                     </div>
                 ) : (
                     <div className="flex items-center justify-center my-2 w-full">

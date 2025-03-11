@@ -4,6 +4,9 @@ import LOGO from '../Assets/images/logo.png';
 const EMAIL = 'snacktrack@gmail.com';
 const CONTACTNUMBER = 'xxxxxxxxxx';
 const MAX_FILE_SIZE = 5;
+const ALLOWED_EXT = ['png', 'jpg', 'jpeg'];
+const SERVER_ERROR = 500;
+const BAD_REQUEST = 400;
 
 const CONTRIBUTORS = [
     {
@@ -47,4 +50,14 @@ const CONTRIBUTORS = [
     },
 ];
 
-export { LIMIT, LOGO, MAX_FILE_SIZE, CONTRIBUTORS, EMAIL, CONTACTNUMBER };
+export {
+    LIMIT,
+    LOGO,
+    MAX_FILE_SIZE,
+    ALLOWED_EXT,
+    CONTRIBUTORS,
+    EMAIL,
+    CONTACTNUMBER,
+    SERVER_ERROR,
+    BAD_REQUEST,
+};

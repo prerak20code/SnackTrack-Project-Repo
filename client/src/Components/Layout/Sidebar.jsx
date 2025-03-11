@@ -1,40 +1,23 @@
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useSideBarContext, useUserContext } from '../../Contexts';
 import { icons } from '../../Assets/icons';
-import { Button, Logout } from '..';
+import { Button } from '..';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRef } from 'react';
 
 export default function Sidebar() {
     const { user } = useUserContext();
-    const navigate = useNavigate();
     const { showSideBar, setShowSideBar } = useSideBarContext();
     const items = [
-        { show: true, path: '/', name: 'Home', icon: icons.home },
-        {
-            show: user,
-            path: '/history',
-            name: 'Order History',
-            icon: icons.clock,
-        },
+        { path: '/', name: 'Home', icon: icons.home },
+        { path: '/history', name: 'Order History', icon: icons.clock },
     ];
 
     const systemItems = [
-        { show: true, path: '/support', name: 'Support', icon: icons.support },
-
-        { show: true, path: '/about-us', name: 'About Us', icon: icons.search },
-        {
-            show: true,
-            path: '/contact-us',
-            name: 'Contact Us',
-            icon: icons.contact,
-        },
-        {
-            show: user,
-            path: '/settings',
-            name: 'Settings',
-            icon: icons.settings,
-        },
+        { path: '/support', name: 'Support', icon: icons.support },
+        { path: '/about-us', name: 'About Us', icon: icons.search },
+        { path: '/contact-us', name: 'Contact Us', icon: icons.contact },
+        { path: '/settings', name: 'Settings', icon: icons.settings },
     ];
 
     const itemElements = items.map((item) => (
@@ -144,48 +127,22 @@ export default function Sidebar() {
                                     title="Close Sidebar"
                                     className="bg-[#ffffff] p-[10px] group rounded-full drop-shadow-md w-fit"
                                 />
-                                {user ? (
-                                    <div className="w-full h-full py-3 flex items-center justify-end gap-4">
-                                        <div
-                                            onClick={() =>
-                                                setShowSideBar(false)
-                                            }
-                                        >
-                                            <Logout />
+
+                                {/* avatar */}
+                                <div className="w-full h-full py-3 flex items-center justify-end gap-4">
+                                    <Link
+                                        to={`/channel/${user?.user_id}`}
+                                        className="hover:scale-110 transition-all duration-300"
+                                    >
+                                        <div className="size-[35px] rounded-full overflow-hidden drop-shadow-md hover:brightness-90">
+                                            <img
+                                                src={user?.user_avatar}
+                                                alt="user avatar"
+                                                className="size-full object-cover"
+                                            />
                                         </div>
-
-                                        <Link
-                                            to={`/channel/${user?.user_id}`}
-                                            className="hover:scale-110 transition-all duration-300"
-                                        >
-                                            <div className="size-[35px] rounded-full overflow-hidden drop-shadow-md hover:brightness-90">
-                                                <img
-                                                    src={user?.user_avatar}
-                                                    alt="user avatar"
-                                                    className="size-full object-cover"
-                                                />
-                                            </div>
-                                        </Link>
-                                    </div>
-                                ) : (
-                                    <div className="w-full h-full py-3 flex items-center justify-end gap-2">
-                                        <Button
-                                            onClick={() =>
-                                                navigate('/register')
-                                            }
-                                            btnText="Sign Up"
-                                            className="text-white rounded-md py-[5px] w-full bg-[#4977ec] hover:bg-[#3b62c2]"
-                                        />
-
-                                        <div className="h-full border-r-[0.01rem] border-[#c8c8c8]" />
-
-                                        <Button
-                                            onClick={() => navigate('/login')}
-                                            btnText="Login"
-                                            className="text-white rounded-md py-[5px] w-full bg-[#4977ec] hover:bg-[#3b62c2]"
-                                        />
-                                    </div>
-                                )}
+                                    </Link>
+                                </div>
                             </div>
 
                             <hr className="w-full" />

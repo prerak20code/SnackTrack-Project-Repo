@@ -13,7 +13,6 @@ export default function DeleteAccount() {
     // const [check, setCheck] = useState(false);
     // const [disabled, setDisabled] = useState(false);
     // const [password, setPassword] = useState('');
-
     // async function handleClick() {
     //     setLoading(true);
     //     setDisabled(true);
@@ -33,12 +32,10 @@ export default function DeleteAccount() {
     //         setShowPopup(false);
     //     }
     // }
-
     // function onMouseOver() {
     //     if (!check || !password) setDisabled(true);
     //     else setDisabled(false);
     // }
-
     // return (
     //     <div>
     //         <div>
@@ -55,7 +52,6 @@ export default function DeleteAccount() {
     //                     ?
     //                 </label>
     //             </div>
-
     //             <div>
     //                 <input
     //                     type="password"
@@ -68,7 +64,6 @@ export default function DeleteAccount() {
     //                 />
     //             </div>
     //         </div>
-
     //         <div>
     //             <Button
     //                 onMouseOver={onMouseOver}

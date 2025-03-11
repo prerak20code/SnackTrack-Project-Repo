@@ -1,5 +1,5 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { Button, Logout } from '..';
+import { Button } from '..';
 import {
     useUserContext,
     useSideBarContext,
@@ -142,46 +142,51 @@ export default function Header() {
                 )}
 
                 {/* order btn */}
-                <NavLink
-                    to={'/order'}
-                    className={({ isActive }) => `${isActive && 'hidden'}`}
-                >
-                    <Button
-                        btnText={
-                            <div className="size-[20px] group-hover:fill-[#4977ec] fill-[#434343]">
-                                {icons.plus}
-                            </div>
-                        }
-                        title="Order"
-                        className="bg-[#ffffff] p-[10px] group rounded-full drop-shadow-md hover:drop-shadow-md w-fit"
-                    />
-                </NavLink>
+                {user.role === 'student' && (
+                    <NavLink
+                        to={'/order'}
+                        className={({ isActive }) => `${isActive && 'hidden'}`}
+                    >
+                        <Button
+                            btnText={
+                                <div>
+                                    <div className="size-[20px] group-hover:fill-[#4977ec] fill-[#434343]">
+                                        {icons.plus}
+                                    </div>
+                                    <p>Order</p>
+                                </div>
+                            }
+                            title="Order"
+                            className="bg-[#ffffff] p-[10px] group rounded-full drop-shadow-md hover:drop-shadow-md w-fit"
+                        />
+                    </NavLink>
+                )}
 
-                {/* login/logout btn */}
-                <div className="hidden sm:flex">
-                    {user ? (
-                        <Logout />
-                    ) : (
-                        <div className="flex items-center justify-center gap-4">
-                            <Button
-                                onClick={() => {
-                                    navigate('/register');
-                                }}
-                                btnText="Sign Up"
-                                title="Sign Up"
-                                className="text-white rounded-md py-[5px] w-[80px] h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
-                            />
-
-                            <Button
-                                onClick={() => {
-                                    navigate('/login');
-                                }}
-                                btnText="Login"
-                                title="Login"
-                                className="text-white rounded-md py-[5px] w-[80px] h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
-                            />
-                        </div>
+                {/* login/register btn */}
+                <div className="flex items-center justify-center gap-4">
+                    {user.role !== 'student' && (
+                        <Button
+                            onClick={() => navigate('/register')}
+                            btnText={
+                                user.role === 'contractor'
+                                    ? 'Add Student'
+                                    : 'Add Contractor'
+                            }
+                            title={
+                                user.role === 'contractor'
+                                    ? 'Add Student'
+                                    : 'Add Contractor'
+                            }
+                            className="text-white rounded-md py-[5px] w-[80px] h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                        />
                     )}
+
+                    <Button
+                        onClick={() => navigate('/login')}
+                        btnText="Login"
+                        title="Login"
+                        className="text-white rounded-md py-[5px] w-[80px] h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                    />
                 </div>
             </div>
         </header>

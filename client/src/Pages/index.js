@@ -10,6 +10,7 @@ import AdminPage from './Admin.Page';
 import AboutUsPage from './AboutUs.Page';
 import ContactUsPage from './ContactUs.Page';
 import FAQpage from './FAQ.page';
+import NewUserPage from './NewUser.Page';
 
 export {
     AboutUsPage,
@@ -24,4 +25,5 @@ export {
     AdminPage,
     ContactUsPage,
     FAQpage,
+    NewUserPage,
 };

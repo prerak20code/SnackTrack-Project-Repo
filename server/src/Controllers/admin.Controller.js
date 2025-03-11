@@ -14,6 +14,23 @@ import {
 } from '../Helpers/index.js';
 import { Admin, Contractor, Canteen } from '../Models/index.js';
 
+// personal usage
+const register = tryCatch('register as admin', async (req, res, next) => {});
+
+const login = tryCatch('login student', async (req, res, next) => {});
+
+const updateAccountDetails = tryCatch(
+    'update account details',
+    async (req, res, next) => {}
+);
+
+const updatePassword = tryCatch(
+    'update password',
+    async (req, res, next) => {}
+);
+
+const updateAvatar = tryCatch('update avatar', async (req, res, next) => {});
+
 // contractor management tasks
 const registerContractor = tryCatch(
     'register as contractor',
@@ -140,23 +157,6 @@ const getCanteens = tryCatch('get canteens', async (req, res, next) => {});
 const addHostel = tryCatch('add hostel', async (req, res, next) => {});
 
 const removeHostel = tryCatch('remove hostel', async (req, res, next) => {});
-
-// personal usage
-const register = tryCatch('register as admin', async (req, res, next) => {});
-
-const login = tryCatch('login student', async (req, res, next) => {});
-
-const updateAccountDetails = tryCatch(
-    'update account details',
-    async (req, res, next) => {}
-);
-
-const updatePassword = tryCatch(
-    'update password',
-    async (req, res, next) => {}
-);
-
-const updateAvatar = tryCatch('update avatar', async (req, res, next) => {});
 
 export {
     login,

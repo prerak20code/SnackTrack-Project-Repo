@@ -1,6 +1,6 @@
 import express from 'express';
 export const adminRouter = express.Router();
-import { upload, verifyJwt } from '../middlewares/index.js';
+import { upload, verifyJwt } from '../Middlewares/index.js';
 
 import {
     login,
@@ -36,15 +36,11 @@ adminRouter
     .get(getContractor);
 
 // canteen management tasks
-adminRouter
-    .route('/canteens')
-    .post(addCanteen)
-    .get(getCanteens)
-    .delete(removeCanteen);
+adminRouter.route('/canteens').post(addCanteen).delete(removeCanteen);
 
 // hostel management tasks
 adminRouter
     .route('/hostels')
+    .get(getCanteens)
     .post(addHostel)
-    .get(getHostels)
     .delete(removeHostel);

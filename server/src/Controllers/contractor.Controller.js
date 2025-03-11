@@ -11,7 +11,7 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
-import { Contractor, Canteen, Snack } from '../Models/index.js';
+import { Contractor, Canteen, Snack, Student } from '../Models/index.js';
 
 // personal usage
 const login = tryCatch('login as contractor', async (req, res, next) => {
@@ -207,15 +207,9 @@ const registerNewStudent = tryCatch(
 const removeAllStudents = tryCatch(
     'remove all students',
     async (req, res, next) => {
-        const { canteenId } = req.params;
         const contractor = req.user;
-        const canteen = await Canteen.findById(canteenId);
-        if (canteen.contractorId !== contractor._id) {
-            return next(new ErrorHandler('unauthorized access', BAD_REQUEST));
-        }
-
+        const canteen = await Canteen.findById(contractor.canteenId);
         await Student.deleteMany({ hostelId: canteen.hostelId });
-
         return res
             .status(OK)
             .json({ message: 'all students removed successfully' });
@@ -252,20 +246,23 @@ const updateStudentAccountDetails = tryCatch(
     'update account details',
     async (req, res, next) => {
         const contractor = req.user;
+        const { studentId } = req.params;
         const { fullName, phoneNumber, rollNo, password } = req.body;
 
-        const isPassValid = bcrypt.compareSync(password, req.user.password);
-        if (!isPassValid) {
-            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
-        }
-
-        const canteen = await Canteen.findById(contractor.canteenId);
-        const student = await Student.findOne({
-            rollNo,
-            hostelId: canteen.hostelId,
-        });
+        const [student, canteen] = await Promise.all([
+            Student.findById(studentId),
+            Canteen.findById(contractor.canteenId),
+        ]);
         if (!student) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
+        }
+        if (student.hostelId !== canteen.hostelId) {
+            return next(new ErrorHandler('unauthorized access', BAD_REQUEST));
+        }
+
+        const isPassValid = bcrypt.compareSync(password, student.password);
+        if (!isPassValid) {
+            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
         student.rollNo = rollNo || student.rollNo;
@@ -282,10 +279,10 @@ const addSnack = tryCatch('add snack', async (req, res, next) => {
     let imageURL;
     try {
         const contractor = req.user;
-        const { name } = req.body;
+        const { name, price } = req.body;
         let image = req.file?.path;
 
-        if (!name) {
+        if (!name || !price) {
             if (image) fs.unlinkSync(image);
             return next(new ErrorHandler('missing fields', BAD_REQUEST));
         }
@@ -299,6 +296,7 @@ const addSnack = tryCatch('add snack', async (req, res, next) => {
         const snack = await Snack.create({
             canteenId: contractor.canteenId,
             name,
+            price,
             image,
         });
         return res.status(OK).json(snack);

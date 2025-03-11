@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { LoginPopup } from '..';
+import { UpdateAvatarPopup, LoginPopup } from '..';
 import { usePopupContext } from '../../Contexts';
 
 export default function Popup() {
@@ -27,6 +27,12 @@ export default function Popup() {
             return (
                 <Wrapper>
                     <LoginPopup />
+                </Wrapper>
+            );
+        case 'updateAvatar':
+            return (
+                <Wrapper>
+                    <UpdateAvatarPopup />
                 </Wrapper>
             );
         default:

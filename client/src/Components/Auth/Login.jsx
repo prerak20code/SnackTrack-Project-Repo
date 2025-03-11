@@ -1,13 +1,18 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useUserContext, usePopupContext } from '../../Contexts';
-import { authService } from '../../Services';
-import { Button } from '..';
+import {
+    studentService,
+    contractorService,
+    adminService,
+} from '../../Services';
+import { Button, InputField } from '..';
 import { icons } from '../../Assets/icons';
 import toast from 'react-hot-toast';
 
 export default function Login() {
     const [inputs, setInputs] = useState({ loginInput: '', password: '' });
+    const [role, setRole] = useState('');
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +37,14 @@ export default function Login() {
         setDisabled(true);
         setError('');
         try {
-            const res = await authService.login(inputs, setLoading);
+            let res;
+            if (role === 'student') {
+                res = await studentService.login(inputs, setLoading);
+            } else if (role === 'contractor') {
+                res = await contractorService.login(inputs, setLoading);
+            } else if (role === 'admin') {
+                res = await adminService.login(inputs, setLoading);
+            }
             if (res && !res.message) {
                 setUser(res);
                 toast.success('Logges in Successfully 😉');
@@ -50,14 +62,18 @@ export default function Login() {
         }
     }
 
+    const roles = ['student', 'contractor', 'admin'];
+
     const inputFields = [
         {
             type: 'text',
             name: 'loginInput',
-            label: 'Username or Email',
+            label: role === 'student' ? 'Roll No' : 'Email',
             value: inputs.loginInput,
-            placeholder: 'Enter username or email',
+            placeholder:
+                role === 'student' ? 'Enter your roll no' : 'Enter your email',
             required: true,
+            show: role,
         },
         {
             type: showPassword ? 'text' : 'password',
@@ -66,38 +82,24 @@ export default function Login() {
             value: inputs.password,
             placeholder: 'Enter password',
             required: true,
+            show: true,
         },
     ];
 
-    const inputElements = inputFields.map((field) => (
-        <div key={field.name} className="w-full">
-            <div className="bg-white z-[1] ml-3 px-2 w-fit relative top-3 font-medium">
-                <label htmlFor={field.name}>
-                    {field.label}
-                    {field.required && <span className="text-red-500">*</span>}
-                </label>
-            </div>
-            <div className="relative">
-                <input
-                    type={field.type}
-                    name={field.name}
-                    id={field.name}
-                    value={inputs[field.name]}
-                    onChange={handleChange}
-                    placeholder={field.placeholder}
-                    className="shadow-md shadow-[#efefef] px-2 py-4 rounded-md indent-2 w-full border-[0.01rem] border-[#aeaeae] bg-transparent placeholder:text-[#a0a0a0]"
+    const inputElements = inputFields.map(
+        (field) =>
+            field.show && (
+                <InputField
+                    key={field.name}
+                    field={field}
+                    handleChange={handleChange}
+                    error={error}
+                    inputs={inputs}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
                 />
-                {field.name === 'password' && (
-                    <div
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        className="size-[20px] absolute right-0 top-[50%] transform translate-y-[-50%] mr-4 cursor-pointer fill-[#474747]"
-                    >
-                        {showPassword ? icons.eyeOff : icons.eye}
-                    </div>
-                )}
-            </div>
-        </div>
-    ));
+            )
+    );
 
     return (
         <div className="text-black w-[400px] h-full">
@@ -106,6 +108,37 @@ export default function Login() {
                     {error}
                 </div>
             )}
+
+            {/* ROLE SELECTION CHECKBOXES */}
+            <div className="w-full">
+                <p className="font-medium mb-2">Are you a:</p>
+                <div className="flex gap-4">
+                    {roles.map((option) => (
+                        <label
+                            key={option}
+                            className="flex items-center gap-2 cursor-pointer"
+                        >
+                            <input
+                                type="radio"
+                                name="role"
+                                value={option}
+                                checked={role === option}
+                                onChange={(e) => setRole(e.target.value)}
+                                className="hidden"
+                            />
+                            <div
+                                className={`w-5 h-5 border-2 rounded-full flex items-center justify-center
+                                    ${role === option ? 'border-blue-500' : 'border-gray-400'}`}
+                            >
+                                {role === option && (
+                                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                )}
+                            </div>
+                            {option}
+                        </label>
+                    ))}
+                </div>
+            </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 {inputElements}
@@ -126,15 +159,6 @@ export default function Login() {
                         }
                         disabled={disabled}
                     />
-                    <p className="w-full text-center text-[16px] mt-2">
-                        don't have an Account ?{' '}
-                        <Link
-                            to={'/register'}
-                            className="text-[#355ab6] hover:underline"
-                        >
-                            Sign up
-                        </Link>
-                    </p>
                 </div>
             </form>
         </div>

@@ -1,37 +1,30 @@
 import { useState } from 'react';
-import { authService } from '../Services';
+import { adminService, contractorService } from '../Services';
 import { useUserContext } from '../Contexts';
 import { useNavigate, Link } from 'react-router-dom';
-import { Button } from '../Components';
-import { verifyExpression, fileRestrictions } from '../Utils';
-import { LOGO, MAX_FILE_SIZE } from '../Constants/constants';
+import { Button, InputField } from '../Components';
+import { verifyExpression } from '../Utils';
+import { LOGO } from '../Constants/constants';
 import { motion } from 'framer-motion';
 import { icons } from '../Assets/icons';
 import toast from 'react-hot-toast';
 
 export default function RegisterPage() {
-    const [inputs, setInputs] = useState({
+    const initialInputs = {
         fullName: '',
         rollNo: '',
         email: '',
         password: '',
         phoneNumber: '',
-        avatar: null,
-    });
+    };
+    const initialError = { ...initialInputs, root: '' };
+    const [inputs, setInputs] = useState(initialInputs);
+    const [error, setError] = useState(initialError);
 
-    const [error, setError] = useState({
-        root: '',
-        fullName: '',
-        rollNo: '',
-        email: '',
-        password: '',
-        phoneNumber: '',
-        avatar: '',
-    });
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const { setUser } = useUserContext();
+    const { user } = useUserContext();
     const navigate = useNavigate();
 
     async function handleChange(e) {
@@ -39,46 +32,20 @@ export default function RegisterPage() {
         setInputs((prev) => ({ ...prev, [name]: value }));
     }
 
-    async function handleFileChange(e) {
-        const { name, files } = e.target;
-        if (files && files[0]) {
-            const file = files[0];
-
-            if (!fileRestrictions(file)) {
-                return toast.error(
-                    `only png, jpg/jpeg files are allowed and File size should not exceed ${MAX_FILE_SIZE} MB.`
-                );
-            }
-
-            setInputs((prev) => ({ ...prev, [name]: file }));
-        } else {
-            name === 'avatar'
-                ? setError((prevError) => ({
-                      ...prevError,
-                      avatar: 'avatar is required.',
-                  }))
-                : setError((prevError) => ({ ...prevError, avatar: '' }));
-        }
-    }
-
     const handleBlur = (e) => {
         let { name, value } = e.target;
-        if (value) {
-            verifyExpression(name, value, setError);
-        }
+        if (value) verifyExpression(name, value, setError);
     };
 
     function onMouseOver() {
         if (
             Object.values(inputs).some((value) => !value) ||
             Object.entries(error).some(
-                ([key, value]) => value !== '' && key !== 'root'
+                ([key, value]) => value && key !== 'root'
             )
         ) {
             setDisabled(true);
-        } else {
-            setDisabled(false);
-        }
+        } else setDisabled(false);
     }
 
     async function handleSubmit(e) {
@@ -86,19 +53,22 @@ export default function RegisterPage() {
         setLoading(true);
         setDisabled(true);
         try {
-            const res = await authService.register(inputs);
-            if (res && !res.message) {
-                setUser(res);
-                toast.success('Account created successfully');
-                navigate('/');
-            } else {
-                setError((prev) => ({ ...prev, root: res.message }));
+            let res;
+            if (user.role === 'contractor') {
+                res = await contractorService.registerStudent(inputs);
+            } else if (user.role === 'admin') {
+                res = await adminService.registerContractor(inputs);
             }
+            if (res && !res.message) {
+                toast.success('Account created successfully');
+            } else setError((prev) => ({ ...prev, root: res.message }));
         } catch (err) {
             navigate('/server-error');
         } finally {
             setDisabled(false);
             setLoading(false);
+            setError(initialError);
+            setInputs(initialInputs);
         }
     }
 
@@ -107,22 +77,25 @@ export default function RegisterPage() {
             type: 'text',
             name: 'rollNo',
             label: 'Roll No',
-            placeholder: 'Enter your roll number',
+            placeholder: 'Enter your hostel roll number',
             required: true,
+            show: user.role === 'contractor',
         },
         {
             type: 'text',
             name: 'fullName',
             label: 'FullName',
-            placeholder: 'Enter full name',
+            placeholder: 'Enter your full name',
             required: true,
+            show: true,
         },
         {
             type: 'text',
             name: 'email',
             label: 'Email',
-            placeholder: 'Enter email',
-            required: true,
+            placeholder: 'Enter your email',
+            required: false,
+            show: user.role !== 'contractor',
         },
         {
             type: showPassword ? 'text' : 'password',
@@ -130,80 +103,34 @@ export default function RegisterPage() {
             label: 'Password',
             placeholder: 'Create new password',
             required: true,
+            show: true,
         },
-    ];
-
-    const fileFields = [
         {
-            name: 'avatar',
-            label: 'Avatar',
+            type: text,
+            name: 'phoneNumber',
+            label: 'PhoneNumber',
+            placeholder: 'Enter your Phone Numbeer',
             required: true,
+            show: true,
         },
     ];
 
-    const inputElements = inputFields.map((field) => (
-        <div key={field.name} className="w-full">
-            <div className="bg-white z-[1] ml-3 px-2 w-fit relative top-3 font-medium">
-                <label htmlFor={field.name}>
-                    {field.required && <span className="text-red-500">* </span>}
-                    {field.label} :
-                </label>
-            </div>
-            <div className="relative">
-                <input
-                    type={field.type}
-                    name={field.name}
-                    id={field.name}
-                    value={inputs[field.name]}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    placeholder={field.placeholder}
-                    className="shadow-md shadow-[#f7f7f7] py-[15px] rounded-[5px] pl-[10px] w-full border-[0.01rem] border-gray-500 bg-transparent"
+    const inputElements = inputFields.map(
+        (field) =>
+            field.show && (
+                <InputField
+                    key={field.name}
+                    field={field}
+                    handleBlur={handleBlur}
+                    handleChange={handleChange}
+                    error={error}
+                    inputs={inputs}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    showPrecautions={true}
                 />
-                {field.name === 'password' && (
-                    <div
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        className="size-[20px] absolute right-0 top-[50%] transform translate-y-[-50%] mr-4 cursor-pointer fill-[#474747]"
-                    >
-                        {showPassword ? icons.eyeOff : icons.eye}
-                    </div>
-                )}
-            </div>
-            {error[field.name] && (
-                <div className="mt-1 text-red-500 text-sm font-medium">
-                    {error[field.name]}
-                </div>
-            )}
-            {field.name === 'password' && !error.password && (
-                <div className="text-xs">password must be 8-12 characters.</div>
-            )}
-        </div>
-    ));
-
-    const fileElements = fileFields.map((field) => (
-        <div key={field.name} className="w-full">
-            <div className="bg-white z-[1] ml-3 px-2 w-fit relative top-3 font-medium">
-                <label htmlFor={field.name}>
-                    {field.required && <span className="text-red-500">* </span>}
-                    {field.label} :
-                </label>
-            </div>
-            <div>
-                <input
-                    type="file"
-                    name={field.name}
-                    id={field.name}
-                    onChange={handleFileChange}
-                    className="shadow-md shadow-[#f7f7f7] py-[15px] rounded-[5px] pl-[10px] border border-gray-500 w-full"
-                />
-            </div>
-            {error[field.name] && (
-                <div className="text-red-500 text-sm mt-1 font-medium">
-                    {error[field.name]}
-                </div>
-            )}
-        </div>
-    ));
+            )
+    );
 
     return (
         <div className="py-10 text-black flex flex-col items-center justify-start gap-4 overflow-y-scroll z-[1] bg-white fixed inset-0">
@@ -221,7 +148,9 @@ export default function RegisterPage() {
             </Link>
             <div className="w-fit">
                 <p className="text-center px-2 text-[28px] font-medium">
-                    Create a new Account
+                    {user.role === 'contractor'
+                        ? 'Register a new Student'
+                        : 'Register a new Contractor'}
                 </p>
                 <motion.div
                     initial={{ width: 0 }}
@@ -229,15 +158,6 @@ export default function RegisterPage() {
                     transition={{ duration: 0.3 }}
                     className="relative -top-2 h-[0.05rem] bg-[#333333]"
                 />
-                <p className="w-full text-center text-[16px]">
-                    already have an Account ?{' '}
-                    <Link
-                        to={'/login'}
-                        className="text-[#355ab6] hover:underline"
-                    >
-                        Login
-                    </Link>
-                </p>
             </div>
 
             <div className="w-[400px] flex flex-col items-center justify-center gap-3">
@@ -252,8 +172,6 @@ export default function RegisterPage() {
                     className="flex flex-col items-start justify-center gap-4 w-full"
                 >
                     {inputElements}
-
-                    {fileElements}
 
                     <div className="w-full">
                         <Button

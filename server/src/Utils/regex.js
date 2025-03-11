@@ -29,11 +29,10 @@ export default function verifyRegex(name, value) {
             }
 
             case 'phoneNumber': {
-                return value.length === 10;
+                return /^[1-9]{1,10}$/.test(value);
             }
 
-            case 'snack_info':
-            case 'snack_name': {
+            case 'name': {
                 return value.length <= 100;
             }
 

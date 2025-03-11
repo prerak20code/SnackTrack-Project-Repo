@@ -10,7 +10,6 @@ export default function UpdateAccountDetails() {
     const { user, setUser } = useUserContext();
     const initialInputs = {
         firstName: user?.user_firstName,
-        lastName: user?.user_lastName,
         email: user?.user_email,
         password: '',
     };

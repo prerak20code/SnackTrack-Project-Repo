@@ -2,7 +2,7 @@ import { Snack } from './snack.Model.js';
 import { Contractor } from './contractor.Model.js';
 import { Hostel } from './hostel.Model.js';
 import { Canteen } from './canteen.Model.js';
-import { Order, OrderHistory } from './order.Model.js';
+import { Order } from './order.Model.js';
 import { Student } from './student.Model.js';
 import { Admin } from './admin.Model.js';
 import { PackagedFood } from './packagedFood.Model.js';
@@ -13,7 +13,6 @@ export {
     Canteen,
     Hostel,
     Order,
-    OrderHistory,
     Snack,
     Admin,
     PackagedFood,

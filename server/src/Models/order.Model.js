@@ -50,26 +50,6 @@ const orderSchema = new Schema(
     { timestamps: true }
 );
 
-const orderHistorySchema = new Schema(
-    {
-        orderId: {
-            type: Types.ObjectId,
-            required: true,
-            ref: 'Snack',
-        },
-        studentId: {
-            type: Types.ObjectId,
-            required: true,
-            ref: 'Student',
-            index: true,
-        },
-    },
-    { timestamps: true }
-);
+orderSchema.plugin(aggregatePaginate);
 
-orderHistorySchema.plugin(aggregatePaginate);
-
-const OrderHistory = model('OrderHistory', orderHistorySchema);
-const Order = model('Order', orderSchema);
-
-export { Order, OrderHistory };
+export const Order = model('Order', orderSchema);

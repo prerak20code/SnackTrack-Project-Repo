@@ -20,8 +20,8 @@ export default function verifyExpression(name, value, setError) {
                 break;
             }
 
-            case 'firstName':
-            case 'lastName': {
+            case 'fullName':
+            case 'name': {
                 /^[a-zA-Z]{1,15}$/.test(value)
                     ? setError((prevError) => ({ ...prevError, [name]: '' }))
                     : setError((prevError) => ({
@@ -31,12 +31,22 @@ export default function verifyExpression(name, value, setError) {
                 break;
             }
 
-            case 'userName': {
-                /^[a-zA-Z0-9_]{1,20}$/.test(value)
+            case 'rollNo': {
+                /^[1-9]{1,3}$/.test(value)
                     ? setError((prevError) => ({ ...prevError, [name]: '' }))
                     : setError((prevError) => ({
                           ...prevError,
-                          [name]: `only alpha-numeric char & underscores are allowed and should not exceed 20 characters`,
+                          [name]: `only numbers are allowed and should not exceed 3 characters.`,
+                      }));
+                break;
+            }
+
+            case 'phoneNumber': {
+                /^[1-9]{1,10}$/.test(value)
+                    ? setError((prevError) => ({ ...prevError, [name]: '' }))
+                    : setError((prevError) => ({
+                          ...prevError,
+                          [name]: `only numbers are allowed and should not exceed 10 characters.`,
                       }));
                 break;
             }
@@ -48,17 +58,6 @@ export default function verifyExpression(name, value, setError) {
                     : setError((prevError) => ({
                           ...prevError,
                           [name]: `${name.toLowerCase()} must be 8-12 characters.`,
-                      }));
-                break;
-            }
-
-            case 'bio':
-            case 'title': {
-                value.length <= 100
-                    ? setError((prevError) => ({ ...prevError, [name]: '' }))
-                    : setError((prevError) => ({
-                          ...prevError,
-                          [name]: `${name.toLowerCase()} should not exceed 100 characters.`,
                       }));
                 break;
             }

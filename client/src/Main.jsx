@@ -23,6 +23,7 @@ import {
     NotFoundPage,
     Redirect,
     FAQpage,
+    NewUserPage,
 } from './Pages';
 
 import {
@@ -30,6 +31,7 @@ import {
     PopupContextProvider,
     SideBarContextProvider,
     SearchContextProvider,
+    useUserContext,
 } from './Contexts';
 
 import {
@@ -40,60 +42,68 @@ import {
 
 function Wrapper() {
     return (
+        <PopupContextProvider>
+            <SideBarContextProvider>
+                <SearchContextProvider>
+                    <App />
+                </SearchContextProvider>
+            </SideBarContextProvider>
+        </PopupContextProvider>
+    );
+}
+
+function AppRouter() {
+    const { user } = useUserContext();
+
+    const router = createBrowserRouter(
+        createRoutesFromElements(
+            <Route path="/" element={<Wrapper />}>
+                {user ? (
+                    //  although no need of redirect because routes are defined only if logged in
+                    <Route element={<Redirect />}>
+                        <Route path="" element={<HomePage />} />
+                        <Route path="settings" element={<SettingsPage />}>
+                            <Route path="" element={<UpdateAccountDetails />} />
+                            <Route
+                                path="password"
+                                element={<UpdatePassword />}
+                            />
+                            <Route
+                                path="delete-account"
+                                element={<DeleteAccount />}
+                            />
+                        </Route>
+                        <Route path="register" element={<RegisterPage />} />
+                        <Route path="admin" element={<AdminPage />} />
+                        <Route path="support" element={<SupportPage />} />
+                        <Route path="about-us" element={<AboutUsPage />} />
+                        <Route path="contact-us" element={<ContactUsPage />} />
+                        <Route path="faqs" element={<FAQpage />} />
+                    </Route>
+                ) : (
+                    <Route path="" element={<NewUserPage />} />
+                )}
+
+                {/* public routes */}
+                <Route path="login" element={<LoginPage />} />
+                <Route path="server-error" element={<ServerErrorPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+            </Route>
+        )
+    );
+    return <RouterProvider router={router} />;
+}
+
+function Root() {
+    return (
         <UserContextProvider>
-            <PopupContextProvider>
-                <SideBarContextProvider>
-                    <SearchContextProvider>
-                        <App />
-                    </SearchContextProvider>
-                </SideBarContextProvider>
-            </PopupContextProvider>
+            <AppRouter />
         </UserContextProvider>
     );
 }
 
-const router = createBrowserRouter(
-    createRoutesFromElements(
-        <Route path="/" element={<Wrapper />}>
-            <Route path="" element={<HomePage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
-
-            <Route
-                path="admin"
-                element={
-                    <Redirect path="/login">
-                        <AdminPage />
-                    </Redirect>
-                }
-            />
-
-            <Route
-                path="settings"
-                element={
-                    <Redirect path="/login">
-                        <SettingsPage />
-                    </Redirect>
-                }
-            >
-                <Route path="" element={<UpdateAccountDetails />} />
-                <Route path="password" element={<UpdatePassword />} />
-                <Route path="delete-account" element={<DeleteAccount />} />
-            </Route>
-
-            {/* static pages */}
-            <Route path="support" element={<SupportPage />} />
-            <Route path="about-us" element={<AboutUsPage />} />
-            <Route path="contact-us" element={<ContactUsPage />} />
-            <Route path="faqs" element={<FAQpage />} />
-            <Route path="server-error" element={<ServerErrorPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-        </Route>
-    )
-);
-
 createRoot(document.getElementById('root')).render(
     // <StrictMode>
-    <RouterProvider router={router} />
+    <Root />
     // </StrictMode>,
 );

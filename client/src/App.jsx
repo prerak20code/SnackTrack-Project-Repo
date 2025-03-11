@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Layout } from './Components';
 import { useSideBarContext, useUserContext, usePopupContext } from './Contexts';
-import { authService } from './Services';
+import { userService } from './Services';
 import { icons } from './Assets/icons';
 
 export default function App() {
-    const { setUser } = useUserContext();
+    const { user, setUser } = useUserContext();
     const [loading, setLoading] = useState(true);
     const { setShowSideBar } = useSideBarContext();
     const { setShowPopup } = usePopupContext();
@@ -14,13 +14,10 @@ export default function App() {
     const location = useLocation();
 
     useEffect(() => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-
         (async function currentUser() {
             try {
                 setLoading(true);
-                const data = await authService.getCurrentUser(signal);
+                const data = await userService.getCurrentUser();
                 setUser(data && !data.message ? data : null);
             } catch (err) {
                 navigate('/server-error');
@@ -28,8 +25,6 @@ export default function App() {
                 setLoading(false);
             }
         })();
-
-        return () => controller.abort();
     }, []);
 
     // Close sidebar & popups
@@ -46,7 +41,6 @@ export default function App() {
         return () => window.removeEventListener('resize', handleResize);
     }, [location]);
 
-    console.log(import.meta.env.VITE_BACKEND_URL);
     return (
         <div className="bg-white h-screen w-screen">
             {loading ? (
@@ -61,8 +55,10 @@ export default function App() {
                         Please refresh the page, if it takes too long
                     </p>
                 </div>
-            ) : (
+            ) : user ? (
                 <Layout />
+            ) : (
+                <Outlet />
             )}
         </div>
     );

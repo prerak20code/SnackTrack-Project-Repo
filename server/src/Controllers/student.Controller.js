@@ -11,7 +11,7 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
-import { Student, Canteen, Hostel } from '../Models/index.js';
+import { Student, Hostel } from '../Models/index.js';
 
 const login = tryCatch('login as student', async (req, res, next) => {
     const { rollNo, password, hostelNo, hostelType } = req.body;

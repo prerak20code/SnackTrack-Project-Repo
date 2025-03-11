@@ -42,13 +42,13 @@ contractorRouter
     .patch(updateStudentAccountDetails);
 
 // snack management tasks
-contractorRouter.route('/snacks').post(addSnack);
+contractorRouter.route('/snacks/add').post(addSnack);
 contractorRouter
     .route('/snacks/:snackId')
     .delete(deleteSnack)
     .patch(updateSnackDetails);
 contractorRouter
-    .route('/snacks/toggle/:snackId')
+    .route('/snacks/availability/:snackId')
     .patch(toggleSnackAvailability);
 
 // packaged food management tasks
@@ -57,7 +57,9 @@ contractorRouter
     .route('/packaged/:itemId')
     .delete(deleteItem)
     .patch(updateItemDetails);
-contractorRouter.route('/packaged/toggle/:itemId').patch(toggleAvaialbleCount);
+contractorRouter
+    .route('/packaged/availability/:itemId')
+    .patch(toggleAvaialbleCount);
 
 // order management tasks
 contractorRouter.route('/orders/:orderId').patch(markOrderAsDelivered);

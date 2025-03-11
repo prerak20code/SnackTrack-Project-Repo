@@ -1,4 +1,4 @@
-import { maxFileSize, allowedExtensions } from './files.js';
+import { MAX_FILE_SIZE, ALLOWED_EXT } from './files.js';
 import { COOKIE_OPTIONS, CORS_OPTIONS, WHITELIST } from './options.js';
 import {
     OK,
@@ -10,8 +10,8 @@ import {
 } from './errorCodes.js';
 
 export {
-    maxFileSize,
-    allowedExtensions,
+    MAX_FILE_SIZE,
+    ALLOWED_EXT,
     COOKIE_OPTIONS,
     CORS_OPTIONS,
     WHITELIST,

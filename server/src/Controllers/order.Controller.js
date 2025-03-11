@@ -1,4 +1,4 @@
-import { tryCatch } from '../Utils';
+import { tryCatch } from '../Utils/index.js';
 import { Order } from '../Models/index.js';
 
 const getOrderHistory = tryCatch('get order history', async (req, res) => {

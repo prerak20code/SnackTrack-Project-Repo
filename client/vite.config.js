@@ -14,9 +14,9 @@ export default defineConfig(({ mode }) => {
         server: {
             proxy: {
                 '/api': {
-                    target: env.VITE_BACKEND_URL,
+                    target: 'http://localhost:4000',
                     changeOrigin: true,
-                    secure: true, // Set to true if using HTTPS
+                    secure: false, // Set to true if using HTTPS
                 },
             },
         },

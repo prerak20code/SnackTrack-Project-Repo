@@ -1,6 +1,9 @@
-import { OK, BAD_REQUEST, NOT_FOUND } from '../Constants/errorCodes.js';
-import { COOKIE_OPTIONS } from '../Constants/options.js';
-import fs from 'fs';
+import {
+    OK,
+    BAD_REQUEST,
+    NOT_FOUND,
+    COOKIE_OPTIONS,
+} from '../Constants/index.js';
 import bcrypt from 'bcrypt';
 import { verifyExpression, tryCatch, ErrorHandler } from '../Utils/index.js';
 import {
@@ -10,88 +13,106 @@ import {
 } from '../Helpers/index.js';
 import { Contractor, Canteen } from '../Models/index.js';
 
-const registerContractor = tryCatch(
-    'register contractor',
-    async (req, res, next) => {
-        let avatarURL;
-        try {
-            const data = {
-                fullName: req.body.fullName.trim(),
-                email: req.body.email.trim(),
-                phoneNumber: req.body.phoneNumber,
-                password: req.body.password,
-                avatar: req.files?.avatar?.[0].path,
-            };
+// under admin
+const register = tryCatch('register as contractor', async (req, res, next) => {
+    try {
+        const data = {
+            fullName: req.body.fullName.trim(),
+            email: req.body.email.trim(),
+            phoneNumber: req.body.phoneNumber,
+            password: req.body.password,
+        };
 
-            const { canteenId } = req.params;
+        const { canteenId } = req.params;
 
-            // input error handling
-            if (
-                !fullName ||
-                !email ||
-                !phoneNumber ||
-                !password ||
-                !canteenId
-            ) {
-                return next(new ErrorHandler('missing fields', BAD_REQUEST));
-            }
-
-            const canteen = await Canteen.findById(canteenId);
-            if (!canteen) {
-                return next(new ErrorHandler('canteen not found', NOT_FOUND));
-            }
-
-            // since a canteen can have only one contractor
-            if (canteen.contractor) {
-                return next(
-                    new ErrorHandler(
-                        'canteen already has a contractor',
-                        BAD_REQUEST
-                    )
-                );
-            }
-
-            // input data validation
-            for (const [key, value] of Object.entries(data)) {
-                if (value && key !== 'canteenId') {
-                    const isAvatar = key === 'avatar';
-                    const isValid = verifyExpression(
-                        isAvatar ? key : 'file',
-                        value
+        // input error handling
+        if (!fullName || !email || !phoneNumber || !password || !canteenId) {
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+        for (const [key, value] of Object.entries(data)) {
+            if (value) {
+                const isValid = verifyExpression(key, value);
+                if (!isValid) {
+                    return next(
+                        new ErrorHandler(`${key} is invalid.`, BAD_REQUEST)
                     );
-                    if (!isValid) {
-                        if (data.avatar) fs.unlinkSync(data.avatar);
-                        return next(
-                            new ErrorHandler(
-                                isAvatar
-                                    ? `Only PNG, JPG/JPEG files are allowed for avatar, and the file size must be < 5MB.`
-                                    : `${key} is invalid.`,
-                                BAD_REQUEST
-                            )
-                        );
-                    }
                 }
             }
-
-            // upload avatar on cloudinary
-            if (data.avatar) {
-                data.avatar = await uploadOnCloudinary(data.avatar);
-                data.avatar = data.avatar.secure_url;
-                avatarURL = data.avatar;
-            }
-
-            // hash the password (auto done by pre hook in model)
-
-            const contractor = await Contractor.create(data);
-            return res.status(OK).json(contractor);
-        } catch (err) {
-            if (avatarURL) await deleteFromCloudinary(avatarURL);
-            throw err;
         }
-    }
-);
 
-const loginContractor = tryCatch('login contractor', async (req, res, next) => {
+        const canteen = await Canteen.findById(canteenId);
+        if (!canteen) {
+            return next(new ErrorHandler('canteen not found', NOT_FOUND));
+        }
+
+        // since a canteen can have only one contractor
+        if (canteen.contractorId) {
+            return next(
+                new ErrorHandler(
+                    'canteen already has a contractor',
+                    BAD_REQUEST
+                )
+            );
+        }
+
+        // hash the password (auto done by pre hook in model)
+
+        const contractor = await Contractor.create(data);
+        canteen.contractorId = contractor._id;
+        await canteen.save();
+        return res.status(OK).json(contractor);
+    } catch (err) {
+        throw err;
+    }
+});
+
+const change = tryCatch('change contractor', async (req, res, next) => {
+    try {
+        const data = {
+            fullName: req.body.fullName.trim(),
+            email: req.body.email.trim(),
+            phoneNumber: req.body.phoneNumber,
+            password: req.body.password,
+            refreshToken: '',
+        };
+
+        const { contractorId } = req.params;
+
+        // input error handling
+        if (!fullName || !email || !phoneNumber || !contractorId) {
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+        for (const [key, value] of Object.entries(data)) {
+            if (value) {
+                const isValid = verifyExpression(key, value);
+                if (!isValid) {
+                    return next(
+                        new ErrorHandler(`${key} is invalid.`, BAD_REQUEST)
+                    );
+                }
+            }
+        }
+
+        const contractor = await Contractor.findById(contractorId);
+        if (!contractor) {
+            return next(new ErrorHandler('contractor not found', NOT_FOUND));
+        }
+
+        // update contractor details
+        const updatedContractor = await Contractor.findByIdAndUpdate(
+            contractorId,
+            data,
+            { new: true }
+        );
+        return res.status(OK).json(updatedContractor);
+    } catch (err) {
+        if (avatarURL) await deleteFromCloudinary(avatarURL);
+        throw err;
+    }
+});
+
+// under contractor (personal)
+const login = tryCatch('login as contractor', async (req, res, next) => {
     const { emailOrPhoneNo, password } = req.body;
 
     if (!emailOrPhoneNo || !password) {
@@ -133,51 +154,24 @@ const loginContractor = tryCatch('login contractor', async (req, res, next) => {
         .json(loggedInContractor);
 });
 
-const deleteAccount = tryCatch(
-    'delete contractor account',
-    async (req, res, next) => {
-        const { password } = req.body;
-
-        const isPassValid = bcrypt.compareSync(password, req.user.password);
-        if (!isPassValid) {
-            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
-        }
-
-        if (req.user.avatar) await deleteFromCloudinary(req.user.avatar);
-
-        await Contractor.findByIdAndDelete(req.user._id);
-
-        return res
-            .status(OK)
-            .clearCookie('snackTrack_accessToken', COOKIE_OPTIONS)
-            .clearCookie('snackTrack_refreshToken', COOKIE_OPTIONS)
-            .json({ message: 'account deleted successfully' });
-    }
-);
-
-const logoutContractor = tryCatch('logout contractor', async (req, res) => {
-    await Contractor.findByIdAndUpdate(req.user?._id, {
-        $set: { refreshToken: '' },
-    });
-    return res
-        .status(OK)
-        .clearCookie('snackTrack_accessToken', COOKIE_OPTIONS)
-        .clearCookie('snackTrack_refreshToken', COOKIE_OPTIONS)
-        .json({ message: 'contractor loggedout successfully' });
-});
-
-const getCurrentContractor = tryCatch('get Current contractor', (req, res) => {
-    const { password, refreshToken, ...contractor } = req.user;
-    return res.status(OK).json(contractor);
-});
-
 const updateAccountDetails = tryCatch(
     'update account details',
     async (req, res, next) => {
         const { fullName, phoneNumber, email, password } = req.body;
 
-        if (email && !verifyExpression('email', email)) {
-            return next(new ErrorHandler('invalid email', BAD_REQUEST));
+        // input error handling
+        if (!fullName || !email || !phoneNumber) {
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+        for (const [key, value] of Object.entries(data)) {
+            if (value) {
+                const isValid = verifyExpression(key, value);
+                if (!isValid) {
+                    return next(
+                        new ErrorHandler(`${key} is invalid.`, BAD_REQUEST)
+                    );
+                }
+            }
         }
 
         const isPassValid = bcrypt.compareSync(password, req.user.password);
@@ -185,11 +179,8 @@ const updateAccountDetails = tryCatch(
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
-        const contractor = await Contractor.findById(contractorId);
+        const contractor = await Contractor.findById(req.user._id);
 
-        if (!contractor) {
-            return next(new ErrorHandler('contractor not found', NOT_FOUND));
-        }
         contractor.email = email || contractor.email;
         contractor.phoneNumber = phoneNumber || contractor.phoneNumber;
         contractor.fullName = fullName || contractor.fullName;
@@ -247,12 +238,10 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
 });
 
 export {
-    registerContractor,
-    loginContractor,
-    logoutContractor,
-    deleteAccount,
+    register,
+    change,
+    login,
     updateAccountDetails,
-    updateAvatar,
     updatePassword,
-    getCurrentContractor,
+    updateAvatar,
 };

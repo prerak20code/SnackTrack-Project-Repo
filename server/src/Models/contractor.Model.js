@@ -1,4 +1,5 @@
 import { Schema, model, Types } from 'mongoose';
+import bcrypt from 'bcrypt';
 
 const contractorSchema = new Schema(
     {
@@ -6,15 +7,37 @@ const contractorSchema = new Schema(
             type: Types.ObjectId,
             ref: 'Canteen',
         },
-        // for general details from user table
-        userId: {
-            type: Types.ObjectId,
-            ref: 'User',
+        fullName: {
+            type: String,
             required: true,
         },
-        // contractor specific fields if any
+        email: {
+            type: String,
+            unique: true,
+            required: true,
+        },
+        password: {
+            type: String,
+            required: true,
+        },
+        phoneNumber: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+        refreshToken: {
+            type: String,
+            default: '',
+        },
     },
     { timestamps: true }
 );
+
+// Hash password before saving
+contractorSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+});
 
 export const Contractor = model('Contractor', contractorSchema);

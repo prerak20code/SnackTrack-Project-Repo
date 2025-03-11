@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { MAX_FILE_SIZE, ALLOWED_EXT } from '../Constants/index.js';
 
 /**
  * Generic Utility to validate the regular expressions
@@ -11,6 +12,12 @@ export default function verifyRegex(name, value) {
         switch (name) {
             case 'fullName': {
                 return /^[a-zA-Z]{1,15}$/.test(value);
+            }
+
+            case 'email': {
+                return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,100}$/.test(
+                    value
+                );
             }
 
             case 'rollNo': {
@@ -35,15 +42,12 @@ export default function verifyRegex(name, value) {
                     try {
                         const stats = fs.statSync(value);
                         const fileSizeMB = stats.size / (1024 * 1024);
-                        const maxSizeMB = 5;
                         const extension = value.split('.').pop().toLowerCase();
-                        const allowedExtensions = ['png', 'jpg', 'jpeg'];
 
-                        const isValid =
-                            allowedExtensions.includes(extension) &&
-                            fileSizeMB <= maxSizeMB;
-
-                        return isValid;
+                        return (
+                            ALLOWED_EXT.includes(extension) &&
+                            fileSizeMB <= MAX_FILE_SIZE
+                        );
                     } catch (err) {
                         console.error('Error accessing file:', err);
                         return false;

@@ -10,162 +10,161 @@ import {
 } from '../Helpers/index.js';
 import { Contractor, Canteen } from '../Models/index.js';
 
-// const registerContractor = tryCatch(
-//     'register contractor',
-//     async (req, res, next) => {
-//         let avatarURL;
-//         try {
-//             const data = {
-//                 fullName: req.body.fullName.trim(),
-//                 email: req.body.email.trim(),
-//                 phoneNumber: req.body.phoneNumber,
-//                 password: req.body.password,
-//                 avatar: req.files?.avatar?.[0].path,
-//             };
+const registerContractor = tryCatch(
+    'register contractor',
+    async (req, res, next) => {
+        let avatarURL;
+        try {
+            const data = {
+                fullName: req.body.fullName.trim(),
+                email: req.body.email.trim(),
+                phoneNumber: req.body.phoneNumber,
+                password: req.body.password,
+                avatar: req.files?.avatar?.[0].path,
+            };
 
-//             const { canteenId } = req.params;
+            const { canteenId } = req.params;
 
-//             // input error handling
-//             if (
-//                 !fullName ||
-//                 !email ||
-//                 !phoneNumber ||
-//                 !password ||
-//                 !canteenId
-//             ) {
-//                 return next(new ErrorHandler('missing fields', BAD_REQUEST));
-//             }
+            // input error handling
+            if (
+                !fullName ||
+                !email ||
+                !phoneNumber ||
+                !password ||
+                !canteenId
+            ) {
+                return next(new ErrorHandler('missing fields', BAD_REQUEST));
+            }
 
-//             const canteen = await Canteen.findById(canteenId);
-//             if (!canteen) {
-//                 return next(new ErrorHandler('canteen not found', NOT_FOUND));
-//             }
+            const canteen = await Canteen.findById(canteenId);
+            if (!canteen) {
+                return next(new ErrorHandler('canteen not found', NOT_FOUND));
+            }
 
-//             for (const [key, value] of Object.entries(data)) {
-//                 if (value && key !== 'canteenId') {
-//                     const isAvatar = key === 'avatar';
-//                     const isValid = verifyExpression(
-//                         isAvatar ? key : 'file',
-//                         value
-//                     );
-//                     if (!isValid) {
-//                         if (data.avatar) fs.unlinkSync(data.avatar);
-//                         return next(
-//                             new ErrorHandler(
-//                                 isAvatar
-//                                     ? `Only PNG, JPG/JPEG files are allowed for avatar, and the file size must be < 5MB.`
-//                                     : `${key} is invalid.`,
-//                                 BAD_REQUEST
-//                             )
-//                         );
-//                     }
-//                 }
-//             }
+            // since a canteen can have only one contractor
+            if (canteen.contractor) {
+                return next(
+                    new ErrorHandler(
+                        'canteen already has a contractor',
+                        BAD_REQUEST
+                    )
+                );
+            }
 
-//             // check if user already exists with this roll no
-//             const existingContractor = await Contractor.findOne({
-//                 canteen: canteenId,
-//                 $or: [{ phoneNumber }, { email }],
-//             });
-//             if (existingContractor) {
-//                 if (data.avatar) fs.unlinkSync(data.avatar);
-//                 return next(
-//                     new ErrorHandler('contractor already exists', BAD_REQUEST)
-//                 );
-//             }
+            // input data validation
+            for (const [key, value] of Object.entries(data)) {
+                if (value && key !== 'canteenId') {
+                    const isAvatar = key === 'avatar';
+                    const isValid = verifyExpression(
+                        isAvatar ? key : 'file',
+                        value
+                    );
+                    if (!isValid) {
+                        if (data.avatar) fs.unlinkSync(data.avatar);
+                        return next(
+                            new ErrorHandler(
+                                isAvatar
+                                    ? `Only PNG, JPG/JPEG files are allowed for avatar, and the file size must be < 5MB.`
+                                    : `${key} is invalid.`,
+                                BAD_REQUEST
+                            )
+                        );
+                    }
+                }
+            }
 
-//             // upload avatar on cloudinary
-//             if (data.avatar) {
-//                 data.avatar = await uploadOnCloudinary(data.avatar);
-//                 data.avatar = data.avatar.secure_url;
-//                 avatarURL = data.avatar;
-//             }
+            // upload avatar on cloudinary
+            if (data.avatar) {
+                data.avatar = await uploadOnCloudinary(data.avatar);
+                data.avatar = data.avatar.secure_url;
+                avatarURL = data.avatar;
+            }
 
-//             // hash the password (auto done by pre hook in model)
+            // hash the password (auto done by pre hook in model)
 
-//             const contractor = await Contractor.create(data);
-//             return res.status(OK).json(contractor);
-//         } catch (err) {
-//             if (avatarURL) await deleteFromCloudinary(avatarURL);
-//             throw err;
-//         }
-//     }
-// );
+            const contractor = await Contractor.create(data);
+            return res.status(OK).json(contractor);
+        } catch (err) {
+            if (avatarURL) await deleteFromCloudinary(avatarURL);
+            throw err;
+        }
+    }
+);
 
-// const loginContractor = tryCatch('login contractor', async (req, res, next) => {
-//     const { rollNo, password, hostelType, hostelNo } = req.body;
+const loginContractor = tryCatch('login contractor', async (req, res, next) => {
+    const { emailOrPhoneNo, password } = req.body;
 
-//     if (!rollNo || !password || !hostelNo || !hostelType) {
-//         return next(new ErrorHandler('missing fields', BAD_REQUEST));
-//     }
+    if (!emailOrPhoneNo || !password) {
+        return next(new ErrorHandler('missing fields', BAD_REQUEST));
+    }
 
-//     const hostel = await Hostel.findOne({ hostelNo, hostelType });
-//     if (!hostel) {
-//         return next(new ErrorHandler('hostel not found', NOT_FOUND));
-//     }
+    const contractor = await Contractor.findOne({
+        $or: [{ email: emailOrPhoneNo }, { phoneNumber: emailOrPhoneNo }],
+    });
+    if (!contractor) {
+        return next(new ErrorHandler('contractor not found', NOT_FOUND));
+    }
 
-//     const student = await Student.findOne({ rollNo, canteenId: canteen._id });
-//     if (!student) {
-//         return next(new ErrorHandler('student not found', NOT_FOUND));
-//     }
-//     const isPassValid = bcrypt.compareSync(password, student.password);
-//     if (!isPassValid) {
-//         return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
-//     }
+    const isPassValid = bcrypt.compareSync(password, contractor.password);
+    if (!isPassValid) {
+        return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+    }
 
-//     // generate tokens
-//     const { accessToken, refreshToken } = await generateTokens(student);
+    // generate tokens
+    const { accessToken, refreshToken } = await generateTokens(contractor);
 
-//     // login user
-//     const loggedInStudent = await User.findByIdAndUpdate(student._id, {
-//         $set: { refreshToken },
-//     }).select('-password -refreshToken');
+    const loggedInContractor = await Contractor.findByIdAndUpdate(
+        contractor._id,
+        {
+            $set: { refreshToken },
+        }
+    ).select('-password -refreshToken');
 
-//     return res
-//         .status(OK)
-//         .cookie('snackTrack_accessToken', accessToken, {
-//             ...COOKIE_OPTIONS,
-//             maxAge: parseInt(process.env.ACCESS_TOKEN_MAXAGE),
-//         })
-//         .cookie('snackTrack_refreshToken', refreshToken, {
-//             ...COOKIE_OPTIONS,
-//             maxAge: parseInt(process.env.REFRESH_TOKEN_MAXAGE),
-//         })
-//         .json(loggedInStudent);
-// });
+    return res
+        .status(OK)
+        .cookie('snackTrack_accessToken', accessToken, {
+            ...COOKIE_OPTIONS,
+            maxAge: parseInt(process.env.ACCESS_TOKEN_MAXAGE),
+        })
+        .cookie('snackTrack_refreshToken', refreshToken, {
+            ...COOKIE_OPTIONS,
+            maxAge: parseInt(process.env.REFRESH_TOKEN_MAXAGE),
+        })
+        .json(loggedInContractor);
+});
 
-// const deleteAccount = tryCatch(
-//     'delete student account',
-//     async (req, res, next) => {
-//         const { password } = req.body;
+const deleteAccount = tryCatch(
+    'delete contractor account',
+    async (req, res, next) => {
+        const { password } = req.body;
 
-//         const isPassValid = bcrypt.compareSync(password, req.user.password);
-//         if (!isPassValid) {
-//             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
-//         }
+        const isPassValid = bcrypt.compareSync(password, req.user.password);
+        if (!isPassValid) {
+            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+        }
 
-//         if (req.user.avatar) await deleteFromCloudinary(req.user.avatar);
+        if (req.user.avatar) await deleteFromCloudinary(req.user.avatar);
 
-//         await Student.findByIdAndDelete(req.user._id);
+        await Contractor.findByIdAndDelete(req.user._id);
 
-//         return res
-//             .status(OK)
-//             .clearCookie('snackTrack_accessToken', COOKIE_OPTIONS)
-//             .clearCookie('snackTrack_refreshToken', COOKIE_OPTIONS)
-//             .json({ message: 'account deleted successfully' });
-//     }
-// );
+        return res
+            .status(OK)
+            .clearCookie('snackTrack_accessToken', COOKIE_OPTIONS)
+            .clearCookie('snackTrack_refreshToken', COOKIE_OPTIONS)
+            .json({ message: 'account deleted successfully' });
+    }
+);
 
-// const logoutStudent = tryCatch('logout student', async (req, res) => {
-//     await Student.findByIdAndUpdate(req.user?._id, {
-//         $set: { refreshToken: '' },
-//     });
-//     return res
-//         .status(OK)
-//         .clearCookie('snackTrack_accessToken', COOKIE_OPTIONS)
-//         .clearCookie('snackTrack_refreshToken', COOKIE_OPTIONS)
-//         .json({ message: 'student loggedout successfully' });
-// });
+const logoutContractor = tryCatch('logout contractor', async (req, res) => {
+    await Contractor.findByIdAndUpdate(req.user?._id, {
+        $set: { refreshToken: '' },
+    });
+    return res
+        .status(OK)
+        .clearCookie('snackTrack_accessToken', COOKIE_OPTIONS)
+        .clearCookie('snackTrack_refreshToken', COOKIE_OPTIONS)
+        .json({ message: 'contractor loggedout successfully' });
+});
 
 const getCurrentContractor = tryCatch('get Current contractor', (req, res) => {
     const { password, refreshToken, ...contractor } = req.user;
@@ -248,10 +247,10 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
 });
 
 export {
-    // registerContractor,
-    // loginContractor,
-    // logoutContractor,
-    // deleteAccount,
+    registerContractor,
+    loginContractor,
+    logoutContractor,
+    deleteAccount,
     updateAccountDetails,
     updateAvatar,
     updatePassword,

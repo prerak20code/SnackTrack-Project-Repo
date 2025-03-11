@@ -36,7 +36,6 @@ export default function verifyRegex(name, value) {
                         const stats = fs.statSync(value);
                         const fileSizeMB = stats.size / (1024 * 1024);
                         const maxSizeMB = 5;
-
                         const extension = value.split('.').pop().toLowerCase();
                         const allowedExtensions = ['png', 'jpg', 'jpeg'];
 

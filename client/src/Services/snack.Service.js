@@ -1,42 +1,8 @@
-class PostService {
-    async getRandomSnacks(
-        signal,
-        page = 1,
-        limit = 10,
-        category = '',
-        orderBy = 'desc'
-    ) {
-        try {
-            const res = await fetch(
-                `/api/posts/all?limit=${limit}&orderBy=${orderBy}&page=${page}&category=${category}`,
-                {
-                    method: 'GET',
-                    signal,
-                }
-            );
-
-            const data = await res.json();
-            console.log(data);
-
-            if (res.status === 500) {
-                throw new Error(data.message);
-            }
-
-            return data;
-        } catch (err) {
-            if (err.name === 'AbortError') {
-                console.log('get random posts request aborted.');
-            } else {
-                console.error('error in getRandomPosts service', err);
-                throw err;
-            }
-        }
-    }
-
+class SnackService {
     async getSnacks(signal, channelId, limit = 10, page = 1, orderBy = 'desc') {
         try {
             const res = await fetch(
-                `/api/posts/channel/${channelId}?limit=${limit}&orderBy=${orderBy}&page=${page}`,
+                `/api/snacks/channel/${channelId}?limit=${limit}&orderBy=${orderBy}&page=${page}`,
                 { signal, method: 'GET' }
             );
 
@@ -49,34 +15,9 @@ class PostService {
             return data;
         } catch (err) {
             if (err.name === 'AbortError') {
-                console.log('get posts request aborted.');
+                console.log('get snacks request aborted.');
             } else {
-                console.error('error in getPosts service', err);
-                throw err;
-            }
-        }
-    }
-
-    async getSnack(signal, postId) {
-        try {
-            const res = await fetch(`/api/posts/post/${postId}`, {
-                method: 'GET',
-                credentials: 'include',
-                signal,
-            });
-
-            const data = await res.json();
-            console.log(data);
-
-            if (res.status === 500) {
-                throw new Error(data.message);
-            }
-            return data;
-        } catch (err) {
-            if (err.name === 'AbortError') {
-                console.log('get post request aborted.');
-            } else {
-                console.error('error in getPost service', err);
+                console.error('error in getSnacks service', err);
                 throw err;
             }
         }
@@ -84,7 +25,7 @@ class PostService {
 
     async updateSnackDetails(inputs, postId) {
         try {
-            const res = await fetch(`/api/posts/details/${postId}`, {
+            const res = await fetch(`/api/snacks/details/${postId}`, {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
@@ -99,7 +40,7 @@ class PostService {
             }
             return data;
         } catch (err) {
-            console.error('error in updatePostDetails service', err);
+            console.error('error in updateSnackDetails service', err);
             throw err;
         }
     }
@@ -107,9 +48,9 @@ class PostService {
     async updateSnackImage(postImage, postId) {
         try {
             const formData = new FormData();
-            formData.append('postImage', postImage);
+            formData.append('image', image);
 
-            const res = await fetch(`/api/posts/image/${postId}`, {
+            const res = await fetch(`/api/snacks/image/${postId}`, {
                 method: 'PATCH',
                 credentials: 'include',
                 body: formData,
@@ -123,14 +64,14 @@ class PostService {
             }
             return data;
         } catch (err) {
-            console.error('error in updatePostImage service', err);
+            console.error('error in updateSnackImage service', err);
             throw err;
         }
     }
 
     async deleteSnack(postId) {
         try {
-            const res = await fetch(`/api/posts/delete/${postId}`, {
+            const res = await fetch(`/api/snacks/delete/${postId}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -143,7 +84,7 @@ class PostService {
             }
             return data;
         } catch (err) {
-            console.error('error in deletePost service', err);
+            console.error('error in deleteSnack service', err);
             throw err;
         }
     }
@@ -155,7 +96,7 @@ class PostService {
                 formData.append(key, value);
             });
 
-            const res = await fetch('/api/posts/add', {
+            const res = await fetch('/api/snacks/add', {
                 method: 'POST',
                 credentials: 'include',
                 body: formData,
@@ -169,14 +110,14 @@ class PostService {
             }
             return data;
         } catch (err) {
-            console.error('error in addPost service', err);
+            console.error('error in addSnack service', err);
             throw err;
         }
     }
 
-    async toggleSnackVisibility(postId) {
+    async toggleSnackAvailability(postId) {
         try {
-            const res = await fetch(`/api/posts/visibility/${postId}`, {
+            const res = await fetch(`/api/snacks/availability/${postId}`, {
                 method: 'PATCH',
                 credentials: 'include',
             });
@@ -189,10 +130,10 @@ class PostService {
             }
             return data;
         } catch (err) {
-            console.error('error in togglePostVisibility service', err);
+            console.error('error in toggleSnackAvailability service', err);
             throw err;
         }
     }
 }
 
-export const postService = new PostService();
+export const snackService = new SnackService();

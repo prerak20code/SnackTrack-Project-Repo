@@ -1,5 +1,6 @@
 import { Schema, model, Types } from 'mongoose';
 
+// idea: single hostel has a single canteen
 const hostelSchema = new Schema(
     {
         hostelType: {
@@ -12,8 +13,7 @@ const hostelSchema = new Schema(
             required: true,
             unique: true,
         },
-        // could use an array: in case a hostel has multiple canteens with canteen No
-        canteen: {
+        canteenId: {
             type: Types.ObjectId,
             ref: 'Canteen',
         },

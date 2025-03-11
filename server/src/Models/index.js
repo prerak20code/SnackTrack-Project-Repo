@@ -3,6 +3,6 @@ import { Contractor } from './contractor.Model.js';
 import { Hostel } from './hostel.Model.js';
 import { Canteen } from './canteen.Model.js';
 import { Order } from './order.Model.js';
-import { Student, History } from './student.Model.js';
+import { Student, OrderHistory } from './student.Model.js';
 
-export { Student, Contractor, Canteen, Hostel, Order, History, Snack };
+export { Student, Contractor, Canteen, Hostel, Order, OrderHistory, Snack };

@@ -1,5 +1,5 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { useSideBarContext, useUserContext } from '../../Context';
+import { useSideBarContext, useUserContext } from '../../Contexts';
 import { icons } from '../../Assets/icons';
 import { Button, Logout } from '..';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -11,33 +11,11 @@ export default function Sidebar() {
     const { showSideBar, setShowSideBar } = useSideBarContext();
     const items = [
         { show: true, path: '/', name: 'Home', icon: icons.home },
-        { show: true, path: '/liked', name: 'Liked Blogs', icon: icons.like },
-        { show: true, path: '/saved', name: 'Saved Blogs', icon: icons.save },
-        {
-            show: user,
-            path: '/chat',
-            name: 'Collaborations',
-            icon: icons.chat,
-        },
-        {
-            show: user,
-            path: '/followers',
-            name: 'Followers',
-            icon: icons.group,
-        },
         {
             show: user,
             path: '/history',
-            name: 'Watch History',
+            name: 'Order History',
             icon: icons.clock,
-        },
-
-        { show: user, path: '/admin', name: 'Admin', icon: icons.user },
-        {
-            show: user,
-            path: `/channel/${user?.user_id}`,
-            name: 'My Content',
-            icon: icons.image,
         },
     ];
 

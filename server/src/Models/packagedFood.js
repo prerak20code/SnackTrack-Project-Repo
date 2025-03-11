@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const packagedFoodSchema = new Schema(
     {
@@ -10,17 +11,15 @@ const packagedFoodSchema = new Schema(
             type: String,
             required: true,
         },
-        price: {
-            type: Number,
+        category: {
+            type: String,
             required: true,
+            enum: ['Biscuits', 'Chips', 'Chocolates', 'Drinks', 'instant food'], // Example categories
         },
-        category: [
+        variants: [
             {
                 price: {
-                    enum: ['10', ''],
-                },
-                type: {
-                    type: String,
+                    type: Number,
                     required: true,
                 },
                 availableCount: {
@@ -30,9 +29,7 @@ const packagedFoodSchema = new Schema(
             },
         ],
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
 packagedFoodSchema.plugin(aggregatePaginate);

@@ -1,45 +1,27 @@
-import HomePage from './HomePage';
-import LoginPage from './LoginPage';
-import RegisterPage from './RegisterPage';
-import PostPage from './PostPage';
-import ChannelPage from './ChannelPage';
-import SettingsPage from './SettingsPage';
-import SupportPage from './SupportPage';
-import AddPostPage from './AddPostPage';
-import NotFoundPage from './NotFoundPage';
-import ServerErrorPage from './ServerErrorPage';
+import HomePage from './Home.Page';
+import LoginPage from './Login.Page';
+import RegisterPage from './Register.Page';
+import SettingsPage from './Settings.Page';
+import SupportPage from './Support.Page';
+import NotFoundPage from './NotFound.Page';
+import ServerErrorPage from './ServerError.Page';
 import Redirect from './Redirect';
-import WatchHistoryPage from './WatchHistoryPage';
-import LikedPostsPage from './LikedPostsPage';
-import AdminPage from './AdminPage';
-import UpdatePostPage from './UpdatePostPage';
-import SavedPostsPage from './SavedPostsPage';
-import AboutUsPage from './AboutUsPage';
-import ContactUsPage from './ContactUsPage';
-import FAQpage from './FAQpage';
-import FollowersPage from './FollowersPage';
-import ChatsPage from './ChatsPage';
+import AdminPage from './Admin.Page';
+import AboutUsPage from './AboutUs.Page';
+import ContactUsPage from './ContactUs.Page';
+import FAQpage from './FAQ.page';
 
 export {
     AboutUsPage,
     HomePage,
     LoginPage,
     RegisterPage,
-    PostPage,
-    ChannelPage,
     SettingsPage,
     SupportPage,
-    AddPostPage,
     NotFoundPage,
     ServerErrorPage,
     Redirect,
-    WatchHistoryPage,
-    LikedPostsPage,
     AdminPage,
-    UpdatePostPage,
-    SavedPostsPage,
     ContactUsPage,
     FAQpage,
-    FollowersPage,
-    ChatsPage,
 };

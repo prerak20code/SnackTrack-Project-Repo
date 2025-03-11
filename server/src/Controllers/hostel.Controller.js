@@ -1,4 +1,5 @@
 import { tryCatch } from '../Utils';
+import { Hostel } from '../Models/index.js';
 
 const getCanteens = tryCatch('get canteens', async (req, res, next) => {});
 

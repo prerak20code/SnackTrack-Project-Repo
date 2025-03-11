@@ -1,9 +1,5 @@
 import { tryCatch } from '../Utils';
-
-const getContractors = tryCatch(
-    'get contractors',
-    async (req, res, next) => {}
-);
+import { Canteen } from '../Models/index.js';
 
 const addCanteen = tryCatch('add canteen', async (req, res, next) => {});
 

@@ -1,44 +1,34 @@
 import { model, Schema, Types } from 'mongoose';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
-import bcrypt from 'bcrypt';
 
+// student of hostel & canteen with ids hostelId & canteenId
 const studentSchema = new Schema(
     {
+        hostelId: {
+            type: Types.ObjectId,
+            required: true,
+            ref: 'Hostel',
+        },
         canteenId: {
             type: Types.ObjectId,
             required: true,
             ref: 'Canteen',
         },
+        // for general details from user table
+        userId: {
+            type: Types.ObjectId,
+            required: true,
+            ref: 'User',
+        },
+        // student specific fields
         rollNo: {
             type: String,
             unique: true,
             required: true,
             index: true,
         },
-        fullName: {
-            type: String,
-            required: true,
-        },
-        phoneNumber: {
-            type: String,
-            required: true,
-        },
-        avatar: {
-            type: String,
-            required: false,
-        },
-        password: {
-            type: String,
-            required: true,
-        },
-        refreshToken: {
-            type: String,
-            default: '',
-        },
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
 const orderHistorySchema = new Schema(
@@ -55,19 +45,10 @@ const orderHistorySchema = new Schema(
             index: true,
         },
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
 orderHistorySchema.plugin(aggregatePaginate);
-
-// Hash password before saving
-studentSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
-});
 
 const Student = model('Student', studentSchema);
 const OrderHistory = model('OrderHistory', orderHistorySchema);

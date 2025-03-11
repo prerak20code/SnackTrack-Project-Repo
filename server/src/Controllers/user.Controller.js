@@ -8,23 +8,28 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
-import { Student, OrderHistory } from '../Models/index.js';
+import { Student, User, OrderHistory } from '../Models/index.js';
 
-const registerStudent = tryCatch('register student', async (req, res, next) => {
+const register = tryCatch('register user', async (req, res, next) => {
     let avatarURL;
     try {
+        // only email, avatar are optional
         const data = {
             fullName: req.body.fullName.trim(),
-            rollNo: req.body.rollNo.trim(),
+            email: req.body.email.trim(),
             phoneNumber: req.body.phoneNumber,
             password: req.body.password,
             avatar: req.files?.avatar?.[0].path,
+            hostelType: req.body.hostelType.trim(),
+            hostelNo: req.body.hostelNo.trim(),
+            role: req.body.role.trim(),
         };
 
-        // input error handling
-        if (!fullName || !rollNo || !phoneNumber || !password) {
-            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        if (role === 'student') {
+            data.rollNo = req.body.rollNo.trim();
         }
+
+        // input error handling
         for (const [key, value] of Object.entries(data)) {
             if (value) {
                 const isAvatar = key === 'avatar';
@@ -43,6 +48,10 @@ const registerStudent = tryCatch('register student', async (req, res, next) => {
                         )
                     );
                 }
+            } else if (key !== 'avatar' && key !== 'email') {
+                return next(
+                    new ErrorHandler(`${key} is required`, BAD_REQUEST)
+                );
             }
         }
 
@@ -241,7 +250,7 @@ const getOrderHistory = tryCatch('get order history', async (req, res) => {
 });
 
 export {
-    registerStudent,
+    register,
     loginStudent,
     logoutStudent,
     deleteAccount,

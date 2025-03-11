@@ -3,6 +3,11 @@ import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const snackSchema = new Schema(
     {
+        canteenId: {
+            type: Types.ObjectId,
+            required: true,
+            ref: 'Canteen',
+        },
         image: {
             type: String,
             required: false,
@@ -19,15 +24,8 @@ const snackSchema = new Schema(
             type: Boolean,
             default: false,
         },
-        canteenId: {
-            type: Types.ObjectId,
-            required: true,
-            ref: 'Canteen',
-        },
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
 snackSchema.plugin(aggregatePaginate);

@@ -1,7 +1,14 @@
 import { Schema, Types, model } from 'mongoose';
 
+// idea: single canteen has a single contractor
+//       single canteen has multiple snacks (limited: so array would be more efficient)
+//       single canteen belongs to a single hostel
 const canteenSchema = new Schema(
     {
+        contractorId: {
+            type: Types.ObjectId,
+            ref: 'Contractor',
+        },
         hostelId: {
             type: Types.ObjectId,
             required: true,
@@ -12,17 +19,8 @@ const canteenSchema = new Schema(
                 ref: 'Snack',
             },
         ],
-        contractors: [
-            // in case a canteen has multiple contractors
-            {
-                type: Types.ObjectId,
-                ref: 'Contractor',
-            },
-        ],
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
 export const Canteen = model('Canteen', canteenSchema);

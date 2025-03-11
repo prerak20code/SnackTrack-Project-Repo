@@ -1,7 +1,7 @@
-class UserService {
+class StudentService {
     async login(inputs) {
         try {
-            const res = await fetch('/api/users/login', {
+            const res = await fetch('/api/students/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(inputs),
@@ -27,7 +27,7 @@ class UserService {
                 formData.append(key, value);
             });
 
-            const res = await fetch('/api/users/register', {
+            const res = await fetch('/api/students/register', {
                 method: 'POST',
                 body: formData,
             });
@@ -54,7 +54,7 @@ class UserService {
 
     async logout() {
         try {
-            const res = await fetch('/api/users/logout', {
+            const res = await fetch('/api/students/logout', {
                 method: 'PATCH',
                 credentials: 'include',
             });
@@ -74,7 +74,7 @@ class UserService {
 
     async deleteAccount(password) {
         try {
-            const res = await fetch('/api/users/delete', {
+            const res = await fetch('/api/students/delete', {
                 method: 'DELETE',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
@@ -96,7 +96,7 @@ class UserService {
 
     async getCurrentUser(signal) {
         try {
-            const res = await fetch('/api/users/current', {
+            const res = await fetch('/api/students/current', {
                 method: 'GET',
                 credentials: 'include',
                 signal,
@@ -121,7 +121,7 @@ class UserService {
 
     async updateAccountDetails(inputs) {
         try {
-            const res = await fetch('/api/users/account', {
+            const res = await fetch('/api/students/account', {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
@@ -143,7 +143,7 @@ class UserService {
 
     async updatePassword(newPassword, oldPassword) {
         try {
-            const res = await fetch('/api/users/password', {
+            const res = await fetch('/api/students/password', {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
@@ -167,4 +167,4 @@ class UserService {
     }
 }
 
-export const userService = new UserService();
+export const studentService = new StudentService();

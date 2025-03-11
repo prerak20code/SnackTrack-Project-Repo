@@ -6,7 +6,7 @@ import fs from 'fs';
 
 const getSnacks = tryCatch('get snacks', async (req, res) => {
     const { canteenId } = req.params;
-    const { orderBy = 'desc', limit = 10, page = 1 } = req.query;
+    const { orderBy = 'desc', limit = 10, page = 1 } = req.query; // for pagination
 
     const result = await Snack.aggregatePaginate(
         [
@@ -34,8 +34,8 @@ const getSnacks = tryCatch('get snacks', async (req, res) => {
 const addSnack = tryCatch('add snack', async (req, res, next) => {
     let imageURL;
     try {
-        const { name } = req.body;
         const { canteenId } = req.params;
+        const { name } = req.body;
         let image = req.file?.path;
 
         if (!name) {
@@ -68,10 +68,10 @@ const updateSnackDetails = tryCatch(
     'update snack details',
     async (req, res, next) => {
         const { snackId } = req.params;
-        const { name, price } = req.body;
+        const { name } = req.body;
         const image = req.file?.path;
 
-        if (!name && !price && !req.file) {
+        if (!name && !req.file) {
             return next(new ErrorHandler('missing fields', BAD_REQUEST));
         }
 
@@ -81,14 +81,38 @@ const updateSnackDetails = tryCatch(
             if (image) fs.unlinkSync(image);
             return next(new ErrorHandler('snack not found', NOT_FOUND));
         }
+
         snack.image = image || snack.image;
         snack.name = name || snack.name;
-        snack.price = price || snack.price;
         await snack.save();
 
         return res
             .status(OK)
             .json({ message: 'snack details updated successfully' });
+    }
+);
+
+const updateSnackPrice = tryCatch(
+    'update snack price',
+    async (req, res, next) => {
+        const { snackId } = req.params;
+        const { price } = req.body;
+
+        if (!price) {
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+
+        const snack = await Snack.findById(snackId);
+        if (!snack) {
+            return next(new ErrorHandler('snack not found', NOT_FOUND));
+        }
+
+        snack.price = price;
+        await snack.save();
+
+        return res
+            .status(OK)
+            .json({ message: 'snack price updated successfully' });
     }
 );
 
@@ -110,5 +134,6 @@ export {
     addSnack,
     deleteSnack,
     updateSnackDetails,
+    updateSnackPrice,
     toggleAvailability,
 };

@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { DeleteAccount, LoginPopup } from '..';
+import { LoginPopup } from '..';
 import { usePopupContext } from '../../Contexts';
 
 export default function Popup() {
@@ -27,12 +27,6 @@ export default function Popup() {
             return (
                 <Wrapper>
                     <LoginPopup />
-                </Wrapper>
-            );
-        case 'deleteAccount':
-            return (
-                <Wrapper>
-                    <DeleteAccount />
                 </Wrapper>
             );
         default:

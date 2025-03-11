@@ -24,7 +24,7 @@ export default function Footer() {
         { path: '/', name: 'Home' },
         { path: '/support', name: 'Support' },
         { path: '/about-us', name: 'About Us' },
-        { path: '/add', name: 'Add Blog' },
+        { path: '/order', name: 'Order now' },
     ];
 
     const linkElements = links.map((link) => (
@@ -49,7 +49,7 @@ export default function Footer() {
             <div className="flex flex-wrap justify-between gap-4">
                 <div className="">
                     <p className="text-black font-medium">
-                        Stay Social, Stay Organized.
+                        Ceneralized, Transparent & Secure.
                     </p>
 
                     <Link
@@ -66,7 +66,7 @@ export default function Footer() {
                             </div>
                         </div>
                         <div className="text-black font-medium">
-                            Peer Connect
+                            Snack Track
                         </div>
                     </Link>
                 </div>
@@ -106,7 +106,7 @@ export default function Footer() {
 
             <div className="flex flex-col xs:flex-row gap-2 transition-all ease-in-out items-center justify-between w-full">
                 <p className="text-black text-xs sm:text-sm text-center">
-                    &copy; 2024 Peer Connect. All rights reserved.
+                    &copy; 2024 Snack Track. All rights reserved.
                 </p>
                 <div className="flex items-center justify-center gap-4 sm:gap-6 lg:gap-8">
                     {socialElements}

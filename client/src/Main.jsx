@@ -8,7 +8,6 @@ import {
     createBrowserRouter,
     createRoutesFromElements,
     RouterProvider,
-    useNavigate,
 } from 'react-router-dom';
 
 import {
@@ -31,12 +30,11 @@ import {
     PopupContextProvider,
     SideBarContextProvider,
     SearchContextProvider,
-} from './Context';
+} from './Contexts';
 
 import {
     DeleteAccount,
     UpdateAccountDetails,
-    UpdateChannelDetails,
     UpdatePassword,
 } from './Components';
 

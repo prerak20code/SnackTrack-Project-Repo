@@ -7,8 +7,8 @@ import {
     addSnack,
     deleteSnack,
     updateSnackDetails,
-    updateImage,
-    toggleSnackAvailability,
+    updateSnackPrice,
+    toggleAvailability,
 } from '../Controllers/snack.Controller.js';
 
 snackRouter.route('/:canteenId').get(getSnacks);
@@ -19,8 +19,10 @@ snackRouter.route('/add').post(upload.single('image'), addSnack);
 
 snackRouter.route('/delete/:snackId').delete(deleteSnack);
 
-snackRouter.route('/details/:snackId').patch(updateSnackDetails);
+snackRouter
+    .route('/details/:snackId')
+    .patch(upload.single('image'), updateSnackDetails);
 
-snackRouter.route('/image/:snackId').patch(upload.single('image'), updateImage);
+snackRouter.route('/price/:snackId').patch(updateSnackPrice);
 
-snackRouter.route('/availability/:snackId').patch(toggleSnackAvailability);
+snackRouter.route('/availability/:snackId').patch(toggleAvailability);

@@ -3,30 +3,30 @@ export const studentRouter = express.Router();
 import { upload, verifyJwt } from '../middlewares/index.js';
 
 import {
-    registerUser,
-    loginUser,
-    logoutUser,
+    registerStudent,
+    loginStudent,
+    logoutStudent,
     deleteAccount,
     updateAccountDetails,
     updateAvatar,
     updatePassword,
-    getCurrentUser,
+    getCurrentStudent,
     getOrderHistory,
 } from '../Controllers/student.Controller.js';
 
 studentRouter
     .route('/register')
-    .post(upload.fields([{ name: 'avatar', maxCount: 1 }]), registerUser);
+    .post(upload.fields([{ name: 'avatar', maxCount: 1 }]), registerStudent);
 
-studentRouter.route('/login').post(loginUser);
+studentRouter.route('/login').post(loginStudent);
 
 studentRouter.use(verifyJwt);
 
-studentRouter.route('/logout').patch(logoutUser);
+studentRouter.route('/logout').patch(logoutStudent);
 
 studentRouter.route('/delete').delete(deleteAccount);
 
-studentRouter.route('/current').get(getCurrentUser);
+studentRouter.route('/current').get(getCurrentStudent);
 
 studentRouter.route('/account').patch(updateAccountDetails);
 

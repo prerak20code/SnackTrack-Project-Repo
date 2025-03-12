@@ -27,7 +27,7 @@ export default function HomePage() {
                 setLoading(true);
                 const res = await snackService.getSnacks(signal, page, LIMIT);
                 if (res && !res.message) {
-                    setSnacks((prev) => [...prev, ...res.posts]);
+                    setSnacks((prev) => [...prev, ...res.snacks]);
                     setSnacksInfo(res.snacksInfo);
                 }
             } catch (err) {
@@ -60,7 +60,11 @@ export default function HomePage() {
 
     return (
         <div>
-            {snackElements.length > 0 && <div>{snackElements}</div>}
+            {snackElements.length > 0 && (
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-6">
+                    {snackElements}
+                </div>
+            )}
 
             {loading ? (
                 page === 1 ? (

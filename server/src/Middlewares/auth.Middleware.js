@@ -1,39 +1,61 @@
 import jwt from 'jsonwebtoken';
-import { BAD_REQUEST, FORBIDDEN } from '../Constants/errorCodes.js';
-import { COOKIE_OPTIONS } from '../Constants/options.js';
+import { BAD_REQUEST, FORBIDDEN, COOKIE_OPTIONS } from '../Constants/index.js';
 import { extractTokens, generateAccessToken } from '../Helpers/index.js';
+import { Student, Contractor, Admin } from '../Models/index.js';
+
+/**
+ * @param {String} token - token to verify
+ * @param {String} type  - type of token (access or refresh)
+ * @returns {Object} null or current user object with user role
+ */
+
+const validateToken = async (token, type) => {
+    const decodedToken = jwt.verify(
+        token,
+        type === 'access'
+            ? process.env.ACCESS_TOKEN_SECRET
+            : process.env.REFRESH_TOKEN_SECRET
+    );
+
+    if (!decodedToken) throw new Error(`invalid ${type} token`);
+
+    let currentUser = null;
+    if (decodedToken.role === 'student') {
+        currentUser = await Student.findById(decodedToken._id).lean();
+    } else if (decodedToken.role === 'contractor') {
+        currentUser = await Contractor.findById(decodedToken._id).lean();
+    } else if (decodedToken.role === 'admin') {
+        currentUser = await Admin.findById(decodedToken._id).lean();
+    }
+
+    if (
+        !currentUser ||
+        (type === 'refresh' && currentUser.refreshToken !== token)
+    ) {
+        throw new Error('user not found');
+    }
+
+    return { ...currentUser, role: decodedToken.role };
+};
 
 /**
  * @param {Object} res - http response object
  * @param {String} refreshToken  - refresh token
- * @returns {String | Object} null or current user object
+ * @returns {Object} null or current user object
  */
-export const refreshAccessToken = async (res, refreshToken) => {
+
+const refreshAccessToken = async (res, refreshToken) => {
     try {
-        const decodedToken = jwt.verify(
-            refreshToken,
-            process.env.REFRESH_TOKEN_SECRET
+        const user = await validateToken(refreshToken, 'refresh');
+        res.cookie(
+            'snackTrack_accessToken',
+            await generateAccessToken({ _id: user._id, role: user.role }), // new access token
+            {
+                ...COOKIE_OPTIONS,
+                maxAge: parseInt(process.env.ACCESS_TOKEN_MAXAGE),
+            }
         );
-
-        if (!decodedToken) {
-            throw new Error('invalid refresh token');
-        }
-
-        const currentUser = await userObject.getUser(decodedToken.userId);
-
-        if (!currentUser || currentUser.refresh_token !== refreshToken) {
-            throw new Error('user with provided refresh token not found');
-        } else {
-            res.cookie(
-                'snackTrack_accessToken',
-                await generateAccessToken(currentUser), // new access token
-                {
-                    ...COOKIE_OPTIONS,
-                    maxAge: parseInt(process.env.ACCESS_TOKEN_MAXAGE),
-                }
-            );
-            return currentUser;
-        }
+        return user;
     } catch (err) {
         throw new Error('missing or invalid refresh token');
     }
@@ -43,43 +65,26 @@ const verifyJwt = async (req, res, next) => {
     try {
         const { accessToken, refreshToken } = extractTokens(req);
 
-        if (!accessToken) {
-            // generate new access token
-            if (refreshToken) {
-                req.user = await refreshAccessToken(res, refreshToken);
-                return next();
-            } else {
-                return res
-                    .status(BAD_REQUEST)
-                    .json({ message: 'tokens missing' });
-            }
-        } else {
+        if (accessToken) {
             // verify access token
-            const decodedToken = jwt.verify(
-                accessToken,
-                process.env.ACCESS_TOKEN_SECRET
-            );
-
-            if (!decodedToken) {
-                throw new Error('invalid access token');
-            } else {
-                const currentUser = await userObject.getUser(
-                    decodedToken.userId
-                );
-                if (!currentUser) {
-                    throw new Error('user not found');
-                } else {
-                    req.user = currentUser;
-                    return next();
-                }
-            }
+            req.user = await validateToken(accessToken, 'access');
+            return next();
+        } else if (refreshToken) {
+            // generate new access token
+            req.user = await refreshAccessToken(res, refreshToken);
+            return next();
+        } else {
+            return res.status(BAD_REQUEST).json({ message: 'tokens missing' });
         }
     } catch (err) {
         return res
             .status(FORBIDDEN)
             .clearCookie('snackTrack_accessToken', COOKIE_OPTIONS)
             .clearCookie('snackTrack_refreshToken', COOKIE_OPTIONS)
-            .json({ message: 'expired or invalid jwt token' });
+            .json({
+                message: 'expired or invalid jwt token',
+                err: err.message,
+            });
     }
 };
 
@@ -87,31 +92,14 @@ const optionalVerifyJwt = async (req, res, next) => {
     try {
         const { accessToken, refreshToken } = extractTokens(req);
 
-        if (!accessToken && !refreshToken) {
-            return next();
-        } else if (accessToken) {
-            const decodedToken = jwt.verify(
-                accessToken,
-                process.env.ACCESS_TOKEN_SECRET
-            );
-
-            if (!decodedToken) {
-                throw new Error('invalid access token');
-            } else {
-                const currentUser = await userObject.getUser(
-                    decodedToken.userId
-                );
-                if (!currentUser) {
-                    throw new Error('user not found');
-                } else {
-                    req.user = currentUser;
-                    return next();
-                }
-            }
-        } else {
+        if (accessToken) {
+            // verify access token
+            req.user = await validateToken(accessToken, 'access');
+        } else if (refreshToken) {
+            // generate new access token
             req.user = await refreshAccessToken(res, refreshToken);
-            return next();
         }
+        return next();
     } catch (err) {
         return res
             .status(FORBIDDEN)

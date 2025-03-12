@@ -1,6 +1,6 @@
 import express from 'express';
 export const contractorRouter = express.Router();
-import { upload, verifyJwt } from '../middlewares/index.js';
+import { upload, verifyJwt } from '../Middlewares/index.js';
 
 import {
     login,
@@ -10,6 +10,7 @@ import {
     registerNewStudent,
     removeAllStudents,
     removeStudent,
+    getStudents,
     updateStudentAccountDetails,
     addSnack,
     deleteSnack,
@@ -34,6 +35,7 @@ contractorRouter.route('/avatar').patch(upload.single('avatar'), updateAvatar);
 // student management tasks
 contractorRouter
     .route('/students')
+    .get(getStudents)
     .post(registerNewStudent)
     .delete(removeAllStudents);
 contractorRouter

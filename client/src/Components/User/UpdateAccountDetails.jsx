@@ -3,19 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../../Contexts';
 import { verifyExpression } from '../../Utils';
 import { userService } from '../../Services';
-import { Button } from '..';
+import { Button, InputField } from '..';
 import toast from 'react-hot-toast';
 
 export default function UpdateAccountDetails() {
     const { user, setUser } = useUserContext();
     const initialInputs = {
-        firstName: user?.user_firstName,
-        email: user?.user_email,
+        fullName: user.fullName,
+        email: user.email,
         password: '',
     };
     const nullErrors = {
-        firstName: '',
-        lastName: '',
+        fullName: '',
         email: '',
         password: '',
     };
@@ -24,6 +23,7 @@ export default function UpdateAccountDetails() {
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -33,18 +33,15 @@ export default function UpdateAccountDetails() {
     function handleBlur(e) {
         const { name, value } = e.target;
         if (value && name !== 'password') {
-            // we don't want to show error on password
             verifyExpression(name, value, setError);
         }
     }
 
     function onMouseOver() {
         if (
-            Object.entries(inputs).some(
-                ([key, value]) => !value && key !== 'lastName'
-            ) ||
+            Object.entries(inputs).some(([key, value]) => !value) ||
             Object.entries(error).some(
-                ([key, value]) => value !== '' && key !== 'password'
+                ([key, value]) => value && key !== 'password'
             ) ||
             !Object.entries(inputs).some(
                 ([key, value]) =>
@@ -88,22 +85,15 @@ export default function UpdateAccountDetails() {
             required: true,
         },
         {
-            name: 'firstName',
+            name: 'fullName',
             type: 'text',
-            placeholder: 'Enter your first name',
+            placeholder: 'Enter your full name',
             label: 'First name',
             required: true,
         },
         {
-            name: 'lastName',
-            type: 'text',
-            placeholder: 'Enter your last name',
-            label: 'Last name',
-            required: false,
-        },
-        {
             name: 'password',
-            type: 'password',
+            type: showPassword ? 'text' : 'password',
             placeholder: 'Enter your password',
             label: 'Password',
             required: true,
@@ -111,47 +101,36 @@ export default function UpdateAccountDetails() {
     ];
 
     const inputElements = inputFields.map((field) => (
-        <div key={field.name} className="w-full">
-            <div className="bg-[#f9f9f9] z-[1] ml-3 px-2 w-fit relative top-3 font-medium">
-                <label htmlFor={field.name}>
-                    {field.label}
-                    {field.required && <span className="text-red-500">*</span>}
-                </label>
-            </div>
-            <div>
-                <input
-                    type={field.type}
-                    name={field.name}
-                    id={field.name}
-                    placeholder={field.placeholder}
-                    value={inputs[field.name]}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required={field.required}
-                    className="shadow-md shadow-[#f7f7f7] py-[15px] rounded-[5px] pl-[10px] w-full border-[0.01rem] border-gray-500 bg-transparent"
-                />
-            </div>
-            {error[field.name] && (
-                <div className="pt-[0.09rem] text-red-500 text-sm">
-                    {error[field.name]}
-                </div>
-            )}
-        </div>
+        <InputField
+            key={field.name}
+            field={field}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            error={error}
+            inputs={inputs}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
+        />
     ));
 
     return (
-        <div className="w-full px-4 py-2">
-            <div className="rounded-xl drop-shadow-md flex flex-col sm:flex-row bg-[#f9f9f9] px-12 py-6 sm:gap-14">
-                <div className="w-full py-6 px-4">
-                    <h3>Update Personal Information</h3>
-                    <p className="">
+        <div className="w-full p-2">
+            <div className="rounded-xl drop-shadow-md flex flex-col sm:flex-row bg-white py-6 px-8 sm:gap-14">
+                <div className="w-full py-4">
+                    <h3 className="text-2xl font-bold">
+                        Update Personal Information
+                    </h3>
+                    <p className="mt-2">
                         Update your personal details here. Please note that
                         changes cannot be undone.
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="w-full max-w-[600px]">
-                    <div className="flex flex-col gap-4">{inputElements}</div>
+                <form
+                    onSubmit={handleSubmit}
+                    className="w-full max-w-[600px] relative -top-2"
+                >
+                    <div className="flex flex-col gap-2">{inputElements}</div>
                     <div className="flex gap-6 mt-6">
                         <Button
                             onMouseOver={onMouseOver}

@@ -28,7 +28,7 @@ export default function ContactUsPage() {
         <div className="w-full h-full flex items-start justify-center">
             <div className="w-[90%] h-full flex flex-col items-start justify-start gap-4">
                 <section className="w-full">
-                    <h1 className="w-full font-semibold text-center mb-6">
+                    <h1 className="w-full font-bold text-center mb-6 text-3xl">
                         Contact Us
                     </h1>
                     <p className="text-justify">
@@ -44,7 +44,7 @@ export default function ContactUsPage() {
                 <div className="flex flex-col lg:flex-row items-start justify-between lg:gap-24 gap-14 w-full h-full">
                     <div className="flex flex-col w-full items-start justify-start gap-4">
                         <section className=" w-full">
-                            <h2 className="mb-4 text-md">
+                            <h2 className="mb-4 font-bold text-xl">
                                 👥 Technical Support
                             </h2>
                             <p className="text-justify">
@@ -71,7 +71,7 @@ export default function ContactUsPage() {
                         <hr className="w-full" />
 
                         <section>
-                            <h2 className="mb-4 text-md">
+                            <h2 className="mb-4 font-bold text-xl">
                                 📚 Frequently Asked Questions (FAQs)
                             </h2>
                             <p className="text-justify">
@@ -131,7 +131,9 @@ export default function ContactUsPage() {
 
                     <div className="w-full">
                         <section className="w-full">
-                            <h2 className="mb-4">🌟 Feedback & Suggestions</h2>
+                            <h2 className="mb-4 font-bold text-xl">
+                                🌟 Feedback & Suggestions
+                            </h2>
                             <p className="text-justify">
                                 Have ideas on how we can improve? We'd love to
                                 hear from you! Please share your thoughts using
@@ -149,13 +151,13 @@ export default function ContactUsPage() {
 
                         <form
                             onSubmit={submitFeedback}
-                            className="mt-2 w-full flex flex-col items-start justify-center gap-3"
+                            className="mt-2 w-full flex flex-col items-start justify-center gap-2"
                         >
                             <div className="w-full">
-                                <div className="bg-white z-[1] ml-3 px-2 w-fit relative top-3 font-medium">
+                                <div className="bg-white z-[1] ml-2 px-2 w-fit relative top-3 font-medium">
                                     <label htmlFor="email">
+                                        <span className="text-red-500">* </span>
                                         Email
-                                        <span className="text-red-500">*</span>
                                     </label>
                                 </div>
                                 <div className="w-full">
@@ -175,10 +177,10 @@ export default function ContactUsPage() {
                             </div>
 
                             <div className="w-full">
-                                <div className="bg-white z-[1] ml-3 px-2 w-fit relative top-3 font-medium">
+                                <div className="bg-white z-[1] ml-2 px-2 w-fit relative top-3 font-medium">
                                     <label htmlFor="feedback">
+                                        <span className="text-red-500">* </span>
                                         Feedback / Suggestion
-                                        <span className="text-red-500">*</span>
                                     </label>
                                 </div>
                                 <div className="w-full">
@@ -187,7 +189,7 @@ export default function ContactUsPage() {
                                         value={inputs.feedback}
                                         onChange={handleChange}
                                         name="feedback"
-                                        className="shadow-md shadow-[#efefef] bg-transparent border border-black w-full indent-2 rounded-md p-2 pt-4 text-black placeholder:text-[15px] placeholder:text-[#a0a0a0] resize-y"
+                                        className="shadow-md shadow-[#efefef] bg-transparent border-[0.01rem] border-[#aeaeae] w-full indent-2 rounded-md px-2 pt-4 text-black placeholder:text-[#a0a0a0] resize-y"
                                         rows="4"
                                         cols="50"
                                         style={{ minHeight: '100px' }}

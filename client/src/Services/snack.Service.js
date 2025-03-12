@@ -1,12 +1,12 @@
 import { SERVER_ERROR } from '../Constants/constants';
 
 class SnackService {
-    async getSnacks(signal, canteenId, limit = 10, page = 1) {
+    async getSnacks(signal, page = 1, limit = 10) {
         try {
-            const res = await fetch(
-                `/api/snacks/${canteenId}?limit=${limit}&page=${page}`,
-                { signal, method: 'GET' }
-            );
+            const res = await fetch(`/api/snacks?limit=${limit}&page=${page}`, {
+                signal,
+                method: 'GET',
+            });
 
             const data = await res.json();
             console.log(data);
@@ -25,10 +25,10 @@ class SnackService {
         }
     }
 
-    async getPackagedFoodItems(signal, canteenId, limit = 10, page = 1) {
+    async getPackagedFoodItems(signal, page = 1, limit = 10) {
         try {
             const res = await fetch(
-                `/api/snacks/packaged/${canteenId}?limit=${limit}&page=${page}`,
+                `/api/snacks/packaged?limit=${limit}&page=${page}`,
                 { signal, method: 'GET' }
             );
 

@@ -11,19 +11,51 @@ export default function FAQpage() {
 
     const faqs = [
         {
-            question: 'What is this blog about?',
-            answer: 'This blog is a collection of articles on various topics, including technology, lifestyle, and personal growth. We aim to provide valuable insights and tips to our readers.',
+            question: 'What is the purpose of this website?',
+            answer: "This website is designed to provide complete transparency regarding the hostel canteen's menu, pricing, and food availability. Students can check daily menus, place orders, and give feedback directly.",
         },
         {
-            question: 'How often do you post new content?',
-            answer: 'New blog posts are published once a week. We strive to maintain a consistent posting schedule to keep our readers engaged.',
+            question: 'How can I view the daily menu?',
+            answer: "The daily menu is updated every morning on the homepage. You can also find it under the 'Menu' section.",
+        },
+        {
+            question: 'Are there vegetarian and vegan options available?',
+            answer: 'Yes! Our canteen provides vegetarian, vegan, and Jain food options. You can filter the menu based on your dietary preferences.',
+        },
+        {
+            question: 'How do I report a food quality issue?',
+            answer: "If you face any issues with food quality, you can use the 'Feedback' section to report it. Your complaint will be reviewed by the canteen management team.",
+        },
+        {
+            question: 'Can I pre-order my meals?',
+            answer: 'Yes! You can pre-order your meals through the website and pick them up at the canteen at your preferred time.',
+        },
+        {
+            question: 'How do I check my meal balance?',
+            answer: "You can check your meal balance in the 'My Account' section under 'Meal Credits'.",
+        },
+        {
+            question: 'Are there any special discounts for students?',
+            answer: 'Yes! We occasionally offer discounts and meal packages for students. Stay tuned for announcements on the homepage.',
+        },
+        {
+            question: 'How often is the menu updated?',
+            answer: 'The menu is updated daily based on availability and seasonal ingredients.',
+        },
+        {
+            question: 'What payment methods are accepted?',
+            answer: 'We accept digital payments including UPI, credit/debit cards, and hostel meal credits.',
+        },
+        {
+            question: 'Who can I contact for additional queries?',
+            answer: "For any further queries, you can visit the 'Contact Us' page or reach out to the hostel management.",
         },
     ];
 
     return (
         <div className="w-full flex items-start justify-center">
             <div className="w-[90%] px-6">
-                <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">
+                <h1 className="text-3xl font-bold text-center mb-6">
                     Frequently Asked Questions
                 </h1>
                 <hr className="w-full my-4" />
@@ -42,7 +74,7 @@ export default function FAQpage() {
                                     animate={{
                                         rotate: expanded === index ? 45 : 0,
                                     }}
-                                    transition={{ duration: 0.3 }}
+                                    transition={{ duration: 0.2 }}
                                     className="flex items-center justify-center"
                                 >
                                     <div className="bg-[#eaeaea] p-2 rounded-full w-fit drop-shadow-md hover:brightness-90">
@@ -62,7 +94,7 @@ export default function FAQpage() {
                                         exit={{ opacity: 0, height: 0 }}
                                         transition={{
                                             opacity: { duration: 0.2 },
-                                            height: { duration: 0.3 },
+                                            height: { duration: 0.2 },
                                         }}
                                     >
                                         <p className="mt-2 text-gray-600">

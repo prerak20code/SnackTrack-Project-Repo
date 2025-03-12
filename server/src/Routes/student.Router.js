@@ -1,6 +1,6 @@
 import express from 'express';
 export const studentRouter = express.Router();
-import { upload, verifyJwt } from '../middlewares/index.js';
+import { upload, verifyJwt } from '../Middlewares/index.js';
 
 import {
     login,

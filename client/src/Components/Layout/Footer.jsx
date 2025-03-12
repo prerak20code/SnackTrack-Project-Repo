@@ -8,11 +8,12 @@ import toast from 'react-hot-toast';
 export default function Footer() {
     const [feedback, setFeedback] = useState('');
 
+    // Social media icons
     const socialElements = Object.entries(CONTRIBUTORS[0].socials).map(
         ([platform, url]) => (
             <Link key={platform} to={url} target="_blank">
-                <div className="bg-[#dadada] p-1 sm:p-[6px] lg:p-2 rounded-full drop-shadow-md hover:bg-[#c9c9c9] w-fit">
-                    <div className="size-[15px] sm:size-[18px] lg:size-[20px]">
+                <div className="bg-[#eaeaea] p-2 rounded-full drop-shadow-md hover:bg-[#d4d4d4] transition-colors duration-300 w-fit">
+                    <div className="size-[18px] sm:size-[20px] lg:size-[22px]">
                         {icons[platform]}
                     </div>
                 </div>
@@ -20,24 +21,26 @@ export default function Footer() {
         )
     );
 
+    // Footer links
     const links = [
         { path: '/', name: 'Home' },
         { path: '/support', name: 'Support' },
         { path: '/about-us', name: 'About Us' },
-        { path: '/order', name: 'Order now' },
+        { path: '/order', name: 'Order Now' },
     ];
 
     const linkElements = links.map((link) => (
-        <p className="text-center" key={link.name}>
+        <p key={link.name} className="text-center">
             <Link
                 to={link.path}
-                className="hover:text-[#4977ec] text-[15px] hover:underline"
+                className="hover:text-[#4977ec] text-[15px] hover:underline transition-colors duration-300"
             >
                 {link.name}
             </Link>
         </p>
     ));
 
+    // Submit feedback
     function submitFeedback(e) {
         e.preventDefault();
         setFeedback('');
@@ -45,72 +48,71 @@ export default function Footer() {
     }
 
     return (
-        <footer className="px-6 pt-6 pb-4 bg-[#f6f6f6]">
-            <div className="flex flex-wrap justify-between gap-4">
-                <div className="">
-                    <p className="text-black font-medium">
-                        Ceneralized, Transparent & Secure.
-                    </p>
-
-                    <Link
-                        to={'/'}
-                        className="flex items-center mt-4 justify-start gap-2"
-                    >
-                        <div>
-                            <div className="size-[40px] rounded-full overflow-hidden drop-shadow-md">
-                                <img
-                                    src={LOGO}
-                                    alt="peer connect logo"
-                                    className="object-cover size-full"
-                                />
-                            </div>
+        <footer className="px-6 py-8 bg-[#f6f6f6]">
+            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-12">
+                {/* Logo and Tagline */}
+                <div className="flex flex-col gap-4">
+                    <Link to="/" className="flex items-center gap-3">
+                        <div className="size-[50px] rounded-full overflow-hidden drop-shadow-md">
+                            <img
+                                src={LOGO}
+                                alt="Snack Track Logo"
+                                className="object-cover size-full"
+                            />
                         </div>
-                        <div className="text-black font-medium">
+                        <div className="text-black font-semibold text-xl">
                             Snack Track
                         </div>
                     </Link>
+                    <p className="text-gray-600 text-sm max-w-[250px]">
+                        Generalized, Transparent & Secure.
+                    </p>
                 </div>
 
-                <div className="text-black">
-                    <p className="text-center underline font-medium underline-offset-2 text-black">
+                {/* Quick Links */}
+                <div className="flex flex-col gap-4">
+                    <p className="text-black font-semibold text-lg underline underline-offset-4">
                         Quick Links
                     </p>
-                    <div>{linkElements}</div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {linkElements}
+                    </div>
                 </div>
 
+                {/* Feedback Form */}
                 <form
                     onSubmit={submitFeedback}
-                    className="w-full flex flex-col items-center justify-center gap-2 max-w-[350px]"
+                    className="flex flex-col gap-4 max-w-[350px] w-full"
                 >
-                    <p className="text-black font-medium underline underline-offset-2">
-                        Provide a Feedback
+                    <p className="text-black font-semibold text-lg underline underline-offset-4">
+                        Provide Feedback
                     </p>
-                    <div className="flex items-center justify-center gap-4 h-[32px] w-full">
+                    <div className="flex items-center gap-2">
                         <input
                             type="text"
-                            placeholder="Provide a Feedback !!"
+                            placeholder="Your feedback..."
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
-                            className="bg-transparent border-gray-500 border-[0.01rem] w-full indent-2 rounded-md px-[5px] h-full text-black placeholder:text-[15px] focus:border-[#4977ec] outline-none placeholder:text-[#505050]"
+                            className="flex-1 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-[#4977ec] focus:outline-none"
                         />
                         <Button
-                            btnText={'Submit'}
+                            btnText="Submit"
                             type="submit"
-                            className="text-white rounded-md px-3 h-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className="bg-[#4977ec] hover:bg-[#3b62c2] text-white px-4 py-2 rounded-lg transition-colors duration-300"
                         />
                     </div>
                 </form>
             </div>
 
-            <hr className="w-full mt-6 mb-4" />
+            {/* Divider */}
+            <hr className="my-6 border-gray-300" />
 
-            <div className="flex flex-col xs:flex-row gap-2 transition-all ease-in-out items-center justify-between w-full">
-                <p className="text-black text-xs sm:text-sm text-center">
+            {/* Copyright and Social Links */}
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p className="text-gray-600 text-sm text-center">
                     &copy; 2024 Snack Track. All rights reserved.
                 </p>
-                <div className="flex items-center justify-center gap-4 sm:gap-6 lg:gap-8">
-                    {socialElements}
-                </div>
+                <div className="flex items-center gap-4">{socialElements}</div>
             </div>
         </footer>
     );

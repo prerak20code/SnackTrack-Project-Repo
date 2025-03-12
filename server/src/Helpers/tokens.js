@@ -1,15 +1,15 @@
 import jwt from 'jsonwebtoken';
 
 /**
- * Util to generate both Access & Refresh JWT Token
- * @param {Object} user - The data which needs to be in the token (only userId)
+ * Util to generate both Access & Refresh JWT Tokens
+ * @param {Object} data - The data which needs to be in the tokens
  * @returns Tokens as {accessToken, refreshToken}
  */
 
-const generateTokens = async (user) => {
+const generateTokens = async (data) => {
     try {
-        const accessToken = await generateAccessToken(user);
-        const refreshToken = await generateRefreshToken(user);
+        const accessToken = await generateAccessToken(data);
+        const refreshToken = await generateRefreshToken(data);
 
         return { accessToken, refreshToken };
     } catch (err) {
@@ -19,34 +19,26 @@ const generateTokens = async (user) => {
 
 /**
  * Util to generate Access Token
- * @param {Object} user - The data which needs to be in the token (only userId)
+ * @param {Object} data - The data which needs to be in the token
  * @returns JWT Token
  */
 
-const generateAccessToken = async (user) => {
-    return jwt.sign(
-        {
-            userId: user.user_id,
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
-    );
+const generateAccessToken = async (data) => {
+    return jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    });
 };
 
 /**
  * Util to generate Refresh Token
- * @param {Object} user - The data which needs to be in the token (only userId)
+ * @param {Object} data - The data which needs to be in the token
  * @returns JWT Token
  */
 
-const generateRefreshToken = async (user) => {
-    return jwt.sign(
-        {
-            userId: user.user_id,
-        },
-        process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
-    );
+const generateRefreshToken = async (data) => {
+    return jwt.sign(data, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    });
 };
 
 /**
@@ -54,6 +46,7 @@ const generateRefreshToken = async (user) => {
  * @param {object} tokenName - Name of the token (snackTrack_accessToken or snackTrack_RefreshToken).
  * @returns Token
  */
+
 const extractTokens = (req) => {
     const accessToken =
         req.cookies?.snackTrack_accessToken ||

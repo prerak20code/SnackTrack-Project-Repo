@@ -98,18 +98,18 @@ export default function RegisterPage() {
             show: user.role !== 'contractor',
         },
         {
-            type: showPassword ? 'text' : 'password',
-            name: 'password',
-            label: 'Password',
-            placeholder: 'Create new password',
+            type: 'text',
+            name: 'phoneNumber',
+            label: 'PhoneNumber',
+            placeholder: 'Enter your Phone Numbeer',
             required: true,
             show: true,
         },
         {
-            type: text,
-            name: 'phoneNumber',
-            label: 'PhoneNumber',
-            placeholder: 'Enter your Phone Numbeer',
+            type: showPassword ? 'text' : 'password',
+            name: 'password',
+            label: 'Password',
+            placeholder: 'Create new password',
             required: true,
             show: true,
         },
@@ -149,14 +149,14 @@ export default function RegisterPage() {
             <div className="w-fit">
                 <p className="text-center px-2 text-[28px] font-medium">
                     {user.role === 'contractor'
-                        ? 'Register a new Student'
-                        : 'Register a new Contractor'}
+                        ? 'Register a New Student'
+                        : 'Register a New Contractor'}
                 </p>
                 <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: '100%' }}
                     transition={{ duration: 0.3 }}
-                    className="relative -top-2 h-[0.05rem] bg-[#333333]"
+                    className="relative -top-1 h-[0.1rem] bg-[#333333]"
                 />
             </div>
 
@@ -169,7 +169,7 @@ export default function RegisterPage() {
 
                 <form
                     onSubmit={handleSubmit}
-                    className="flex flex-col items-start justify-center gap-4 w-full"
+                    className="flex flex-col items-start justify-center gap-3 w-full"
                 >
                     {inputElements}
 

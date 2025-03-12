@@ -39,15 +39,24 @@ export default function Login() {
         try {
             let res;
             if (role === 'student') {
-                res = await studentService.login(inputs, setLoading);
+                res = await studentService.login({
+                    userName: inputs.loginInput,
+                    password: inputs.password,
+                });
             } else if (role === 'contractor') {
-                res = await contractorService.login(inputs, setLoading);
+                res = await contractorService.login({
+                    emailOrPhoneNo: inputs.loginInput,
+                    password: inputs.password,
+                });
             } else if (role === 'admin') {
-                res = await adminService.login(inputs, setLoading);
+                res = await adminService.login({
+                    emailOrPhoneNo: inputs.loginInput,
+                    password: inputs.password,
+                });
             }
             if (res && !res.message) {
                 setUser(res);
-                toast.success('Logges in Successfully 😉');
+                toast.success('Logged in Successfully 😉');
                 if (showPopup) setShowPopup(false);
                 else navigate('/');
             } else {
@@ -68,10 +77,12 @@ export default function Login() {
         {
             type: 'text',
             name: 'loginInput',
-            label: role === 'student' ? 'Roll No' : 'Email',
+            label: role === 'student' ? 'Username' : 'Email',
             value: inputs.loginInput,
             placeholder:
-                role === 'student' ? 'Enter your roll no' : 'Enter your email',
+                role === 'student'
+                    ? 'Enter your username, ex: GH8-123'
+                    : 'Enter your email',
             required: true,
             show: role,
         },

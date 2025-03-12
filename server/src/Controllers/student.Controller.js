@@ -11,31 +11,30 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
-import { Student, Hostel } from '../Models/index.js';
+import { Student } from '../Models/index.js';
 
 const login = tryCatch('login as student', async (req, res, next) => {
-    const { rollNo, password, hostelNo, hostelType } = req.body;
+    const { userName, password } = req.body;
 
-    if (!rollNo || !password || !hostelNo || !hostelType) {
+    if (!userName || !password) {
         return next(new ErrorHandler('missing fields', BAD_REQUEST));
     }
 
-    const hostel = await Hostel.findOne({ hostelNo, hostelType });
-    if (!hostel) {
-        return next(new ErrorHandler('hostel not found', NOT_FOUND));
-    }
-
-    const student = await Student.findOne({ rollNo, hostelId: hostel._id });
+    const student = await Student.findOne({ userName });
     if (!student) {
         return next(new ErrorHandler('student not found', NOT_FOUND));
     }
+
     const isPassValid = bcrypt.compareSync(password, student.password);
     if (!isPassValid) {
         return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
     }
 
     // generate tokens
-    const { accessToken, refreshToken } = await generateTokens(student);
+    const { accessToken, refreshToken } = await generateTokens({
+        _id: student._id,
+        role: 'student',
+    });
 
     // login user
     const loggedInStudent = await Student.findByIdAndUpdate(student._id, {

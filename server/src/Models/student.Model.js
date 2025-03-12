@@ -1,5 +1,6 @@
 import { model, Schema, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
+import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const studentSchema = new Schema(
     {
@@ -8,7 +9,8 @@ const studentSchema = new Schema(
             required: true,
             ref: 'Hostel',
         },
-        rollNo: {
+        userName: {
+            // ex: GH8-75  GH8 describes the hostel and 75 is the roll no
             type: String,
             unique: true,
             required: true,
@@ -38,10 +40,12 @@ const studentSchema = new Schema(
     { timestamps: true }
 );
 
+studentSchema.plugin(mongooseAggregatePaginate);
+
 // Hash password before saving pre hook
 studentSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, 10);
+    this.password = bcrypt.hashSync(this.password, 10);
     next();
 });
 

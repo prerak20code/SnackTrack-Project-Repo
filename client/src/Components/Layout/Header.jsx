@@ -45,9 +45,7 @@ export default function Header() {
                         </div>
                     }
                     title="Show Sidebar"
-                    onClick={() => {
-                        setShowSideBar((prev) => !prev);
-                    }}
+                    onClick={() => setShowSideBar((prev) => !prev)}
                     className="bg-[#ffffff] p-[10px] group rounded-full drop-shadow-md w-fit"
                 />
 
@@ -59,11 +57,11 @@ export default function Header() {
                     <div className="overflow-hidden rounded-full size-[40px] drop-shadow-md hover:scale-110 transition-all duration-300">
                         <img
                             src={LOGO}
-                            alt="peer connect logo"
+                            alt="Snack Track Logo"
                             className="object-cover size-full hover:brightness-95"
                         />
                     </div>
-                    <div className="hidden xs:block hover:scale-110 transition-all duration-300">
+                    <div className="hover:scale-110 transition-all duration-300">
                         SnackTrack
                     </div>
                 </Link>
@@ -103,11 +101,6 @@ export default function Header() {
                     </div>
 
                     <div className="flex items-center justify-center gap-2 absolute right-1 top-[50%] translate-y-[-50%]">
-                        {/* <Button
-                            btnText={<div className="text-white">Search</div>}
-                            onClick={() => {}}
-                            className=" bg-[#4977ec] px-4 py-[5px] group rounded-full drop-shadow-md hover:bg-[#3b66d2] w-fit"
-                        /> */}
                         <Button
                             btnText={
                                 <div className="size-[20px] group-hover:stroke-[#4977ec] stroke-[#434343]">
@@ -163,31 +156,31 @@ export default function Header() {
                 )}
 
                 {/* login/register btn */}
-                <div className="flex items-center justify-center gap-4">
-                    {user.role !== 'student' && (
+                {user && user.role !== 'student' && (
+                    <div className="flex items-center justify-center gap-4">
                         <Button
                             onClick={() => navigate('/register')}
                             btnText={
-                                user.role === 'contractor'
-                                    ? 'Add Student'
-                                    : 'Add Contractor'
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="size-[20px] fill-white">
+                                        {icons.plus}
+                                    </div>
+                                    <span>
+                                        {user.role === 'contractor'
+                                            ? 'Add Student'
+                                            : 'Add Contractor'}
+                                    </span>
+                                </div>
                             }
                             title={
                                 user.role === 'contractor'
                                     ? 'Add Student'
                                     : 'Add Contractor'
                             }
-                            className="text-white rounded-md py-[5px] w-[80px] h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className="text-white rounded-md py-[5px] w-[140px] h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
                         />
-                    )}
-
-                    <Button
-                        onClick={() => navigate('/login')}
-                        btnText="Login"
-                        title="Login"
-                        className="text-white rounded-md py-[5px] w-[80px] h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
-                    />
-                </div>
+                    </div>
+                )}
             </div>
         </header>
     );

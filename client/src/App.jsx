@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Layout } from './Components';
 import { useSideBarContext, useUserContext, usePopupContext } from './Contexts';
 import { userService } from './Services';
 import { icons } from './Assets/icons';
 
 export default function App() {
-    const { user, setUser } = useUserContext();
     const [loading, setLoading] = useState(true);
+    const { user, setUser } = useUserContext();
     const { setShowSideBar } = useSideBarContext();
     const { setShowPopup } = usePopupContext();
     const navigate = useNavigate();
     const location = useLocation();
 
+    // get current user
     useEffect(() => {
         (async function currentUser() {
             try {
@@ -27,18 +28,13 @@ export default function App() {
         })();
     }, []);
 
-    // Close sidebar & popups
+    // Close sidebar & popups on window resize and location change
     useEffect(() => {
-        const handleResize = () => setShowSideBar(false);
-
-        // on window resize
-        window.addEventListener('resize', handleResize);
-
-        // on location/route change
-        setShowSideBar(false);
-        setShowPopup(false);
-
-        return () => window.removeEventListener('resize', handleResize);
+        const closeSidebar = () => setShowSideBar(false);
+        const closePopup = () => setShowPopup(false);
+        window.addEventListener('resize', closeSidebar);
+        closeSidebar();
+        closePopup();
     }, [location]);
 
     return (
@@ -55,10 +51,8 @@ export default function App() {
                         Please refresh the page, if it takes too long
                     </p>
                 </div>
-            ) : user ? (
-                <Layout />
             ) : (
-                <Outlet />
+                <Layout />
             )}
         </div>
     );

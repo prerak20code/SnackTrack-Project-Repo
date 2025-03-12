@@ -1,12 +1,12 @@
 import { SERVER_ERROR } from '../Constants/constants';
 
 class StudentService {
-    async login({ rollNo, password }) {
+    async login({ userName, password }) {
         try {
             const res = await fetch('/api/students/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ rollNo, password }),
+                body: JSON.stringify({ userName, password }),
             });
 
             const data = await res.json();

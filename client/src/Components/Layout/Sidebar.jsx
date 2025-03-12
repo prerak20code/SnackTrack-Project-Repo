@@ -9,8 +9,19 @@ export default function Sidebar() {
     const { user } = useUserContext();
     const { showSideBar, setShowSideBar } = useSideBarContext();
     const items = [
-        { path: '/', name: 'Home', icon: icons.home },
-        { path: '/history', name: 'Order History', icon: icons.clock },
+        { path: '/', name: 'Home', icon: icons.home, show: true },
+        {
+            path: '/history',
+            name: 'Order History',
+            icon: icons.clock,
+            show: true,
+        },
+        {
+            path: '/students',
+            name: 'Students',
+            icon: icons.clock,
+            show: user.role === 'contractor',
+        },
     ];
 
     const systemItems = [
@@ -24,7 +35,7 @@ export default function Sidebar() {
         <NavLink
             key={item.name}
             className={({ isActive }) =>
-                `${isActive && 'backdrop-brightness-90'} ${!item.show && 'hidden'} w-full py-2 px-[10px] rounded-md hover:backdrop-brightness-90`
+                `${isActive && 'backdrop-brightness-90'} w-full py-2 px-[10px] rounded-md hover:backdrop-brightness-90`
             }
             to={item.path}
         >
@@ -40,7 +51,7 @@ export default function Sidebar() {
             key={item.name}
             to={item.path}
             className={({ isActive }) =>
-                `${isActive && 'backdrop-brightness-90'} ${!item.show && 'hidden'} w-full py-2 px-[10px] rounded-md hover:backdrop-brightness-90`
+                `${isActive && 'backdrop-brightness-90'} w-full py-2 px-[10px] rounded-md hover:backdrop-brightness-90`
             }
         >
             <div className="flex items-center justify-start gap-4">
@@ -129,19 +140,12 @@ export default function Sidebar() {
                                 />
 
                                 {/* avatar */}
-                                <div className="w-full h-full py-3 flex items-center justify-end gap-4">
-                                    <Link
-                                        to={`/channel/${user?.user_id}`}
-                                        className="hover:scale-110 transition-all duration-300"
-                                    >
-                                        <div className="size-[35px] rounded-full overflow-hidden drop-shadow-md hover:brightness-90">
-                                            <img
-                                                src={user?.user_avatar}
-                                                alt="user avatar"
-                                                className="size-full object-cover"
-                                            />
-                                        </div>
-                                    </Link>
+                                <div className="size-[40px] rounded-full overflow-hidden drop-shadow-md hover:brightness-90">
+                                    <img
+                                        src={user.user_avatar || icons.avatar}
+                                        alt="user avatar"
+                                        className="size-full object-cover"
+                                    />
                                 </div>
                             </div>
 

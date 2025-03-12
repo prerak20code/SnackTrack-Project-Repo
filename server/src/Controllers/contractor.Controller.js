@@ -11,7 +11,13 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
-import { Contractor, Canteen, Snack, Student } from '../Models/index.js';
+import {
+    Contractor,
+    Canteen,
+    Snack,
+    Student,
+    Hostel,
+} from '../Models/index.js';
 
 // personal usage
 const login = tryCatch('login as contractor', async (req, res, next) => {
@@ -34,7 +40,10 @@ const login = tryCatch('login as contractor', async (req, res, next) => {
     }
 
     // generate tokens
-    const { accessToken, refreshToken } = await generateTokens(contractor);
+    const { accessToken, refreshToken } = await generateTokens({
+        _id: contractor._id,
+        role: 'contractor',
+    });
 
     const loggedInContractor = await Contractor.findByIdAndUpdate(
         contractor._id,
@@ -165,9 +174,15 @@ const registerNewStudent = tryCatch(
                 }
             }
 
+            const hostel = await Hostel.findOne({
+                canteenId: contractor.canteenId,
+            });
+
+            data.userName = hostel.type + hostel.number + '-' + rollNo;
+
             // check if user already exists with this roll no
             const existingStudent = await Student.findOne({
-                rollNo: data.rollNo,
+                userName: data.userName,
             });
             if (existingStudent) {
                 return next(
@@ -175,29 +190,19 @@ const registerNewStudent = tryCatch(
                 );
             }
 
-            data.hostelId = (
-                await Canteen.findById(contractor.canteenId)
-            )?.hostelId;
+            data.hostelId = hostel._id;
 
             // hash the password (auto done by pre hook in model)
 
-            // generate tokens
-            const { accessToken, refreshToken } = await generateTokens(student);
-            data.refreshToken = refreshToken;
+            const student = await Student.create({
+                fullName: data.fullName,
+                hostelId: data.hostelId,
+                userName: data.userName,
+                phoneNumber: data.phoneNumber,
+                password: data.password,
+            });
 
-            const student = await Student.create(data);
-
-            return res
-                .status(OK)
-                .cookie('snackTrack_accessToken', accessToken, {
-                    ...COOKIE_OPTIONS,
-                    maxAge: parseInt(process.env.ACCESS_TOKEN_MAXAGE),
-                })
-                .cookie('snackTrack_refreshToken', refreshToken, {
-                    ...COOKIE_OPTIONS,
-                    maxAge: parseInt(process.env.REFRESH_TOKEN_MAXAGE),
-                })
-                .json(student);
+            return res.status(OK).json(student);
         } catch (err) {
             throw err;
         }
@@ -242,6 +247,33 @@ const removeStudent = tryCatch(
     }
 );
 
+const getStudents = tryCatch('get students', async (req, res) => {
+    const contractor = req.user;
+    const { limit = 10, page = 1 } = req.query; // for pagination
+    const hostel = await Hostel.findOne({ canteenId: contractor.canteenId });
+    const result = await Student.aggregatePaginate(
+        [{ $match: { hostelId: hostel._id } }],
+        {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { createdAt: -1 },
+        }
+    );
+    if (result.docs.length) {
+        const data = {
+            students: result.docs,
+            studentsInfo: {
+                hasNextPage: result.hasNextPage,
+                hasPrevPage: result.hasPrevPage,
+                totalStudents: result.totalDocs,
+            },
+        };
+        return res.status(OK).json(data);
+    } else {
+        return res.status(OK).json({ message: 'no students found' });
+    }
+});
+
 const updateStudentAccountDetails = tryCatch(
     'update account details',
     async (req, res, next) => {
@@ -249,14 +281,14 @@ const updateStudentAccountDetails = tryCatch(
         const { studentId } = req.params;
         const { fullName, phoneNumber, rollNo, password } = req.body;
 
-        const [student, canteen] = await Promise.all([
+        const [student, hostel] = await Promise.all([
             Student.findById(studentId),
-            Canteen.findById(contractor.canteenId),
+            Hostel.findOne({ canteenId: contractor.canteenId }),
         ]);
         if (!student) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
         }
-        if (student.hostelId !== canteen.hostelId) {
+        if (student.hostelId !== hostel._id) {
             return next(new ErrorHandler('unauthorized access', BAD_REQUEST));
         }
 
@@ -265,7 +297,8 @@ const updateStudentAccountDetails = tryCatch(
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
-        student.rollNo = rollNo || student.rollNo;
+        student.userName =
+            hostel.type + hostel.number + '-' + rollNo || student.userName;
         student.fullName = fullName || student.fullName;
         student.phoneNumber = phoneNumber || student.phoneNumber;
         await student.save();
@@ -405,6 +438,7 @@ export {
     registerNewStudent,
     removeAllStudents,
     removeStudent,
+    getStudents,
     updateStudentAccountDetails,
     addSnack,
     deleteSnack,

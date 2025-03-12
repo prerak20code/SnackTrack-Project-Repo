@@ -25,7 +25,7 @@ export default function AboutUsPage() {
     return (
         <div className="w-full flex items-start justify-center">
             <div className="w-[90%]">
-                <h1 className="w-full font-semibold text-center mb-6">
+                <h1 className="w-full font-bold text-3xl text-center mb-6">
                     About Us
                 </h1>
                 <p className="text-md">
@@ -35,7 +35,7 @@ export default function AboutUsPage() {
                     building connections within the college community.
                 </p>
                 <hr className="my-6" />
-                <h2 className="w-full text-center my-6">Our Mission</h2>
+                <h2 className="w-full text-center my-6 text-xl font-bold">Our Mission</h2>
                 <p className="text-md">
                     Our mission is to create a digital space that encourages
                     collaboration, learning, and fun through writing. Whether
@@ -45,7 +45,7 @@ export default function AboutUsPage() {
                     with like-minded individuals.
                 </p>
                 <hr className="m-8" />
-                <h2 className="w-full text-center my-6">Why We Started?</h2>
+                <h2 className="w-full text-center my-6 text-xl font-bold">Why We Started?</h2>
                 <p className="text-md">
                     As college students, we wanted a place where we could freely
                     share our ideas and engage with others. We realized that
@@ -55,7 +55,7 @@ export default function AboutUsPage() {
                     and provide a platform for communication and connection.
                 </p>
                 <hr className="m-8" />
-                <h2 className="w-full text-center my-6">What We Do</h2>
+                <h2 className="w-full text-center my-6 text-xl font-bold">What We Do</h2>
                 <ul>
                     <li>
                         <strong>Blog Posts:</strong> Articles written by
@@ -75,7 +75,7 @@ export default function AboutUsPage() {
                     </li>
                 </ul>
                 <hr className="m-8" />
-                <h2 className="w-full text-center my-6">Meet the Team</h2>
+                <h2 className="w-full text-center my-6 text-xl font-bold">Meet the Team</h2>
                 <p className="text-md">
                     Our team consists of passionate students who are eager to
                     make a difference in the college community. We come from
@@ -86,7 +86,7 @@ export default function AboutUsPage() {
                     {members}
                 </div>
                 <hr className="m-8" />
-                <h2 className="w-full text-center my-6">Privacy Policy</h2>
+                <h2 className="w-full text-center my-6 text-xl font-bold">Privacy Policy</h2>
                 <p className="text-md">
                     Your privacy is important to us. Below is our Privacy Policy
                     outlining how we handle your data:
@@ -128,7 +128,7 @@ export default function AboutUsPage() {
                     </li>
                 </ul>
                 <hr className="m-8" />
-                <h2 className="w-full text-center my-6">Contact Us</h2>
+                <h2 className="w-full text-center my-6 text-xl font-bold">Contact Us</h2>
                 <p className="text-md">
                     If you have any questions or would like to collaborate, feel
                     free to connect with us on{' '}

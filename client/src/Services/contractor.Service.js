@@ -170,6 +170,30 @@ class ContractorService {
         }
     }
 
+    async getStudents(signal, page = 1, limit = 10) {
+        try {
+            const res = await fetch(
+                `/api/contractors/students?page=${page}&limit=${limit}`,
+                {
+                    method: 'GET',
+                    signal,
+                    credentials: 'include',
+                }
+            );
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in getStudents service', err);
+            throw err;
+        }
+    }
+
     async updateStudentAccountDetails(
         studentId,
         { fullName, phoneNumber, rollNo, password }

@@ -3,12 +3,12 @@ import { Schema, model, Types } from 'mongoose';
 // idea: single hostel has a single canteen
 const hostelSchema = new Schema(
     {
-        hostelType: {
+        type: {
             type: String,
-            enum: ['GH', 'BH'],
+            enum: ['GH', 'BH', 'IH'],
             required: true,
         },
-        hostelNumber: {
+        number: {
             type: Number,
             required: true,
             unique: true,

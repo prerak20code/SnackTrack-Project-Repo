@@ -1,0 +1,109 @@
+import { useEffect, useState } from 'react';
+import { contractorService } from '../Services';
+import { paginate } from '../Utils';
+import { useNavigate } from 'react-router-dom';
+import { useSearchContext } from '../Contexts';
+import { LIMIT } from '../Constants/constants';
+import { Button, StudentView } from '../Components';
+import { icons } from '../Assets/icons';
+
+export default function StudentsPage() {
+    const [students, setStudents] = useState([]);
+    const [studentsInfo, setStudentsInfo] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(1);
+    const { search } = useSearchContext();
+    const navigate = useNavigate();
+
+    const paginateRef = paginate(studentsInfo?.hasNextPage, loading, setPage);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        (async function getStudents() {
+            try {
+                setLoading(true);
+                const res = await contractorService.getStudents(
+                    signal,
+                    page,
+                    LIMIT
+                );
+                if (res && !res.message) {
+                    setStudents((prev) => [...prev, ...res.students]);
+                    setStudentsInfo(res.studentsInfo);
+                }
+            } catch (err) {
+                navigate('/server-error');
+            } finally {
+                setLoading(false);
+            }
+        })();
+
+        return () => controller.abort();
+    }, [page]);
+
+    const studentElements = students
+        ?.filter(
+            (student) =>
+                !search ||
+                student.name.toLowerCase().includes(search.toLowerCase())
+        )
+        .map((student, index) => (
+            <StudentView
+                key={student._id}
+                student={student}
+                reference={
+                    index + 1 === students.length && studentsInfo?.hasNextPage
+                        ? paginateRef
+                        : null
+                }
+            />
+        ));
+
+    async function removeAllStudents() {}
+
+    return (
+        <div>
+            {studentElements.length > 0 && (
+                <div>
+                    <div className="">
+                        <Button
+                            title="Remove all Students"
+                            onClick={removeAllStudents}
+                            btnText={
+                                <div className="flex gap-2 items-center justify-center px-1">
+                                    <div className="size-[16px] fill-black group-hover:fill-red-700">
+                                        {icons.delete}
+                                    </div>
+                                    <p>Remove All Students</p>
+                                </div>
+                            }
+                            className="bg-white drop-shadow-md text-black group p-2 rounded-lg hover:bg-"
+                        />
+                    </div>
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
+                        {studentElements}
+                    </div>
+                </div>
+            )}
+
+            {loading ? (
+                page === 1 ? (
+                    <div className="w-full text-center">
+                        loading first batch...
+                        {/* pulses */}
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center my-2 w-full">
+                        <div className="size-7 fill-[#4977ec] dark:text-[#f7f7f7]">
+                            {icons.loading}
+                        </div>
+                    </div>
+                )
+            ) : (
+                studentElements.length === 0 && <div>No students found !!</div>
+            )}
+        </div>
+    );
+}

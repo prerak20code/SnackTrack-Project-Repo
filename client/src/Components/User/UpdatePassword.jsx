@@ -105,7 +105,7 @@ export default function UpdatePassword() {
 
     const inputElements = inputFields.map((field) => (
         <div key={field.name}>
-            <div className="bg-[#f9f9f9] z-[1] ml-3 px-2 w-fit relative top-3 font-medium">
+            <div className="bg-white z-[1] ml-3 px-2 w-fit relative top-3 font-medium">
                 <label htmlFor={field.name}>
                     {field.label}
                     {field.required && <span className="text-red-500">*</span>}
@@ -124,7 +124,7 @@ export default function UpdatePassword() {
                     className="shadow-md shadow-[#f7f7f7] py-[15px] rounded-[5px] pl-[10px] w-full border-[0.01rem] border-gray-500 bg-transparent"
                 />
             </div>
-            {field.name === 'newPassword' && (
+            {!error.newPassword && field.name === 'newPassword' && (
                 <div className="text-sm">Password must be 8-12 characters.</div>
             )}
             {error[field.name] && (
@@ -136,17 +136,17 @@ export default function UpdatePassword() {
     ));
 
     return (
-        <div className="w-full px-4 py-2">
-            <div className="rounded-xl drop-shadow-md flex flex-col sm:flex-row bg-[#f9f9f9] px-12 py-6 sm:gap-14">
-                <div className="w-full py-6 px-4">
-                    <h3>Change Password</h3>
-                    <p className="">
+        <div className="w-full p-2">
+            <div className="rounded-xl drop-shadow-md flex flex-col sm:flex-row bg-white px-8 py-6 sm:gap-14">
+                <div className="w-full py-4">
+                    <h3 className="text-2xl font-bold">Change Password</h3>
+                    <p className="mt-2">
                         Update your password to secure your account. Changes are
                         final once saved.
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="w-full max-w-[600px]">
-                    <div className="flex flex-col gap-4">{inputElements}</div>
+                    <div className="flex flex-col gap-2">{inputElements}</div>
                     <div className="flex gap-6 mt-6">
                         <Button
                             btnText="Cancel"

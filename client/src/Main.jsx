@@ -1,4 +1,3 @@
-// import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './Styles/index.css';
@@ -16,6 +15,7 @@ import {
     RegisterPage,
     SettingsPage,
     AdminPage,
+    StudentsPage,
     SupportPage,
     AboutUsPage,
     ContactUsPage,
@@ -27,77 +27,52 @@ import {
 } from './Pages';
 
 import {
-    UserContextProvider,
-    PopupContextProvider,
-    SideBarContextProvider,
-    SearchContextProvider,
-    useUserContext,
-} from './Contexts';
-
-import {
     DeleteAccount,
     UpdateAccountDetails,
     UpdatePassword,
 } from './Components';
 
-function Wrapper() {
-    return (
-        <PopupContextProvider>
-            <SideBarContextProvider>
-                <SearchContextProvider>
-                    <App />
-                </SearchContextProvider>
-            </SideBarContextProvider>
-        </PopupContextProvider>
-    );
-}
+import {
+    UserContextProvider,
+    PopupContextProvider,
+    SideBarContextProvider,
+    SearchContextProvider,
+} from './Contexts';
 
-function AppRouter() {
-    const { user } = useUserContext();
-
-    const router = createBrowserRouter(
-        createRoutesFromElements(
-            <Route path="/" element={<Wrapper />}>
-                {user ? (
-                    //  although no need of redirect because routes are defined only if logged in
-                    <Route element={<Redirect />}>
-                        <Route path="" element={<HomePage />} />
-                        <Route path="settings" element={<SettingsPage />}>
-                            <Route path="" element={<UpdateAccountDetails />} />
-                            <Route
-                                path="password"
-                                element={<UpdatePassword />}
-                            />
-                            <Route
-                                path="delete-account"
-                                element={<DeleteAccount />}
-                            />
-                        </Route>
-                        <Route path="register" element={<RegisterPage />} />
-                        <Route path="admin" element={<AdminPage />} />
-                        <Route path="support" element={<SupportPage />} />
-                        <Route path="about-us" element={<AboutUsPage />} />
-                        <Route path="contact-us" element={<ContactUsPage />} />
-                        <Route path="faqs" element={<FAQpage />} />
-                    </Route>
-                ) : (
-                    <Route path="" element={<NewUserPage />} />
-                )}
-
-                {/* public routes */}
-                <Route path="login" element={<LoginPage />} />
-                <Route path="server-error" element={<ServerErrorPage />} />
-                <Route path="*" element={<NotFoundPage />} />
+const router = createBrowserRouter(
+    createRoutesFromElements(
+        <Route path="/" element={<App />}>
+            <Route path="" element={<HomePage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+            <Route path="admin" element={<AdminPage />} />
+            <Route path="students" element={<StudentsPage />} />
+            <Route path="settings" element={<SettingsPage />}>
+                <Route path="" element={<UpdateAccountDetails />} />
+                <Route path="password" element={<UpdatePassword />} />
+                <Route path="delete-account" element={<DeleteAccount />} />
             </Route>
-        )
-    );
-    return <RouterProvider router={router} />;
-}
+            <Route path="support" element={<SupportPage />} />
+            <Route path="about-us" element={<AboutUsPage />} />
+            <Route path="contact-us" element={<ContactUsPage />} />
+            <Route path="faqs" element={<FAQpage />} />
+            <Route path="new-user" element={<NewUserPage />} />
+            <Route path="server-error" element={<ServerErrorPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+        </Route>
+    )
+);
 
 function Root() {
     return (
         <UserContextProvider>
-            <AppRouter />
+            <PopupContextProvider>
+                <SideBarContextProvider>
+                    <SearchContextProvider>
+                        <RouterProvider router={router} />
+                    </SearchContextProvider>
+                </SideBarContextProvider>
+            </PopupContextProvider>
         </UserContextProvider>
     );
 }

@@ -1,5 +1,5 @@
 import { model, Schema, Types } from 'mongoose';
-import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
+import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const snackSchema = new Schema(
     {
@@ -28,6 +28,6 @@ const snackSchema = new Schema(
     { timestamps: true }
 );
 
-snackSchema.plugin(aggregatePaginate);
+snackSchema.plugin(mongooseAggregatePaginate);
 
 export const Snack = model('Snack', snackSchema);

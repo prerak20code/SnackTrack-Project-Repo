@@ -15,6 +15,7 @@ import UpdateAvatar from './User/UpdateAvatar';
 import LoginPopup from './Popups/Login.Popup';
 import UpdateAvatarPopup from './Popups/UpdateAvatar.Popup';
 import SnackView from './Snack/SnackView';
+import StudentView from './Student/StudentView';
 
 export {
     Header,
@@ -34,4 +35,5 @@ export {
     LoginPopup,
     UpdateAvatarPopup,
     SnackView,
+    StudentView,
 };

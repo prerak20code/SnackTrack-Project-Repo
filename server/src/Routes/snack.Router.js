@@ -5,6 +5,8 @@ import {
     getSnacks,
     getPackagedFoodItems,
 } from '../Controllers/snack.Controller.js';
+import { verifyJwt } from '../Middlewares/index.js';
 
-snackRouter.route('/:canteenId').get(getSnacks);
-snackRouter.route('/packaged/:canteenId').get(getPackagedFoodItems);
+snackRouter.use(verifyJwt);
+snackRouter.route('/packaged').get(getPackagedFoodItems);
+snackRouter.route('/').get(getSnacks);

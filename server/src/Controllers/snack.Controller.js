@@ -1,10 +1,15 @@
 import { OK } from '../Constants/index.js';
 import { tryCatch } from '../Utils/index.js';
-import { Snack, PackagedFood } from '../Models/index.js';
+import { Snack, PackagedFood, Hostel } from '../Models/index.js';
 
 const getSnacks = tryCatch('get snacks', async (req, res) => {
-    const { canteenId } = req.params;
+    const user = req.user;
     const { limit = 10, page = 1 } = req.query; // for pagination
+
+    const canteenId =
+        user.role === 'student'
+            ? (await Hostel.findById(user.hostelId))?.canteenId
+            : user.canteenId;
 
     const result = await Snack.aggregatePaginate([{ $match: { canteenId } }], {
         page: parseInt(page),
@@ -30,8 +35,13 @@ const getSnacks = tryCatch('get snacks', async (req, res) => {
 const getPackagedFoodItems = tryCatch(
     'get packaged food items',
     async (req, res) => {
-        const { canteenId } = req.params;
+        const user = req.user;
         const { limit = 10, page = 1 } = req.query; // for pagination
+
+        const canteenId =
+            user.role === 'student' // only student has a userName
+                ? (await Hostel.findById(user.hostelId))?.canteenId
+                : user.canteenId;
 
         const result = await PackagedFood.aggregatePaginate(
             [{ $match: { canteenId } }],

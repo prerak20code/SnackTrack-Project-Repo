@@ -27,22 +27,22 @@ export default function SettingsPage() {
 
     return (
         <div className="w-full h-full overflow-scroll">
-            <div className="w-full">
+            <div className="w-full mb-8">
                 {/* avatar */}
-                <div className="relative -top-8 flex gap-2 items-center justify-start">
+                <div className="flex gap-4 items-center justify-start">
                     <div className="relative">
-                        <div className="rounded-full  overflow-hidden size-[140px] border-[0.5rem] border-white ">
+                        <div className="rounded-full overflow-hidden size-[100px] border">
                             <img
                                 alt="user avatar"
-                                src={user.user_avatar}
+                                src={user.avatar}
                                 className="size-full object-cover drop-shadow-md"
                             />
                         </div>
 
-                        <div className="">
+                        <div>
                             <Button
                                 btnText={
-                                    <div className="size-[35px] fill-[#202020]">
+                                    <div className="size-[25px] fill-[#202020]">
                                         {icons.upload}
                                     </div>
                                 }
@@ -50,24 +50,23 @@ export default function SettingsPage() {
                                     setShowPopup(true);
                                     setPopupInfo({ type: 'updateAvatar' });
                                 }}
-                                className="drop-shadow-md absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%] rounded-md p-1 bg-[#b5b4b4] border-[0.01rem] border-[#bbbbbb] bg-opacity-80 stroke-black fill-[#4d4d4d]"
+                                className="drop-shadow-md absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%] rounded-md p-1 bg-[#d3d3d3] border-[0.01rem] border-[#c7c7c7]"
                             />
                         </div>
                     </div>
 
-                    {/* user info*/}
-                    <div className="flex flex-col items-start justify-center gap-1">
-                        <div className="text-3xl font-medium">
-                            {user.user_firstName} {user.user_lastName}
-                        </div>
-                        <div className="text-xl text-[#151515]">
-                            @{user.user_name}
-                        </div>
+                    {/* info*/}
+                    <div className="space-y-1">
+                        <p className="text-2xl font-bold">{user.fullName}</p>
+                        <p className="">
+                            @{user.hostelType}
+                            {user.hostelNumber}hosteltypeandnumber
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div className="flex items-center justify-evenly w-full gap-6">
+            <div className="flex items-center justify-evenly w-full gap-4">
                 {tabElements}
             </div>
 

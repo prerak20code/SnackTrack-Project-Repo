@@ -26,7 +26,27 @@ const updateAccountDetails = tryCatch(
 
 const updatePassword = tryCatch(
     'update password',
-    async (req, res, next) => {}
+    async (req, res, next) => {
+        const { oldPassword, newPassword } = req.body;
+        const admin = req.user;
+
+        if (!oldPassword || !newPassword) {
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+
+        const isPassValid = bcrypt.compareSync(oldPassword, admin.password);
+        if (!isPassValid) {
+            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+        }
+
+        const hashedPassword = bcrypt.hashSync(newPassword, 10);
+        const updatedAdmin = await Admin.findByIdAndUpdate(
+            admin._id,
+            { password: hashedPassword },
+            { new: true }
+        ).select('-password');
+        return res.status(OK).json(updatedAdmin);
+    }
 );
 
 const updateAvatar = tryCatch('update avatar', async (req, res, next) => {});

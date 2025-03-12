@@ -20,7 +20,7 @@ import {
     contractorRouter,
     orderRouter,
 } from './Routes/index.js';
-import { errorMiddleware } from './Middlewares/index.js';
+import { errorMiddleware } from './middlewares/index.js';
 
 app.use('/api/users', userRouter); // for general user operations
 app.use('/api/students', studentRouter);

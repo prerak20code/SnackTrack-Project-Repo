@@ -8,6 +8,7 @@ import {
     formatFileSize,
     formatCount,
 } from './formatting';
+import { getRollNo } from './student';
 
 export {
     verifyExpression,
@@ -18,4 +19,5 @@ export {
     formatTime,
     formatFileSize,
     formatCount,
+    getRollNo,
 };

@@ -101,16 +101,22 @@ export default function UpdateAccountDetails() {
     ];
 
     const inputElements = inputFields.map((field) => (
-        <InputField
-            key={field.name}
-            field={field}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            error={error}
-            inputs={inputs}
-            showPassword={showPassword}
-            setShowPassword={setShowPassword}
-        />
+        <div className="w-full" key={field.name}>
+            <InputField
+                field={field}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                error={error}
+                inputs={inputs}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+            />
+            {error[field.name] && (
+                <div className="mt-1 text-red-500 text-sm font-medium">
+                    {error[field.name]}
+                </div>
+            )}
+        </div>
     ));
 
     return (

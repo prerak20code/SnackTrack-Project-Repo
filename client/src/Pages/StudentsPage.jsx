@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { contractorService } from '../Services';
 import { paginate } from '../Utils';
 import { useNavigate } from 'react-router-dom';
-import { useSearchContext } from '../Contexts';
+import { useContractorContext, useSearchContext } from '../Contexts';
 import { LIMIT } from '../Constants/constants';
 import { Button, StudentView } from '../Components';
 import { icons } from '../Assets/icons';
 
 export default function StudentsPage() {
-    const [students, setStudents] = useState([]);
+    const { students, setStudents } = useContractorContext();
     const [studentsInfo, setStudentsInfo] = useState({});
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
@@ -40,7 +40,11 @@ export default function StudentsPage() {
             }
         })();
 
-        return () => controller.abort();
+        return () => {
+            controller.abort();
+            setStudents([]);
+            setStudentsInfo({});
+        };
     }, [page]);
 
     const studentElements = students
@@ -66,20 +70,20 @@ export default function StudentsPage() {
     return (
         <div>
             {studentElements.length > 0 && (
-                <div>
-                    <div className="">
+                <div className="w-full">
+                    <div className=" w-full flex justify-center mb-8">
                         <Button
                             title="Remove all Students"
                             onClick={removeAllStudents}
                             btnText={
                                 <div className="flex gap-2 items-center justify-center px-1">
-                                    <div className="size-[16px] fill-black group-hover:fill-red-700">
+                                    <div className="size-[16px] fill-white group-hover:fill-red-700">
                                         {icons.delete}
                                     </div>
                                     <p>Remove All Students</p>
                                 </div>
                             }
-                            className="bg-white drop-shadow-md text-black group p-2 rounded-lg hover:bg-"
+                            className="bg-red-700 text-white p-2 rounded-lg"
                         />
                     </div>
                     <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">

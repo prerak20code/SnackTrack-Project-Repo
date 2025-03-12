@@ -9,16 +9,21 @@ export default function InputField({
         placeholder: '',
     },
     inputs,
-    error,
-    handleChange,
-    handleBlur,
-    setShowPassword,
+    handleChange = null,
+    handleBlur = null,
+    setShowPassword = null,
     showPassword = false,
-    showPrecautions = false,
 }) {
+    const passwordVariants = [
+        'password',
+        'oldPassword',
+        'newPassword',
+        'confirmPassword',
+        'contractorPassword',
+    ];
     return (
         <div key={field.name} className="w-full">
-            <div className="bg-white z-[1] ml-3 px-2 w-fit relative top-3 font-medium">
+            <div className="bg-white z-[1] ml-2 px-2 w-fit relative top-3 font-medium">
                 <label htmlFor={field.name}>
                     {field.required && <span className="text-red-500">* </span>}
                     {field.label} :
@@ -33,9 +38,9 @@ export default function InputField({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder={field.placeholder}
-                    className="shadow-md shadow-[#f7f7f7] py-[15px] rounded-[5px] pl-[10px] w-full border-[0.01rem] border-gray-500 bg-transparent"
+                    className="shadow-md shadow-[#f7f7f7] py-3 rounded-md indent-3 w-full border-[0.01rem] border-gray-500 bg-transparent"
                 />
-                {field.name === 'password' && (
+                {passwordVariants.includes(field.name) && (
                     <div
                         onClick={() => setShowPassword((prev) => !prev)}
                         className="size-[20px] absolute right-0 top-[50%] transform translate-y-[-50%] mr-4 cursor-pointer fill-[#474747]"
@@ -44,20 +49,6 @@ export default function InputField({
                     </div>
                 )}
             </div>
-            {showPrecautions && (
-                <div>
-                    {error[field.name] && (
-                        <div className="mt-1 text-red-500 text-sm font-medium">
-                            {error[field.name]}
-                        </div>
-                    )}
-                    {field.name === 'password' && !error.password && (
-                        <div className="text-xs">
-                            password must be 8-12 characters.
-                        </div>
-                    )}
-                </div>
-            )}
         </div>
     );
 }

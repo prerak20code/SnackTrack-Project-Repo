@@ -1,4 +1,4 @@
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useSideBarContext, useUserContext } from '../../Contexts';
 import { icons } from '../../Assets/icons';
 import { Button } from '..';
@@ -22,6 +22,12 @@ export default function Sidebar() {
             icon: icons.clock,
             show: user.role === 'contractor',
         },
+        {
+            path: '/canteens',
+            name: 'Canteens',
+            icon: icons.clock,
+            show: user.role === 'admin',
+        },
     ];
 
     const systemItems = [
@@ -31,20 +37,25 @@ export default function Sidebar() {
         { path: '/settings', name: 'Settings', icon: icons.settings },
     ];
 
-    const itemElements = items.map((item) => (
-        <NavLink
-            key={item.name}
-            className={({ isActive }) =>
-                `${isActive && 'backdrop-brightness-90'} w-full py-2 px-[10px] rounded-md hover:backdrop-brightness-90`
-            }
-            to={item.path}
-        >
-            <div className="flex items-center justify-start gap-4">
-                <div className="size-[19px] fill-[#2a2a2a]">{item.icon}</div>
-                <div>{item.name}</div>
-            </div>
-        </NavLink>
-    ));
+    const itemElements = items.map(
+        (item) =>
+            item.show && (
+                <NavLink
+                    key={item.name}
+                    className={({ isActive }) =>
+                        `${isActive && 'backdrop-brightness-90'} w-full py-2 px-[10px] rounded-md hover:backdrop-brightness-90`
+                    }
+                    to={item.path}
+                >
+                    <div className="flex items-center justify-start gap-4">
+                        <div className="size-[19px] fill-[#2a2a2a]">
+                            {item.icon}
+                        </div>
+                        <div>{item.name}</div>
+                    </div>
+                </NavLink>
+            )
+    );
 
     const systemItemElements = systemItems.map((item) => (
         <NavLink

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUserContext, usePopupContext } from '../../Contexts';
+import { useUserContext } from '../../Contexts';
 import {
     studentService,
     contractorService,
@@ -18,7 +18,6 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const { setUser } = useUserContext();
-    const { setShowPopup, showPopup } = usePopupContext();
     const navigate = useNavigate();
 
     function handleChange(e) {
@@ -38,12 +37,7 @@ export default function Login() {
         setError('');
         try {
             let res;
-            if (role === 'student') {
-                res = await studentService.login({
-                    userName: inputs.loginInput,
-                    password: inputs.password,
-                });
-            } else if (role === 'contractor') {
+            if (role === 'contractor') {
                 res = await contractorService.login({
                     emailOrPhoneNo: inputs.loginInput,
                     password: inputs.password,
@@ -53,12 +47,16 @@ export default function Login() {
                     emailOrPhoneNo: inputs.loginInput,
                     password: inputs.password,
                 });
+            } else {
+                res = await studentService.login({
+                    userName: inputs.loginInput,
+                    password: inputs.password,
+                });
             }
             if (res && !res.message) {
                 setUser(res);
                 toast.success('Logged in Successfully 😉');
-                if (showPopup) setShowPopup(false);
-                else navigate('/');
+                navigate('/');
             } else {
                 setUser(null);
                 setError(res.message);

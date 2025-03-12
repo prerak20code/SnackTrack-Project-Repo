@@ -13,18 +13,17 @@ export default function RegisterPage() {
     const initialInputs = {
         fullName: '',
         rollNo: '',
-        email: '',
         password: '',
         phoneNumber: '',
     };
+    const { user } = useUserContext();
+    if (user.role !== 'contractor') initialInputs.email = '';
     const initialError = { ...initialInputs, root: '' };
     const [inputs, setInputs] = useState(initialInputs);
     const [error, setError] = useState(initialError);
-
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const { user } = useUserContext();
     const navigate = useNavigate();
 
     async function handleChange(e) {
@@ -100,8 +99,8 @@ export default function RegisterPage() {
         {
             type: 'text',
             name: 'phoneNumber',
-            label: 'PhoneNumber',
-            placeholder: 'Enter your Phone Numbeer',
+            label: 'Phone Number',
+            placeholder: 'Enter your Phone Number',
             required: true,
             show: true,
         },
@@ -117,19 +116,48 @@ export default function RegisterPage() {
 
     const inputElements = inputFields.map(
         (field) =>
-            field.show && (
-                <InputField
-                    key={field.name}
-                    field={field}
-                    handleBlur={handleBlur}
-                    handleChange={handleChange}
-                    error={error}
-                    inputs={inputs}
-                    showPassword={showPassword}
-                    setShowPassword={setShowPassword}
-                    showPrecautions={true}
-                />
-            )
+            field.show &&
+            (field.name === 'password' ? (
+                <div className="w-full" key={field.name}>
+                    <InputField
+                        field={field}
+                        handleBlur={handleBlur}
+                        handleChange={handleChange}
+                        error={error}
+                        inputs={inputs}
+                        showPassword={showPassword}
+                        setShowPassword={setShowPassword}
+                    />
+                    {error[field.name] && (
+                        <div className="mt-1 text-red-500 text-sm font-medium">
+                            {error[field.name]}
+                        </div>
+                    )}
+                    {field.name === 'password' && !error.password && (
+                        <div className="text-xs">
+                            password must be 8-12 characters.
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="w-full" key={field.name}>
+                    <InputField
+                        field={field}
+                        handleBlur={handleBlur}
+                        handleChange={handleChange}
+                        error={error}
+                        inputs={inputs}
+                        showPassword={showPassword}
+                        setShowPassword={setShowPassword}
+                        showPrecautions={true}
+                    />
+                    {error[field.name] && (
+                        <div className="mt-1 text-red-500 text-sm font-medium">
+                            {error[field.name]}
+                        </div>
+                    )}
+                </div>
+            ))
     );
 
     return (

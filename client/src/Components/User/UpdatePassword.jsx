@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { verifyExpression } from '../../Utils';
 import { useNavigate } from 'react-router-dom';
 import { userService } from '../../Services';
-import { Button } from '..';
+import { Button, InputField } from '..';
 import toast from 'react-hot-toast';
 
 export default function UpdatePassword() {
@@ -21,6 +21,9 @@ export default function UpdatePassword() {
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     async function handleChange(e) {
         const { name, value } = e.target;
@@ -82,58 +85,76 @@ export default function UpdatePassword() {
     const inputFields = [
         {
             name: 'oldPassword',
-            type: 'password',
+            type: showPassword ? 'text' : 'password',
             placeholder: 'Enter current Password',
             label: 'Old Password',
             required: true,
         },
         {
             name: 'newPassword',
-            type: 'password',
+            type: showNewPassword ? 'text' : 'password',
             placeholder: 'Create new password',
             label: 'New Password',
             required: true,
         },
         {
             name: 'confirmPassword',
-            type: 'password',
+            type: showConfirmPassword ? 'text' : 'password',
             placeholder: 'Confirm new password',
             label: 'Confirm Password',
             required: true,
         },
     ];
 
-    const inputElements = inputFields.map((field) => (
-        <div key={field.name}>
-            <div className="bg-white z-[1] ml-3 px-2 w-fit relative top-3 font-medium">
-                <label htmlFor={field.name}>
-                    {field.label}
-                    {field.required && <span className="text-red-500">*</span>}
-                </label>
-            </div>
-            <div>
-                <input
-                    type={field.type}
-                    name={field.name}
-                    id={field.name}
-                    value={inputs[field.name]}
-                    placeholder={field.placeholder}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required={field.required}
-                    className="shadow-md shadow-[#f7f7f7] py-[15px] rounded-[5px] pl-[10px] w-full border-[0.01rem] border-gray-500 bg-transparent"
+    const inputElements = inputFields.map((field) =>
+        field.name === 'oldPassword' ? (
+            <div className="w-full" key={field.name}>
+                <InputField
+                    field={field}
+                    handleChange={handleChange}
+                    error={error}
+                    inputs={inputs}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
                 />
+                {error[field.name] && (
+                    <div className="pt-[0.09rem] text-red-500 text-sm">
+                        {error[field.name]}
+                    </div>
+                )}
             </div>
-            {!error.newPassword && field.name === 'newPassword' && (
-                <div className="text-sm">Password must be 8-12 characters.</div>
-            )}
-            {error[field.name] && (
-                <div className="pt-[0.09rem] text-red-500 text-sm">
-                    {error[field.name]}
-                </div>
-            )}
-        </div>
-    ));
+        ) : (
+            <div className="w-full" key={field.name}>
+                <InputField
+                    field={field}
+                    handleBlur={handleBlur}
+                    handleChange={handleChange}
+                    error={error}
+                    inputs={inputs}
+                    showPassword={
+                        field.name === 'newPassword'
+                            ? showNewPassword
+                            : showConfirmPassword
+                    }
+                    setShowPassword={
+                        field.name === 'newPassword'
+                            ? setShowNewPassword
+                            : setShowConfirmPassword
+                    }
+                />
+                {!error.newPassword && field.name === 'newPassword' && (
+                    <div className="text-sm">
+                        Password must be 8-12 characters.
+                    </div>
+                )}
+                {error[field.name] && (
+                    <div className="pt-[0.09rem] text-red-500 text-sm">
+                        {error[field.name]}
+                    </div>
+                )}
+            </div>
+        )
+    );
 
     return (
         <div className="w-full p-2">

@@ -10,18 +10,19 @@ import { MAX_FILE_SIZE, ALLOWED_EXT } from '../Constants/index.js';
 export default function verifyRegex(name, value) {
     if (value) {
         switch (name) {
-            case 'fullName': {
-                return /^[a-zA-Z]{1,15}$/.test(value);
+            case 'fullName':
+            case 'name': {
+                return /^[a-zA-Z ]{1,20}$/.test(value);
             }
 
             case 'email': {
-                return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,100}$/.test(
+                return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,100}$/.test(
                     value
                 );
             }
 
             case 'rollNo': {
-                return /^[1-9]{1,3}$/.test(value);
+                return /^[0-9]{1,3}$/.test(value);
             }
 
             case 'password': {
@@ -29,11 +30,7 @@ export default function verifyRegex(name, value) {
             }
 
             case 'phoneNumber': {
-                return /^[1-9]{1,10}$/.test(value);
-            }
-
-            case 'name': {
-                return value.length <= 100;
+                return /^[0-9]{10}$/.test(value);
             }
 
             case 'file': {

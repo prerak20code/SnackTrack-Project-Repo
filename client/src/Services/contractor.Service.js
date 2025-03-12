@@ -107,8 +107,9 @@ class ContractorService {
 
     async registerStudent({ fullName, rollNo, password, phoneNumber }) {
         try {
-            const res = await fetch('/api/contractors/students/register', {
+            const res = await fetch('/api/contractors/students', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     fullName,
                     rollNo,
@@ -130,11 +131,13 @@ class ContractorService {
         }
     }
 
-    async removeStudent(studentId) {
+    async removeStudent(studentId, password) {
         try {
             const res = await fetch(`/api/contractors/students/${studentId}`, {
                 method: 'DELETE',
                 credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password }),
             });
 
             const data = await res.json();
@@ -196,23 +199,21 @@ class ContractorService {
 
     async updateStudentAccountDetails(
         studentId,
-        { fullName, phoneNumber, rollNo, password }
+        { fullName, phoneNumber, rollNo, password, contractorPassword }
     ) {
         try {
-            const res = await fetch(
-                `/api/contractors/students/account/${studentId}`,
-                {
-                    method: 'PATCH',
-                    credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        fullName,
-                        phoneNumber,
-                        rollNo,
-                        password,
-                    }),
-                }
-            );
+            const res = await fetch(`/api/contractors/students/${studentId}`, {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fullName,
+                    phoneNumber,
+                    rollNo,
+                    password,
+                    contractorPassword,
+                }),
+            });
 
             const data = await res.json();
             console.log(data);

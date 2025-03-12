@@ -2,15 +2,26 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
 import { LOGO } from '../../Constants/constants';
+import { usePopupContext, useContractorContext } from '../../Contexts';
+import { getRollNo } from '../../Utils';
 
 export default function StudentView({ student, reference, children }) {
     const { _id, avatar, fullName, userName, phoneNumber } = student;
-    const rollNo = userName.slice(userName.indexOf('-') + 1);
     const navigate = useNavigate();
+    const { setShowPopup, setPopupInfo } = usePopupContext();
+    const { setTargetStudent } = useContractorContext();
 
-    async function removeStudent() {}
+    async function removeStudent() {
+        setTargetStudent(student);
+        setPopupInfo({ type: 'removeStudent' });
+        setShowPopup(true);
+    }
 
-    async function editStudent() {}
+    async function editStudent() {
+        setTargetStudent(student);
+        setPopupInfo({ type: 'editStudent' });
+        setShowPopup(true);
+    }
 
     return (
         <div
@@ -38,7 +49,7 @@ export default function StudentView({ student, reference, children }) {
 
                         <div className="text-black hover:text-[#5c5c5c] text-[15px] w-fit">
                             <span className="font-medium">Roll No: </span>
-                            {rollNo}
+                            {getRollNo(userName)}
                         </div>
 
                         <div className="text-black hover:text-[#5c5c5c] text-[15px] w-fit">

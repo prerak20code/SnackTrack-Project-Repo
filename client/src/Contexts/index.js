@@ -2,6 +2,10 @@ import { useUserContext, UserContextProvider } from './User.Context';
 import { useSideBarContext, SideBarContextProvider } from './Sidebar.Context';
 import { PopupContextProvider, usePopupContext } from './Popup.Context';
 import { SearchContextProvider, useSearchContext } from './Search.Context';
+import {
+    useContractorContext,
+    ContractorContextProvider,
+} from './Contractor.Context';
 
 export {
     useUserContext,
@@ -12,4 +16,6 @@ export {
     usePopupContext,
     SearchContextProvider,
     useSearchContext,
+    useContractorContext,
+    ContractorContextProvider,
 };

@@ -162,7 +162,12 @@ const registerNewStudent = tryCatch(
             };
 
             // input error handling
-            if (!fullName || !rollNo || !phoneNumber || !password) {
+            if (
+                !data.fullName ||
+                !data.rollNo ||
+                !data.phoneNumber ||
+                !data.password
+            ) {
                 return next(new ErrorHandler('missing fields', BAD_REQUEST));
             }
             for (const [key, value] of Object.entries(data)) {
@@ -178,7 +183,7 @@ const registerNewStudent = tryCatch(
                 canteenId: contractor.canteenId,
             });
 
-            data.userName = hostel.type + hostel.number + '-' + rollNo;
+            data.userName = hostel.type + hostel.number + '-' + data.rollNo;
 
             // check if user already exists with this roll no
             const existingStudent = await Student.findOne({
@@ -226,6 +231,7 @@ const removeStudent = tryCatch(
     async (req, res, next) => {
         const { studentId } = req.params;
         const contractor = req.user;
+        const { password } = req.body;
 
         const [canteen, student] = await Promise.all([
             Canteen.findById(contractor.canteenId),
@@ -234,16 +240,22 @@ const removeStudent = tryCatch(
         if (!student) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
         }
+
         // a contractor can remove the student only if the student belongs to his canteen
-        if (canteen.hostelId !== student.hostelId) {
+        if (!canteen.hostelId.equals(student.hostelId)) {
             return next(new ErrorHandler('unauthorized access', BAD_REQUEST));
+        }
+
+        const isPassValid = bcrypt.compareSync(password, contractor.password);
+        if (!isPassValid) {
+            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
         if (student.avatar) await deleteFromCloudinary(student.avatar);
 
         await Student.findByIdAndDelete(studentId);
 
-        return res.status(OK).json({ message: 'student removed successfully' });
+        return res.status(OK).json({ message: 'account deleted successfully' });
     }
 );
 
@@ -252,7 +264,10 @@ const getStudents = tryCatch('get students', async (req, res) => {
     const { limit = 10, page = 1 } = req.query; // for pagination
     const hostel = await Hostel.findOne({ canteenId: contractor.canteenId });
     const result = await Student.aggregatePaginate(
-        [{ $match: { hostelId: hostel._id } }],
+        [
+            { $match: { hostelId: hostel._id } },
+            { $project: { password: 0, refreshToken: 0 } },
+        ],
         {
             page: parseInt(page),
             limit: parseInt(limit),
@@ -274,12 +289,14 @@ const getStudents = tryCatch('get students', async (req, res) => {
     }
 });
 
+// if two students are exchanging there roll no due to some reason then will have to delete one and update details of there and register first one again
 const updateStudentAccountDetails = tryCatch(
     'update account details',
     async (req, res, next) => {
         const contractor = req.user;
         const { studentId } = req.params;
-        const { fullName, phoneNumber, rollNo, password } = req.body;
+        const { fullName, phoneNumber, rollNo, password, contractorPassword } =
+            req.body;
 
         const [student, hostel] = await Promise.all([
             Student.findById(studentId),
@@ -288,13 +305,29 @@ const updateStudentAccountDetails = tryCatch(
         if (!student) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
         }
-        if (student.hostelId !== hostel._id) {
+        if (!student.hostelId.equals(hostel._id)) {
             return next(new ErrorHandler('unauthorized access', BAD_REQUEST));
         }
 
-        const isPassValid = bcrypt.compareSync(password, student.password);
-        if (!isPassValid) {
+        const [isStudentPassValid, isContractorPassValid] = await Promise.all([
+            bcrypt.compare(password, student.password),
+            bcrypt.compare(contractorPassword, contractor.password),
+        ]);
+        if (!isStudentPassValid) {
+            return next(
+                new ErrorHandler('invalid student password', BAD_REQUEST)
+            );
+        }
+        if (!isContractorPassValid) {
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+        }
+
+        const alreadyExists = await Student.findOne({
+            userName: hostel.type + hostel.number + '-' + rollNo,
+        });
+
+        if (alreadyExists) {
+            return next(new ErrorHandler('user already exists', BAD_REQUEST));
         }
 
         student.userName =

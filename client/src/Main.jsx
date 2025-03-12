@@ -37,6 +37,7 @@ import {
     PopupContextProvider,
     SideBarContextProvider,
     SearchContextProvider,
+    ContractorContextProvider,
 } from './Contexts';
 
 const router = createBrowserRouter(
@@ -66,13 +67,15 @@ const router = createBrowserRouter(
 function Root() {
     return (
         <UserContextProvider>
-            <PopupContextProvider>
-                <SideBarContextProvider>
-                    <SearchContextProvider>
-                        <RouterProvider router={router} />
-                    </SearchContextProvider>
-                </SideBarContextProvider>
-            </PopupContextProvider>
+            <ContractorContextProvider>
+                <PopupContextProvider>
+                    <SideBarContextProvider>
+                        <SearchContextProvider>
+                            <RouterProvider router={router} />
+                        </SearchContextProvider>
+                    </SideBarContextProvider>
+                </PopupContextProvider>
+            </ContractorContextProvider>
         </UserContextProvider>
     );
 }

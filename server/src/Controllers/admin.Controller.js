@@ -12,12 +12,90 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
-import { Admin, Contractor, Canteen } from '../Models/index.js';
+import { Admin, Contractor, Canteen, Hostel } from '../Models/index.js';
 
 // personal usage
-const register = tryCatch('register as admin', async (req, res, next) => {});
+// register as admin
+const register = tryCatch('register as admin', async (req, res, next) => {
+    const { fullName, email, phoneNumber, password } = req.body;
 
-const login = tryCatch('login student', async (req, res, next) => {});
+    // Input validation
+    if (!fullName || !email || !phoneNumber || !password) {
+        return next(new ErrorHandler('missing fields', BAD_REQUEST));
+    }
+
+    // Check if admin already exists
+    const existingAdmin = await Admin.findOne({
+        $or: [{ email }, { phoneNumber }],
+    });
+    if (existingAdmin) {
+        return next(new ErrorHandler('admin already exists', BAD_REQUEST));
+    }
+
+    // Hash password
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    // Create new admin
+    const admin = await Admin.create({
+        fullName,
+        email,
+        phoneNumber,
+        password: hashedPassword,
+    });
+
+    return res.status(OK).json({
+        message: 'Admin registered successfully',
+        admin,
+    });
+});
+// login as admin
+const login = tryCatch('login as admin', async (req, res, next) => {
+    const { emailOrPhoneNo, password } = req.body;
+
+    // Validate input fields
+    if (!emailOrPhoneNo || !password) {
+        return next(new ErrorHandler('missing fields', BAD_REQUEST));
+    }
+
+    // Find admin by email or phone number
+    const admin = await Admin.findOne({
+        $or: [{ email: emailOrPhoneNo }, { phoneNumber: emailOrPhoneNo }],
+    });
+
+    if (!admin) {
+        return next(new ErrorHandler('admin not found', NOT_FOUND));
+    }
+
+    // Verify password
+    const isPassValid = bcrypt.compareSync(password, admin.password);
+    if (!isPassValid) {
+        return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+    }
+
+    // Generate tokens
+    const { accessToken, refreshToken } = await generateTokens({
+        _id: admin._id,
+        role: 'admin',
+    });
+
+    // Save refresh token in the database
+    const loggedInAdmin = await Admin.findByIdAndUpdate(admin._id, {
+        $set: { refreshToken },
+    }).select('-password -refreshToken');
+
+    // Set tokens as cookies and return response
+    return res
+        .status(OK)
+        .cookie('snackTrack_accessToken', accessToken, {
+            ...COOKIE_OPTIONS,
+            maxAge: parseInt(process.env.ACCESS_TOKEN_MAXAGE),
+        })
+        .cookie('snackTrack_refreshToken', refreshToken, {
+            ...COOKIE_OPTIONS,
+            maxAge: parseInt(process.env.REFRESH_TOKEN_MAXAGE),
+        })
+        .json(loggedInAdmin);
+});
 
 const updateAccountDetails = tryCatch(
     'update account details',
@@ -26,32 +104,13 @@ const updateAccountDetails = tryCatch(
 
 const updatePassword = tryCatch(
     'update password',
-    async (req, res, next) => {
-        const { oldPassword, newPassword } = req.body;
-        const admin = req.user;
-
-        if (!oldPassword || !newPassword) {
-            return next(new ErrorHandler('missing fields', BAD_REQUEST));
-        }
-
-        const isPassValid = bcrypt.compareSync(oldPassword, admin.password);
-        if (!isPassValid) {
-            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
-        }
-
-        const hashedPassword = bcrypt.hashSync(newPassword, 10);
-        const updatedAdmin = await Admin.findByIdAndUpdate(
-            admin._id,
-            { password: hashedPassword },
-            { new: true }
-        ).select('-password');
-        return res.status(OK).json(updatedAdmin);
-    }
+    async (req, res, next) => {}
 );
 
 const updateAvatar = tryCatch('update avatar', async (req, res, next) => {});
 
 // contractor management tasks
+// register contractor
 const registerContractor = tryCatch(
     'register as contractor',
     async (req, res, next) => {
@@ -112,7 +171,7 @@ const registerContractor = tryCatch(
         }
     }
 );
-
+// change contractor details
 const changeContractor = tryCatch(
     'change contractor',
     async (req, res, next) => {
@@ -161,9 +220,68 @@ const changeContractor = tryCatch(
     }
 );
 
-const getContractor = tryCatch('get contractor', async (req, res, next) => {
-    const contractor = await Canteen.find({ contractor: { $ne: null } });
-    return res.status(OK).json(contractor);
+// update contractor password if forget
+const updateContractorPassword = tryCatch(
+    'update contractor password',
+    async (req, res, next) => {
+        const { contractorId, newPassword } = req.body;
+
+        if (!contractorId || !newPassword) {
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+
+        // Find contractor
+        const contractor = await Contractor.findById(contractorId);
+        if (!contractor) {
+            return next(new ErrorHandler('contractor not found', NOT_FOUND));
+        }
+
+        // Validate new password format
+        const isValid = verifyExpression('password', newPassword);
+        if (!isValid) {
+            return next(
+                new ErrorHandler('invalid password format', BAD_REQUEST)
+            );
+        }
+
+        // Hash new password
+        contractor.password = bcrypt.hashSync(newPassword, 10);
+        await contractor.save();
+
+        return res
+            .status(OK)
+            .json({ message: 'Contractor password updated successfully' });
+    }
+);
+// get all contractors
+const getContractor = tryCatch('get contractors', async (req, res) => {
+    const { limit = 10, page = 1 } = req.query; // Pagination
+
+    const result = await Contractor.aggregatePaginate(
+        [
+            { $match: {} }, // Fetch all contractors
+            { $project: { password: 0, refreshToken: 0 } }, // Exclude sensitive fields
+        ],
+        {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { createdAt: -1 },
+        }
+    );
+
+    if (result.docs.length) {
+        const data = {
+            contractors: result.docs,
+            contractorsInfo: {
+                hasNextPage: result.hasNextPage,
+                hasPrevPage: result.hasPrevPage,
+                totalContractors: result.totalDocs,
+            },
+        };
+        return res.status(200).json(data);
+    } else {
+        return res.status(200).json({ message: 'No contractors found' });
+    }
 });
 
 // canteen management tasks
@@ -172,11 +290,104 @@ const addCanteen = tryCatch('add canteen', async (req, res, next) => {});
 const removeCanteen = tryCatch('remove canteen', async (req, res, next) => {});
 
 // hostel management tasks
-const getCanteens = tryCatch('get canteens', async (req, res, next) => {});
+const getCanteens = tryCatch('get canteens', async (req, res) => {
+    const { limit = 10, page = 1 } = req.query; // Pagination
 
-const addHostel = tryCatch('add hostel', async (req, res, next) => {});
+    const result = await Canteen.aggregatePaginate(
+        [
+            { $match: {} }, // Fetch all canteens
+            {
+                $lookup: {
+                    from: 'hostels',
+                    localField: 'hostelId',
+                    foreignField: '_id',
+                    as: 'hostelInfo',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$hostelInfo',
+                    preserveNullAndEmptyArrays: true,
+                },
+            }, // Keeps canteens even if no hostel is linked
+            {
+                $project: {
+                    name: 1,
+                    location: 1,
+                    contractor: 1,
+                    'hostelInfo.type': 1,
+                    'hostelInfo.number': 1,
+                },
+            },
+        ],
+        {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { createdAt: -1 },
+        }
+    );
 
-const removeHostel = tryCatch('remove hostel', async (req, res, next) => {});
+    if (result.docs.length) {
+        const data = {
+            canteens: result.docs,
+            canteensInfo: {
+                hasNextPage: result.hasNextPage,
+                hasPrevPage: result.hasPrevPage,
+                totalCanteens: result.totalDocs,
+            },
+        };
+        return res.status(200).json(data);
+    } else {
+        return res.status(200).json({ message: 'No canteens found' });
+    }
+});
+
+// Add a new hostel
+const addHostel = tryCatch('add hostel', async (req, res, next) => {
+    const { type, number, canteenId } = req.body;
+
+    // Validate required fields
+    if (!type || !number) {
+        return res
+            .status(400)
+            .json({ message: 'Type and number are required' });
+    }
+
+    try {
+        // Check if the hostel number already exists
+        const existingHostel = await Hostel.findOne({ number });
+        if (existingHostel) {
+            return res
+                .status(400)
+                .json({ message: 'Hostel number already exists' });
+        }
+
+        // Create a new hostel
+        const hostel = new Hostel({ type, number, canteenId });
+        await hostel.save();
+
+        res.status(201).json({ message: 'Hostel added successfully', hostel });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Remove a hostel and detach its canteen
+const removeHostel = tryCatch('remove hostel', async (req, res, next) => {
+    const { id } = req.params;
+    const hostel = await hostel.findByIdAndDelete(id);
+
+    if (!hostel) {
+        return next(new ErrorHandler('Hostel not found', NOT_FOUND));
+    }
+
+    // Unassign the canteen associated with this hostel
+    if (hostel.canteenId) {
+        await Canteen.findByIdAndUpdate(hostel.canteenId, { hostelId: null });
+    }
+
+    return res.status(OK).json({ message: 'Hostel removed successfully' });
+});
 
 export {
     login,

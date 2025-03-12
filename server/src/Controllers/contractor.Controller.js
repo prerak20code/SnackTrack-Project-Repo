@@ -441,26 +441,169 @@ const toggleSnackAvailability = tryCatch(
             .json({ message: 'snack availability toggled successfully' });
     }
 );
-
 // packaged food management tasks
-const addItem = tryCatch('add item', async (req, res, next) => {});
+const addItem = tryCatch('add item', async (req, res, next) => {
+    let imageURL;
+    try {
+        const contractor = req.user;
+        const { name, price, availableCount } = req.body;
+        let image = req.file?.path;
 
-const deleteItem = tryCatch('delete item', async (req, res, next) => {});
+        // Validate required fields
+        if (!name || !price || !availableCount) {
+            if (image) fs.unlinkSync(image);
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+
+        // Upload image on cloudinary if provided
+        if (image) {
+            image = await uploadOnCloudinary(image);
+            image = image.secure_url;
+            imageURL = image;
+        }
+
+        // Create new packaged food item
+        const item = await PackagedFood.create({
+            canteenId: contractor.canteenId,
+            name,
+            price,
+            availableCount,
+            image,
+        });
+
+        return res.status(OK).json(item);
+    } catch (err) {
+        // Clean up uploaded image if error occurs
+        if (imageURL) await deleteFromCloudinary(imageURL);
+        throw err;
+    }
+});
+
+const deleteItem = tryCatch('delete item', async (req, res, next) => {
+    const { itemId } = req.params;
+    const contractor = req.user;
+
+    // Find the item and ensure it belongs to the contractor's canteen
+    const item = await PackagedFood.findOne({
+        _id: itemId,
+        canteenId: contractor.canteenId,
+    });
+    if (!item) {
+        return next(new ErrorHandler('item not found', NOT_FOUND));
+    }
+
+    // Delete the item's image from Cloudinary if it exists
+    if (item.image) {
+        await deleteFromCloudinary(item.image);
+    }
+
+    // Delete the item
+    await item.remove();
+
+    return res.status(OK).json({ message: 'item deleted successfully' });
+});
 
 const updateItemDetails = tryCatch(
     'update item details',
-    async (req, res, next) => {}
+    async (req, res, next) => {
+        const { itemId } = req.params;
+        const contractor = req.user;
+        const { name, category, variants } = req.body;
+        const image = req.file?.path;
+
+        // Validate required fields
+        if (!name && !category && !variants && !req.file) {
+            if (image) fs.unlinkSync(image);
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+
+        // Find the item and ensure it belongs to the contractor's canteen
+        const item = await PackagedFood.findOne({
+            _id: itemId,
+            canteenId: contractor.canteenId,
+        });
+        if (!item) {
+            if (image) fs.unlinkSync(image);
+            return next(new ErrorHandler('item not found', NOT_FOUND));
+        }
+
+        let imageURL;
+        try {
+            // Upload new image on cloudinary if provided
+            if (image) {
+                imageURL = await uploadOnCloudinary(image);
+                imageURL = imageURL.secure_url;
+            }
+
+            // Update item details
+            item.name = name || item.name;
+            item.category = category || item.category;
+            item.variants = variants || item.variants;
+            item.image = imageURL || item.image;
+
+            await item.save();
+
+            // Delete old image if it exists and a new image was uploaded
+            if (imageURL && item.image !== imageURL) {
+                await deleteFromCloudinary(item.image);
+            }
+
+            return res.status(OK).json(item);
+        } catch (err) {
+            if (imageURL) await deleteFromCloudinary(imageURL);
+            throw err;
+        }
+    }
 );
 
 const toggleAvaialbleCount = tryCatch(
     'toggle available count',
-    async (req, res, next) => {}
+    async (req, res, next) => {
+        const { itemId } = req.params;
+        const contractor = req.user;
+
+        // Find the item and ensure it belongs to the contractor's canteen
+        const item = await PackagedFood.findOne({
+            _id: itemId,
+            canteenId: contractor.canteenId,
+        });
+        if (!item) {
+            return next(new ErrorHandler('item not found', NOT_FOUND));
+        }
+
+        // Toggle the available count
+        item.variants.forEach((variant) => {
+            variant.availableCount = variant.availableCount === 0 ? 1 : 0;
+        });
+
+        await item.save();
+
+        return res.status(OK).json(item);
+    }
 );
 
 // order management tasks
 const markOrderAsDelivered = tryCatch(
     'mark order as delivered',
-    async (req, res, next) => {}
+    async (req, res, next) => {
+        const { orderId } = req.params;
+        const contractor = req.user;
+
+        // Find the order and ensure it belongs to the contractor's canteen
+        const order = await Order.findOne({
+            _id: orderId,
+            canteenId: contractor.canteenId,
+        });
+        if (!order) {
+            return next(new ErrorHandler('order not found', NOT_FOUND));
+        }
+
+        // Mark the order as delivered
+        order.status = 'Completed';
+        await order.save();
+
+        return res.status(OK).json(order);
+    }
 );
 
 export {

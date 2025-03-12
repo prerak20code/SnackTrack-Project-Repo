@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Layout } from './Components';
 import { useSideBarContext, useUserContext, usePopupContext } from './Contexts';
 import { userService } from './Services';
@@ -52,7 +52,7 @@ export default function App() {
                     </p>
                 </div>
             ) : (
-                <Outlet />
+                <Layout />
             )}
         </div>
     );

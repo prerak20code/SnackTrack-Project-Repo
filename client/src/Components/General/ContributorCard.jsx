@@ -30,7 +30,9 @@ export default function ContributorCard({ contributor }) {
                     <p className="text-blue-600 font-bold text-[14px] mb-2">
                         {role}
                     </p>
-                    <p className="text-gray-600 line-clamp-3 text-[15px]">{bio}</p>
+                    <p className="text-gray-600 line-clamp-3 text-[15px]">
+                        {bio}
+                    </p>
                     <div className="flex mt-6 gap-4">
                         {Object.entries(socials).map(
                             ([platform, url]) =>

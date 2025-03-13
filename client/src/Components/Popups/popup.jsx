@@ -17,7 +17,7 @@ export default function Popup() {
 
     const Wrapper = ({ children }) => (
         <div
-            className="fixed inset-0 z-[1000] backdrop-blur-sm flex items-center justify-center drop-shadow-md"
+            className="fixed inset-0 z-[1] backdrop-blur-sm flex items-center justify-center drop-shadow-md"
             ref={ref}
             onClick={close}
         >

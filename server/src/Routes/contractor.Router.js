@@ -20,7 +20,6 @@ import {
     deleteItem,
     updateItemDetails,
     toggleAvaialbleCount,
-    markOrderAsDelivered,
 } from '../Controllers/contractor.Controller.js';
 
 contractorRouter.route('/login').post(login);
@@ -63,5 +62,3 @@ contractorRouter
     .route('/packaged/availability/:itemId')
     .patch(toggleAvaialbleCount);
 
-// order management tasks
-contractorRouter.route('/orders/:orderId').patch(markOrderAsDelivered);

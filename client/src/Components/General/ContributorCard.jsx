@@ -4,57 +4,49 @@ import { motion } from 'framer-motion';
 
 export default function ContributorCard({ contributor }) {
     const { name, role, bio, image, socials } = contributor;
+
     return (
-        <div className="max-h-[400px] flex items-center justify-center">
-            <motion.div
-                whileHover={{
-                    y: -5,
-                    boxShadow: '0px 10px 10px rgba(0, 0, 0, 0.05)', // increase shadow on hover
-                }}
-                transition={{
-                    type: 'tween',
-                }}
-                className="bg-[#f9f9f9] h-full max-w-[330px] flex flex-col items-center justify-center gap-6 rounded-xl p-6 drop-shadow-md overflow-hidden"
-            >
-                <div className="w-full flex items-center justify-center">
-                    <div className="size-[145px] overflow-hidden border rounded-full drop-shadow-md">
-                        <img
-                            src={image}
-                            alt={`${name} profile photo`}
-                            className="size-full object-cover"
-                        />
-                    </div>
-                </div>
-                <div className="">
-                    <h3 className="text-xl font-bold text-gray-900">{name}</h3>
-                    <p className="text-blue-600 font-bold text-[14px] mb-2">
-                        {role}
-                    </p>
-                    <p className="text-gray-600 line-clamp-3 text-[15px]">
-                        {bio}
-                    </p>
-                    <div className="flex mt-6 gap-4">
-                        {Object.entries(socials).map(
-                            ([platform, url]) =>
-                                url && (
-                                    <Link
-                                        key={platform}
-                                        to={url}
-                                        target="_blank"
-                                    >
-                                        <div className="flex items-center justify-center">
-                                            <div className="bg-[#eaeaea] p-1 rounded-full w-fit drop-shadow-md hover:brightness-90">
-                                                <div className="size-[16px]">
-                                                    {icons[platform]}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                )
-                        )}
-                    </div>
-                </div>
-            </motion.div>
-        </div>
+        <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 12 }}
+            className="relative bg-white/20 backdrop-blur-lg border border-white/40 shadow-xl rounded-2xl overflow-hidden p-6 flex flex-col items-center gap-4 max-w-sm"
+        >
+            {/* Profile Image */}
+            <div className="w-32 h-32 overflow-hidden rounded-full border-4 border-gray-300 shadow-md">
+                <img
+                    src={image}
+                    alt={`${name} profile`}
+                    className="w-full h-full object-cover"
+                />
+            </div>
+
+            {/* Contributor Details */}
+            <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-900">{name}</h3>
+                <p className="text-blue-600 font-semibold text-sm">{role}</p>
+                <p className="text-gray-600 text-sm mt-2 line-clamp-3">{bio}</p>
+            </div>
+
+            {/* Social Media Links */}
+            <div className="flex gap-4 mt-4">
+                {Object.entries(socials).map(([platform, url]) =>
+                    url ? (
+                        <Link key={platform} to={url} target="_blank">
+                            <motion.div
+                                whileHover={{ scale: 1.2 }}
+                                whileTap={{ scale: 0.9 }}
+                                className="bg-gray-200 p-2 rounded-full shadow-md hover:bg-gray-300 transition"
+                            >
+                                <div className="size-5">{icons[platform]}</div>
+                            </motion.div>
+                        </Link>
+                    ) : null
+                )}
+            </div>
+
+            {/* Floating Glow Effect */}
+            <div className="absolute inset-0 rounded-2xl bg-white/5 blur-lg opacity-50 pointer-events-none" />
+        </motion.div>
     );
 }

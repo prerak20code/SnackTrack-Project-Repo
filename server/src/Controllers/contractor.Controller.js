@@ -42,10 +42,12 @@ const login = tryCatch('login as contractor', async (req, res, next) => {
     const [loggedInContractor, canteen] = await Promise.all([
         Contractor.findByIdAndUpdate(contractor._id, {
             $set: { refreshToken },
-        }).select('-password -refreshToken'),
-        Canteen.findById(contractor.canteenId).select(
-            'hostelNumber hostelNumber hostelName'
-        ),
+        })
+            .select('-password -refreshToken')
+            .lean(),
+        Canteen.findById(contractor.canteenId)
+            .select('hostelType hostelNumber hostelName')
+            .lean(),
     ]);
 
     return res
@@ -64,14 +66,20 @@ const login = tryCatch('login as contractor', async (req, res, next) => {
 const updateAccountDetails = tryCatch(
     'update account details',
     async (req, res, next) => {
-        const { fullName, phoneNumber, email, password } = req.body;
+        const { _id, password } = req.user;
+        const data = {
+            fullName: req.body.fullName.trim(),
+            email: req.body.email.trim(),
+            phoneNumber: req.body.phoneNumber,
+            password: req.body.password,
+        };
 
         // input error handling
-        if (!fullName || !email || !phoneNumber) {
+        if (!data.fullName || !data.email || !data.phoneNumber) {
             return next(new ErrorHandler('missing fields', BAD_REQUEST));
         }
         for (const [key, value] of Object.entries(data)) {
-            if (value) {
+            if (value && key !== 'password') {
                 const isValid = verifyExpression(key, value);
                 if (!isValid) {
                     return next(
@@ -81,28 +89,35 @@ const updateAccountDetails = tryCatch(
             }
         }
 
-        const isPassValid = bcrypt.compareSync(password, req.user.password);
+        const isPassValid = bcrypt.compareSync(data.password, password);
         if (!isPassValid) {
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
-        const contractor = await Contractor.findById(req.user._id);
-
-        contractor.email = email || contractor.email;
-        contractor.phoneNumber = phoneNumber || contractor.phoneNumber;
-        contractor.fullName = fullName || contractor.fullName;
-        await contractor.save();
+        // update or keep prev details if empty
+        await Contractor.findByIdAndUpdate(
+            _id,
+            {
+                $set: {
+                    ...(data.email && { email: data.email }),
+                    ...(data.phoneNumber && { phoneNumber: data.phoneNumber }),
+                    ...(data.fullName && { fullName: data.fullName }),
+                },
+            },
+            { new: true }
+        );
 
         return res
             .status(OK)
-            .json({ mssage: 'account details updated successfully' });
+            .json({ message: 'account details updated successfully' });
     }
 );
 
 const updatePassword = tryCatch('update password', async (req, res, next) => {
     const { oldPassword, newPassword } = req.body;
+    const contractor = req.user;
 
-    const isPassValid = bcrypt.compareSync(oldPassword, req.user.password);
+    const isPassValid = bcrypt.compareSync(oldPassword, contractor.password);
     if (!isPassValid) {
         return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
     }
@@ -115,7 +130,7 @@ const updatePassword = tryCatch('update password', async (req, res, next) => {
     // hash new password
     const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
 
-    await Contractor.findByIdAndUpdate(req.user._id, {
+    await Contractor.findByIdAndUpdate(contractor._id, {
         $set: { password: hashedNewPassword },
     });
 
@@ -135,7 +150,13 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
         avatarURL = avatarURL.secure_url;
 
         // update user avatar
-        const updatedContractor = await Contractor.updateAvatar(_id, avatarURL);
+        const updatedContractor = await Contractor.findByIdAndUpdate(
+            _id,
+            {
+                $set: { avatar: avatarURL },
+            },
+            { new: true }
+        );
 
         // delete old avatar
         if (updatedContractor && avatar) await deleteFromCloudinary(avatar);
@@ -340,6 +361,7 @@ const updateStudentAccountDetails = tryCatch(
     }
 );
 
+// TODO: ⭐PENDING FOR CHECKING
 // snack management tasks
 const addSnack = tryCatch('add snack', async (req, res, next) => {
     let imageURL;
@@ -441,6 +463,7 @@ const toggleSnackAvailability = tryCatch(
             .json({ message: 'snack availability toggled successfully' });
     }
 );
+
 // packaged food management tasks
 const addItem = tryCatch('add item', async (req, res, next) => {
     let imageURL;
@@ -582,30 +605,6 @@ const toggleAvaialbleCount = tryCatch(
     }
 );
 
-// order management tasks
-const markOrderAsDelivered = tryCatch(
-    'mark order as delivered',
-    async (req, res, next) => {
-        const { orderId } = req.params;
-        const contractor = req.user;
-
-        // Find the order and ensure it belongs to the contractor's canteen
-        const order = await Order.findOne({
-            _id: orderId,
-            canteenId: contractor.canteenId,
-        });
-        if (!order) {
-            return next(new ErrorHandler('order not found', NOT_FOUND));
-        }
-
-        // Mark the order as delivered
-        order.status = 'Completed';
-        await order.save();
-
-        return res.status(OK).json(order);
-    }
-);
-
 export {
     login,
     updateAccountDetails,
@@ -624,5 +623,4 @@ export {
     deleteItem,
     updateItemDetails,
     toggleAvaialbleCount,
-    markOrderAsDelivered,
 };

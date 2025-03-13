@@ -21,7 +21,7 @@ export default function NewUserPage() {
                 <div className="flex justify-center animate-bounce animate-infinite animate-duration-2000">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        style={{ color: '#3a67d8' }} // Apply custom color directly
+                        style={{ color: '#3a67d8' }} 
                         className="h-12 w-12"
                         fill="none"
                         viewBox="0 0 24 24"

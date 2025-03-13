@@ -24,7 +24,6 @@ import {
 } from './Pages';
 
 import {
-    DeleteAccount,
     UpdateAccountDetails,
     UpdatePassword,
 } from './Components';
@@ -43,7 +42,7 @@ export const router = createBrowserRouter(
                 <Route path="settings" element={<SettingsPage />}>
                     <Route path="" element={<UpdateAccountDetails />} />
                     <Route path="password" element={<UpdatePassword />} />
-                    <Route path="delete-account" element={<DeleteAccount />} />
+                    {/* <Route path="delete-account" element={<DeleteAccount />} /> */}
                 </Route>
                 <Route path="support" element={<SupportPage />} />
                 <Route path="about-us" element={<AboutUsPage />} />

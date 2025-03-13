@@ -38,7 +38,7 @@ export default function InputField({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder={field.placeholder}
-                    className="shadow-md shadow-[#f7f7f7] py-3 rounded-md indent-3 w-full border-[0.01rem] border-gray-500 bg-transparent"
+                    className="shadow-md py-3 rounded-md indent-3 w-full border-[0.01rem] border-gray-500 bg-transparent"
                 />
                 {passwordVariants.includes(field.name) && (
                     <div

@@ -8,7 +8,7 @@ export default function Layout() {
             <Header />
             <hr className="w-full" />
             <Sidebar />
-            <main className="mt-[65px] p-6 min-h-[calc(100%-60px)] w-full">
+            <main className="mt-[65px] p-4 min-h-[calc(100%-60px)] w-full">
                 <Outlet />
             </main>
             <hr className="w-full" />

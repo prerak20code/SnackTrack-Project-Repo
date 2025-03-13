@@ -54,7 +54,7 @@ class ContractorService {
         }
     }
 
-    async updatePassword({ newPassword, oldPassword }) {
+    async updatePassword(oldPassword, newPassword) {
         try {
             const res = await fetch('/api/contractors/password', {
                 method: 'PATCH',

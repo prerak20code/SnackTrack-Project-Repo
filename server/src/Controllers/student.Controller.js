@@ -40,10 +40,12 @@ const login = tryCatch('login as student', async (req, res, next) => {
     const [loggedInStudent, canteen] = await Promise.all([
         Student.findByIdAndUpdate(student._id, {
             $set: { refreshToken },
-        }).select('-password -refreshToken'),
-        Canteen.findById(student.canteenId).select(
-            'hostelNumber hostelNumber hostelName'
-        ),
+        })
+            .select('-password -refreshToken')
+            .lean(),
+        Canteen.findById(student.canteenId)
+            .select('hostelType hostelNumber hostelName')
+            .lean(),
     ]);
 
     return res
@@ -86,7 +88,7 @@ const updatePassword = tryCatch('update password', async (req, res, next) => {
 const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
     let avatarURL;
     try {
-        const student = req.user;
+        const { _id, avatar } = req.user;
         if (!req.file) {
             return next(new ErrorHandler('missing avatar', BAD_REQUEST));
         }
@@ -96,14 +98,17 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
         avatarURL = avatarURL.secure_url;
 
         // update user avatar
-        const updatedStudent = await Student.updateAvatar(
-            student._id,
-            avatarURL
+        const updatedStudent = await Student.findByIdAndUpdate(
+            _id,
+            {
+                $set: { avatar: avatarURL },
+            },
+            { new: true }
         );
 
         // delete old avatar
-        if (updatedStudent && student.avatar) {
-            await deleteFromCloudinary(student.avatar);
+        if (updatedStudent && avatar) {
+            await deleteFromCloudinary(avatar);
         }
 
         return res.status(OK).json({ newAvatar: updatedStudent.avatar });

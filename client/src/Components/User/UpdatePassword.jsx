@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { verifyExpression } from '../../Utils';
 import { useNavigate } from 'react-router-dom';
-import { userService } from '../../Services';
+import {
+    adminService,
+    contractorService,
+    studentService,
+} from '../../Services';
 import { Button, InputField } from '..';
 import toast from 'react-hot-toast';
+import { useUserContext } from '../../Contexts';
+import { icons } from '../../Assets/icons';
 
 export default function UpdatePassword() {
     const initialInputs = {
@@ -24,6 +30,7 @@ export default function UpdatePassword() {
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const { user } = useUserContext();
 
     async function handleChange(e) {
         const { name, value } = e.target;
@@ -63,10 +70,23 @@ export default function UpdatePassword() {
                     newPassword: 'new password should not match old password',
                 }));
             } else {
-                const res = await userService.updatePassword(
-                    inputs.newPassword,
-                    inputs.oldPassword
-                );
+                let res = null;
+                if (user.role === 'student') {
+                    res = await studentService.updatePassword(
+                        inputs.oldPassword,
+                        inputs.newPassword
+                    );
+                } else if (user.role === 'admin') {
+                    res = await adminService.updatePassword(
+                        inputs.oldPassword,
+                        inputs.newPassword
+                    );
+                } else {
+                    res = await contractorService.updatePassword(
+                        inputs.oldPassword,
+                        inputs.newPassword
+                    );
+                }
                 if (res && res.message === 'password updated successfully') {
                     setInputs(initialInputs);
                     toast.success('Password updated successfully');
@@ -163,7 +183,7 @@ export default function UpdatePassword() {
                     <h3 className="text-2xl font-bold">Change Password</h3>
                     <p className="mt-2">
                         Update your password to secure your account. Changes are
-                        final once saved.
+                        final once saved and cannot be undone.
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="w-full max-w-[600px]">
@@ -180,7 +200,17 @@ export default function UpdatePassword() {
                             className="text-white rounded-md py-2 text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
                         />
                         <Button
-                            btnText={loading ? 'Updating...' : 'Update'}
+                            btnText={
+                                loading ? (
+                                    <div className="flex items-center justify-center w-full">
+                                        <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
+                                            {icons.loading}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    'Update'
+                                )
+                            }
                             type="submit"
                             disabled={disabled}
                             onMouseOver={onMouseOver}

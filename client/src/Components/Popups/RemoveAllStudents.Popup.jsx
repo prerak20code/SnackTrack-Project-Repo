@@ -105,8 +105,10 @@ export default function RemoveAllStudentsPopup() {
                 <Button
                     btnText={
                         loading ? (
-                            <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
-                                {icons.loading}
+                            <div className="flex items-center justify-center w-full">
+                                <div className="size-5 fill-red-700 dark:text-[#e95555]">
+                                    {icons.loading}
+                                </div>
                             </div>
                         ) : (
                             'Delete'
@@ -115,7 +117,7 @@ export default function RemoveAllStudentsPopup() {
                     onClick={removeStudents}
                     onMouseOver={onMouseOver}
                     disabled={disabled}
-                    className="text-white relative -top-2 rounded-md w-full py-2 px-3 bg-[#4977ec] hover:bg-[#3b62c2]"
+                    className="text-white relative -top-2 rounded-md w-full py-2 px-3 bg-red-700 hover:bg-red-800"
                 />
             </div>
         </div>

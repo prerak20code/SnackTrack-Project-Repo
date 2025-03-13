@@ -1,159 +1,174 @@
 import { CONTRIBUTORS } from '../Constants/constants';
 import { Link } from 'react-router-dom';
 
+function FeatureCard({ title, description }) {
+    return (
+        <div className="bg-white shadow-md rounded-xl p-6 text-center">
+            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <p className="text-gray-700 mt-2">{description}</p>
+        </div>
+    );
+}
+
+function PrivacyCard({ title, description }) {
+    return (
+        <div className="bg-white shadow-md rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <p className="text-gray-700 mt-2">{description}</p>
+        </div>
+    );
+}
 export default function AboutUsPage() {
-    const members = CONTRIBUTORS.map((contributor) => (
-        <div
-            key={contributor.name}
-            className="flex flex-col gap-3 items-center justify-center"
-        >
-            <div className="drop-shadow-xl hover:brightness-90">
-                <div className="size-[100px] rounded-full overflow-hidden">
-                    <img
-                        src={contributor.image}
-                        alt="contributor profile image"
-                        className="size-full object-cover"
+    return (
+        <div className="w-full min-h-screen bg-[#f9f9f9]">
+            {/* Hero Section */}
+            <section className="w-full bg-white shadow-md py-12 px-8 md:px-16">
+                <h1 className="text-5xl font-bold text-gray-900">About Us</h1>
+                <p className="mt-4 text-lg text-gray-700 max-w-3xl">
+                    Welcome to <strong>Hostel Canteen Management</strong>, a
+                    platform designed to enhance transparency, efficiency, and
+                    security in hostel dining services. Our goal is to provide
+                    real-time meal tracking, structured billing, and a seamless
+                    feedback system.
+                </p>
+            </section>
+
+            {/* Content Section with Grid Layout */}
+            <div className="w-full px-8 md:px-16 py-10 grid grid-cols-1 md:grid-cols-2 gap-12">
+                {/* Mission */}
+                <div>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                        Our Mission
+                    </h2>
+                    <p className="text-gray-700 mt-3">
+                        We aim to eliminate manual discrepancies, enhance food
+                        quality monitoring, and ensure a fair billing system in
+                        hostel canteens. Our platform provides students with
+                        real-time access to meal consumption, expenses, and
+                        feedback submissions.
+                    </p>
+                </div>
+
+                {/* Why We Started */}
+                <div>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                        Why We Started
+                    </h2>
+                    <p className="text-gray-700 mt-3">
+                        Many hostel residents face challenges such as inaccurate
+                        meal deductions and lack of transparency. Our system
+                        centralizes meal tracking, payment management, and
+                        feedback submission in a streamlined, user-friendly
+                        interface.
+                    </p>
+                </div>
+            </div>
+
+            {/* Features Section */}
+            <section className="w-full px-8 md:px-16 py-10 bg-gray-100">
+                <h2 className="text-3xl font-bold text-gray-900 text-center">
+                    Key Features
+                </h2>
+
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <FeatureCard
+                        title="📅 Daily Menu Display"
+                        description="Check what's being served in real time."
+                    />
+                    <FeatureCard
+                        title="💳 Automated Billing"
+                        description="Transparent meal tracking with detailed statements."
+                    />
+                    <FeatureCard
+                        title="⭐ Feedback & Ratings"
+                        description="Raise concerns and rate food quality easily."
+                    />
+                    <FeatureCard
+                        title="🔒 Secure Authentication"
+                        description="Only verified students can access records."
+                    />
+                    <FeatureCard
+                        title="🔔 Live Notifications"
+                        description="Get meal, deduction, and policy change alerts."
                     />
                 </div>
-            </div>
-            <div className="w-full text-center font-semibold text-xl">
-                {contributor.name}
-            </div>
-        </div>
-    ));
+            </section>
 
-    return (
-        <div className="w-full flex items-start justify-center">
-            <div className="w-[90%]">
-                <h1 className="w-full font-bold text-3xl text-center mb-6">
-                    About Us
-                </h1>
-                <p className="text-md">
-                    Welcome to <strong>Snack Track</strong>, a platform created
-                    by students for students. We aim to provide a space where
-                    peers can share their thoughts, experiences, and ideas while
-                    building connections within the college community.
-                </p>
-                <hr className="my-6" />
-                <h2 className="w-full text-center my-6 text-xl font-bold">
-                    Our Mission
-                </h2>
-                <p className="text-md">
-                    Our mission is to create a digital space that encourages
-                    collaboration, learning, and fun through writing. Whether
-                    it's about the latest campus event, personal experiences, or
-                    simply sharing knowledge, College Connect Blog serves as the
-                    go-to place for students to express themselves and connect
-                    with like-minded individuals.
-                </p>
-                <hr className="m-8" />
-                <h2 className="w-full text-center my-6 text-xl font-bold">
-                    Why We Started?
-                </h2>
-                <p className="text-md">
-                    As college students, we wanted a place where we could freely
-                    share our ideas and engage with others. We realized that
-                    many students have great stories to tell, but sometimes
-                    there isn't a dedicated space to share them. So, we decided
-                    to build College Connect Blog as a way to bridge that gap
-                    and provide a platform for communication and connection.
-                </p>
-                <hr className="m-8" />
-                <h2 className="w-full text-center my-6 text-xl font-bold">
-                    What We Do
-                </h2>
-                <ul>
-                    <li>
-                        <strong>Blog Posts:</strong> Articles written by
-                        students, for students, covering a wide range of topics
-                        from personal experiences to helpful tips and advice.
-                    </li>
-                    <li>
-                        <strong>Collaboration:</strong> A place where students
-                        can collaborate on projects, share ideas, and make new
-                        connections.
-                    </li>
-                    <li>
-                        <strong>Community Building:</strong> We believe in the
-                        power of community. Through College Connect, we aim to
-                        foster a positive, open environment where everyone can
-                        contribute.
-                    </li>
-                </ul>
-                <hr className="m-8" />
-                <h2 className="w-full text-center my-6 text-xl font-bold">
+            {/* Meet the Team */}
+            <section className="w-full px-8 md:px-16 py-12 text-center">
+                <h2 className="text-3xl font-bold text-gray-900">
                     Meet the Team
                 </h2>
-                <p className="text-md">
-                    Our team consists of passionate students who are eager to
-                    make a difference in the college community. We come from
-                    different zones, but we share a common goal: to build a
-                    space for students to connect, collaborate, and grow.
+                <p className="text-gray-700 mt-3">
+                    Our team of developers and canteen administrators work
+                    together to ensure smooth operations and a transparent
+                    dining experience.
                 </p>
-                <div className="mt-10 flex flex-wrap justify-evenly gap-4 w-full">
-                    {members}
+                <div className="flex w-full justify-center">
+                    <div className="mt-8 flex flex-wrap justify-evenly w-full">
+                        {CONTRIBUTORS.map((contributor) => (
+                            <div
+                                key={contributor.name}
+                                className="flex flex-col items-center"
+                            >
+                                <div className="size-24 rounded-full overflow-hidden shadow-lg hover:brightness-90">
+                                    <img
+                                        src={contributor.image}
+                                        alt={contributor.name}
+                                        className="w-full h-full object-cover"
+                                        loading="lazy"
+                                    />
+                                </div>
+                                <p className="mt-2 font-semibold text-gray-800">
+                                    {contributor.name}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <hr className="m-8" />
-                <h2 className="w-full text-center my-6 text-xl font-bold">
-                    Privacy Policy
+            </section>
+
+            {/* Privacy & Security */}
+            <section className="w-full px-8 md:px-16 py-12 bg-gray-100">
+                <h2 className="text-3xl font-bold text-gray-900 text-center">
+                    Privacy & Security
                 </h2>
-                <p className="text-md">
-                    Your privacy is important to us. Below is our Privacy Policy
-                    outlining how we handle your data:
-                </p>
-                <ul>
-                    <li>
-                        <strong>Data Collection:</strong> We collect personal
-                        information like your name, email address, and any other
-                        details you provide when registering or commenting on
-                        the blog.
-                    </li>
-                    <li>
-                        <strong>Data Use:</strong> Your personal data is used
-                        solely for the purpose of enabling you to interact with
-                        the blog (e.g., posting comments, subscribing to
-                        updates).
-                    </li>
-                    <li>
-                        <strong>Third-Party Services:</strong> We may use
-                        third-party services like Google Analytics to help us
-                        understand how users interact with our website. These
-                        services may collect data such as IP addresses and
-                        device information.
-                    </li>
-                    <li>
-                        <strong>Cookies:</strong> Our website uses cookies to
-                        enhance your experience. By using the site, you agree to
-                        our use of cookies.
-                    </li>
-                    <li>
-                        <strong>Security:</strong> We take the security of your
-                        personal information seriously. We use standard industry
-                        practices to protect your data.
-                    </li>
-                    <li>
-                        <strong>Opt-Out:</strong> If you no longer wish to
-                        receive communications from us, you can opt out at any
-                        time by clicking the "Unsubscribe" link in our emails.
-                    </li>
-                </ul>
-                <hr className="m-8" />
-                <h2 className="w-full text-center my-6 text-xl font-bold">
-                    Contact Us
-                </h2>
-                <p className="text-md">
-                    If you have any questions or would like to collaborate, feel
-                    free to connect with us on{' '}
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <PrivacyCard
+                        title="🔹 Secure Transactions"
+                        description="All financial transactions are end-to-end encrypted."
+                    />
+                    <PrivacyCard
+                        title="🔹 Access Control"
+                        description="Data access is restricted to registered students and administrators."
+                    />
+                    <PrivacyCard
+                        title="🔹 Data Encryption"
+                        description="All personal and financial details are securely stored."
+                    />
+                    <PrivacyCard
+                        title="🔹 Fraud Prevention"
+                        description="Real-time monitoring ensures security and integrity."
+                    />
+                </div>
+            </section>
+
+            {/* Contact Section */}
+            <section className="w-full px-8 md:px-16 py-12 text-center">
+                <h2 className="text-3xl font-bold text-gray-900">Contact Us</h2>
+                <p className="text-md text-gray-700 mt-3">
+                    For inquiries or assistance, reach out to our support team
+                    via{' '}
                     <Link
-                        className="text-[#3547ec] font-medium hover:underline"
+                        to="https://discord.gg/example"
                         target="_blank"
-                        to={'https://discord.com/channels/@sania_singla'}
+                        className="text-blue-500 font-medium hover:underline"
                     >
                         Discord
-                    </Link>
-                    . We would love to hear from you!!
+                    </Link>{' '}
+                    or visit the hostel office.
                 </p>
-            </div>
+            </section>
         </div>
     );
 }

@@ -211,8 +211,10 @@ export default function EditStudentPopup() {
                             onMouseOver={onMouseOver}
                             btnText={
                                 loading ? (
-                                    <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
-                                        {icons.loading}
+                                    <div className="flex items-center justify-center w-full">
+                                        <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
+                                            {icons.loading}
+                                        </div>
                                     </div>
                                 ) : (
                                     'Update'

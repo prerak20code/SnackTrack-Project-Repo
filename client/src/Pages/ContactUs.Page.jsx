@@ -25,185 +25,175 @@ export default function ContactUsPage() {
     }
 
     return (
-        <div className="w-full h-full flex items-start justify-center">
-            <div className="w-[90%] h-full flex flex-col items-start justify-start gap-4">
-                <section className="w-full">
-                    <h1 className="w-full font-bold text-center mb-6 text-3xl">
-                        Contact Us
-                    </h1>
-                    <p className="text-justify">
-                        We're here to help! you make the most of your
-                        experience! Whether you have feedback, need support, or
-                        looking for guidance, feel free to reach out to us. Our
-                        team is ready to assist you on every step on the way!
-                    </p>
-                </section>
+        <div className="w-full min-h-screen bg-[#f9f9f9]">
+            {/* Hero Section */}
+            <section className="w-full bg-white shadow-md py-12 px-8 md:px-16">
+                <h1 className="text-5xl font-bold text-gray-900">Contact Us</h1>
+                <p className="mt-4 text-lg text-gray-700 max-w-3xl">
+                    We're here to help! Whether you need support, have feedback,
+                    or suggestions, feel free to reach out. Our team is ready to
+                    assist you!
+                </p>
+            </section>
 
-                <hr className="w-full" />
+            {/* Grid Layout for Content */}
+            <div className="w-full px-8 md:px-16 py-10 grid grid-cols-1 md:grid-cols-2 gap-12">
+                {/* Left Section - Contact Info & Support */}
+                <div className="flex flex-col gap-8">
+                    {/* Technical Support */}
+                    <div className="bg-white shadow-md p-6 rounded-xl">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                            👥 Technical Support
+                        </h2>
+                        <p className="text-gray-700">
+                            Need help with{' '}
+                            <Link
+                                to="/"
+                                className="text-[#4977ec] font-semibold hover:underline"
+                            >
+                                Snack Track
+                            </Link>{' '}
+                            or facing technical issues? Visit our{' '}
+                            <Link
+                                to="/support"
+                                className="text-[#4977ec] font-semibold hover:underline"
+                            >
+                                Support Page
+                            </Link>{' '}
+                            for troubleshooting tips and direct assistance.
+                        </p>
+                    </div>
 
-                <div className="flex flex-col lg:flex-row items-start justify-between lg:gap-24 gap-14 w-full h-full">
-                    <div className="flex flex-col w-full items-start justify-start gap-4">
-                        <section className=" w-full">
-                            <h2 className="mb-4 font-bold text-xl">
-                                👥 Technical Support
-                            </h2>
-                            <p className="text-justify">
-                                Need help navigating{' '}
-                                <Link
-                                    to={'/'}
-                                    className="font-semibold text-[#4977ec] hover:underline"
-                                >
-                                    Snack Track
-                                </Link>{' '}
-                                or having technical issues? Visit our{' '}
-                                <Link
-                                    to={'/support'}
-                                    className="text-nowrap font-semibold text-[#4977ec] hover:underline"
-                                >
-                                    Support Page
-                                </Link>{' '}
-                                for assistance, troubleshooting tips, and to
-                                connect directly with team members if you need
-                                further help.
-                            </p>
-                        </section>
+                    {/* FAQs */}
+                    <div className="bg-white shadow-md p-6 rounded-xl">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                            📚 Frequently Asked Questions
+                        </h2>
+                        <p className="text-gray-700">
+                            Have a question? Check out our{' '}
+                            <Link
+                                to="/faqs"
+                                className="text-[#4977ec] font-semibold hover:underline"
+                            >
+                                FAQ page
+                            </Link>{' '}
+                            for quick answers.
+                        </p>
+                    </div>
 
-                        <hr className="w-full" />
-
-                        <section>
-                            <h2 className="mb-4 font-bold text-xl">
-                                📚 Frequently Asked Questions (FAQs)
-                            </h2>
-                            <p className="text-justify">
-                                For common questions and guidance, check out our{' '}
-                                <Link
-                                    to={'/faqs'}
-                                    className="font-semibold text-[#4977ec]  hover:underline"
-                                >
-                                    FAQ page
-                                </Link>
-                                . You might find the answer you're looking for
-                                right there!
-                            </p>
-                        </section>
-
-                        {/* <hr className="w-full" /> */}
-
-                        <section className="mt-4 flex flex-col gap-4 items-start justify-start bg-[#fdfdfd] drop-shadow-md rounded-md p-4">
-                            <div className="flex items-center justify-start gap-3">
-                                <div className="flex items-center justify-center">
-                                    <div className="bg-[#f3f3f3] p-2 rounded-full w-fit drop-shadow-xl hover:brightness-95">
-                                        <div className="size-[16px]">
-                                            {icons.email}
-                                        </div>
+                    {/* Contact Information */}
+                    <div className="bg-white shadow-md p-6 rounded-xl">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                            Contact Information
+                        </h2>
+                        <div className="flex flex-col gap-4">
+                            {/* Email */}
+                            <div className="flex items-center gap-4">
+                                <div className="p-2 bg-gray-100 rounded-full">
+                                    <div className="size-5 fill-black">
+                                        {icons.email}
                                     </div>
                                 </div>
-
-                                <div className="flex items-center justify-center gap-2">
-                                    <div className="cursor-text">{EMAIL}</div>
-
-                                    <div
-                                        className="size-[15px] hover:fill-[#2e5cd3] cursor-pointer fill-[#4977ec]"
+                                <div className="flex items-center gap-2">
+                                    <p className="text-gray-700">{EMAIL}</p>
+                                    <button
                                         onClick={copyEmail}
+                                        className="p-1 hover:bg-gray-100 rounded-full group"
                                     >
-                                        {icons.clipboard}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center justify-start gap-3">
-                                <div className="flex items-center justify-center">
-                                    <div className="bg-[#f3f3f3] p-2 rounded-full w-fit drop-shadow-xl hover:brightness-95">
-                                        <div className="size-[16px]">
-                                            {icons.contact}
+                                        <div className="size-5 fill-[#4977ec] group-hover:fill-[#3b62c2]">
+                                            {icons.clipboard}
                                         </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Phone */}
+                            <div className="flex items-center gap-4">
+                                <div className="p-2 bg-gray-100 rounded-full">
+                                    <div className="size-5 fill-black">
+                                        {icons.contact}
                                     </div>
                                 </div>
-
-                                <div className="cursor-text">
-                                    {CONTACTNUMBER}
-                                </div>
+                                <p className="text-gray-700">{CONTACTNUMBER}</p>
                             </div>
-                        </section>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Section - Feedback Form */}
+                <div>
+                    <div className="bg-white shadow-md p-6 rounded-xl">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                            🌟 Feedback & Suggestions
+                        </h2>
+                        <p className="text-gray-700">
+                            Have ideas on how we can improve? We'd love to hear
+                            from you! Share your thoughts to help make{' '}
+                            <Link
+                                to="/"
+                                className="text-[#4977ec] font-semibold hover:underline"
+                            >
+                                Snack Track
+                            </Link>{' '}
+                            even better.
+                        </p>
                     </div>
 
-                    {/* <div className="border-[0.01rem] border-[red] h-[calc(100%-60px)]" /> */}
-
-                    <div className="w-full">
-                        <section className="w-full">
-                            <h2 className="mb-4 font-bold text-xl">
-                                🌟 Feedback & Suggestions
-                            </h2>
-                            <p className="text-justify">
-                                Have ideas on how we can improve? We'd love to
-                                hear from you! Please share your thoughts using
-                                our Feedback Form, our team will review them to
-                                make{' '}
-                                <Link
-                                    to={'/'}
-                                    className="font-semibold text-[#4977ec] hover:underline"
-                                >
-                                    Snack Track
-                                </Link>{' '}
-                                better for everyone.
-                            </p>
-                        </section>
-
-                        <form
-                            onSubmit={submitFeedback}
-                            className="mt-2 w-full flex flex-col items-start justify-center gap-2"
-                        >
-                            <div className="w-full">
-                                <div className="bg-white z-[1] ml-2 px-2 w-fit relative top-3 font-medium">
-                                    <label htmlFor="email">
-                                        <span className="text-red-500">* </span>
-                                        Email
-                                    </label>
-                                </div>
-                                <div className="w-full">
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={inputs.email}
-                                        onChange={handleChange}
-                                        placeholder="Enter your Email"
-                                        className="shadow-md shadow-[#efefef] px-2 py-4 rounded-md indent-2 w-full border-[0.01rem] border-[#aeaeae] bg-transparent placeholder:text-[#a0a0a0]"
-                                    />
-                                </div>
-                                <p className="text-sm">
-                                    this email will be sent along with the
-                                    feedback
-                                </p>
+                    {/* Feedback Form */}
+                    <form
+                        onSubmit={submitFeedback}
+                        className="mt-6 bg-white p-6 pt-2 rounded-xl shadow-md"
+                    >
+                        {/* Email Input */}
+                        <div className="mb-1">
+                            <div className="bg-white z-[1] ml-2 px-2 w-fit relative top-3 font-medium">
+                                <label htmlFor="email">
+                                    <span className="text-red-500">*</span>{' '}
+                                    Email
+                                </label>
                             </div>
-
-                            <div className="w-full">
-                                <div className="bg-white z-[1] ml-2 px-2 w-fit relative top-3 font-medium">
-                                    <label htmlFor="feedback">
-                                        <span className="text-red-500">* </span>
-                                        Feedback / Suggestion
-                                    </label>
-                                </div>
-                                <div className="w-full">
-                                    <textarea
-                                        placeholder="Let us know how are we doing !!"
-                                        value={inputs.feedback}
-                                        onChange={handleChange}
-                                        name="feedback"
-                                        className="shadow-md shadow-[#efefef] bg-transparent border-[0.01rem] border-[#aeaeae] w-full indent-2 rounded-md px-2 pt-4 text-black placeholder:text-[#a0a0a0] resize-y"
-                                        rows="4"
-                                        cols="50"
-                                        style={{ minHeight: '100px' }}
-                                    />
-                                </div>
-                            </div>
-
-                            <Button
-                                btnText={'Submit'}
-                                type="submit"
-                                className="text-white mt-4 rounded-md w-full py-2 px-3 bg-[#4977ec] hover:bg-[#3b62c2]"
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={inputs.email}
+                                onChange={handleChange}
+                                placeholder="Enter your email"
+                                className="shadow-md py-3 rounded-md indent-3 w-full border-[0.01rem] border-gray-500 bg-transparent"
+                                required
                             />
-                        </form>
-                    </div>
+                            <p className="text-sm text-gray-500 mt-1">
+                                This email will be sent along with your
+                                feedback.
+                            </p>
+                        </div>
+
+                        {/* Feedback Input */}
+                        <div className="mb-4">
+                            <div className="bg-white z-[1] ml-2 px-2 w-fit relative top-3 font-medium">
+                                <label htmlFor="feedback">
+                                    <span className="text-red-500">*</span>{' '}
+                                    Feedback / Suggestion
+                                </label>
+                            </div>
+                            <textarea
+                                name="feedback"
+                                id="feedback"
+                                value={inputs.feedback}
+                                onChange={handleChange}
+                                placeholder="Let us know how we're doing!"
+                                className="shadow-md py-3 rounded-md indent-3 w-full border-[0.01rem] border-gray-500 bg-transparent"
+                                rows="4"
+                                required
+                            />
+                        </div>
+
+                        <Button
+                            btnText="Submit"
+                            type="submit"
+                            className="w-full bg-[#4977ec] hover:bg-[#3b62c2] text-white py-2 rounded-md"
+                        />
+                    </form>
                 </div>
             </div>
         </div>

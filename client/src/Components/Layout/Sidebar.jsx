@@ -19,8 +19,14 @@ export default function Sidebar() {
         {
             path: '/students',
             name: 'Students',
-            icon: icons.clock,
+            icon: icons.user,
             show: user.role === 'contractor',
+        },
+        {
+            path: '/cart',
+            name: 'Cart',
+            icon: icons.cart,
+            show: user.role === 'student',
         },
         {
             path: '/canteens',

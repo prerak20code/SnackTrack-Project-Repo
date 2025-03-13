@@ -46,7 +46,7 @@ class StudentService {
         }
     }
 
-    async updatePassword({ newPassword, oldPassword }) {
+    async updatePassword(oldPassword, newPassword) {
         try {
             const res = await fetch('/api/students/password', {
                 method: 'PATCH',
@@ -70,8 +70,6 @@ class StudentService {
             throw err;
         }
     }
-
-    async placeOrder() {}
 }
 
 export const studentService = new StudentService();

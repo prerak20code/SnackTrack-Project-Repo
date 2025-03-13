@@ -35,7 +35,7 @@ export default function Header() {
     ));
 
     return (
-        <header className="drop-shadow-md fixed top-0 z-[1] w-full bg-[#f6f6f6] text-black h-[60px] px-3 font-medium flex items-center justify-between gap-4">
+        <header className="drop-shadow-md fixed top-0 z-[10] w-full bg-[#f6f6f6] text-black h-[60px] px-3 font-medium flex items-center justify-between gap-4">
             <div className="flex items-center justify-center gap-4">
                 {/* hamburgur menu btn */}
                 <Button
@@ -67,7 +67,7 @@ export default function Header() {
                 </Link>
             </div>
 
-            {/* links */}
+            {/* Quick links */}
             <div className="hidden lg:flex items-center justify-evenly transition-all ease-in-out w-[50%] max-w-[600px] px-8">
                 <motion.div
                     initial={{ x: 0 }}
@@ -78,6 +78,7 @@ export default function Header() {
                     {linkElements}
                 </motion.div>
             </div>
+
             {/* search bar */}
             {showSearchBar && (
                 <motion.div
@@ -91,9 +92,7 @@ export default function Header() {
                         type="text"
                         placeholder="Search here"
                         value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                        }}
+                        onChange={(e) => setSearch(e.target.value)}
                         className="w-full bg-white border-[#d5d5d5] border-[0.01rem] indent-8 rounded-full p-2 text-black text-[16px] font-normal placeholder:text-[#525252] outline-none focus:border-[0.1rem] focus:border-[#4977ec]"
                     />
                     <div className="size-[20px] fill-[#434343] group-focus-within:fill-[#4977ec] absolute top-3 left-3">
@@ -108,9 +107,7 @@ export default function Header() {
                                 </div>
                             }
                             title="Close"
-                            onClick={() => {
-                                setShowSearchBar(false);
-                            }}
+                            onClick={() => setShowSearchBar(false)}
                             className="bg-[#ffffff] p-[6px] group rounded-full drop-shadow-md hover:drop-shadow-md w-fit"
                         />
                     </div>
@@ -134,29 +131,23 @@ export default function Header() {
                     />
                 )}
 
-                {/* order btn */}
-                {user.role === 'student' && (
-                    <NavLink
-                        to={'/order'}
-                        className={({ isActive }) => `${isActive && 'hidden'}`}
-                    >
+                {user.role === 'student' ? (
+                    <div className="flex items-center justify-center gap-4">
                         <Button
+                            onClick={() => navigate('/cart')}
                             btnText={
-                                <div>
-                                    <div className="size-[20px] group-hover:fill-[#4977ec] fill-[#434343]">
-                                        {icons.plus}
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="size-[20px] fill-white">
+                                        {icons.cart}
                                     </div>
-                                    <p>Order</p>
+                                    <span>View Cart</span>
                                 </div>
                             }
-                            title="Order"
-                            className="bg-[#ffffff] p-[10px] group rounded-full drop-shadow-md hover:drop-shadow-md w-fit"
+                            title="View Cart"
+                            className="text-white rounded-md py-[5px] w-fit px-2 h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
                         />
-                    </NavLink>
-                )}
-
-                {/* login/register btn */}
-                {user.role !== 'student' && (
+                    </div>
+                ) : (
                     <div className="flex items-center justify-center gap-4">
                         <Button
                             onClick={() => navigate('/register')}
@@ -177,7 +168,7 @@ export default function Header() {
                                     ? 'Add Student'
                                     : 'Add Contractor'
                             }
-                            className="text-white rounded-md py-[5px] w-[140px] h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className="text-white rounded-md py-[5px] w-fit px-2 h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
                         />
                     </div>
                 )}

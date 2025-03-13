@@ -38,4 +38,4 @@ adminSchema.pre('save', async function (next) {
     next();
 });
 
-export const Admin = model('Admin', adminSchema);
+export const Admin = new model('Admin', adminSchema);

@@ -12,7 +12,7 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
-import { Admin, Contractor, Canteen, Hostel } from '../Models/index.js';
+import { Admin, Contractor, Canteen } from '../Models/index.js';
 
 // personal usage
 // register as admin
@@ -94,7 +94,7 @@ const login = tryCatch('login as admin', async (req, res, next) => {
             ...COOKIE_OPTIONS,
             maxAge: parseInt(process.env.REFRESH_TOKEN_MAXAGE),
         })
-        .json(loggedInAdmin);
+        .json({ ...loggedInAdmin, role: 'admin' });
 });
 
 const updateAccountDetails = tryCatch(
@@ -110,7 +110,6 @@ const updatePassword = tryCatch(
 const updateAvatar = tryCatch('update avatar', async (req, res, next) => {});
 
 // contractor management tasks
-// register contractor
 const registerContractor = tryCatch(
     'register as contractor',
     async (req, res, next) => {
@@ -162,7 +161,10 @@ const registerContractor = tryCatch(
 
             // hash the password (auto done by pre hook in model)
 
-            const contractor = await Contractor.create(data);
+            const contractor = await Contractor.create({
+                ...data,
+                canteenId: canteen._id,
+            });
             canteen.contractorId = contractor._id;
             await canteen.save();
             return res.status(OK).json(contractor);
@@ -171,7 +173,6 @@ const registerContractor = tryCatch(
         }
     }
 );
-// change contractor details
 const changeContractor = tryCatch(
     'change contractor',
     async (req, res, next) => {
@@ -212,7 +213,12 @@ const changeContractor = tryCatch(
                 data,
                 { new: true }
             );
-            return res.status(OK).json(updatedContractor);
+            return res
+                .status(OK)
+                .json({
+                    message: 'Contractor details updated successfully',
+                    updatedContractor,
+                });
         } catch (err) {
             if (avatarURL) await deleteFromCloudinary(avatarURL);
             throw err;
@@ -253,6 +259,7 @@ const updateContractorPassword = tryCatch(
             .json({ message: 'Contractor password updated successfully' });
     }
 );
+
 // get all contractors
 const getContractor = tryCatch('get contractors', async (req, res) => {
     const { limit = 10, page = 1 } = req.query; // Pagination
@@ -342,53 +349,6 @@ const getCanteens = tryCatch('get canteens', async (req, res) => {
     }
 });
 
-// Add a new hostel
-const addHostel = tryCatch('add hostel', async (req, res, next) => {
-    const { type, number, canteenId } = req.body;
-
-    // Validate required fields
-    if (!type || !number) {
-        return res
-            .status(400)
-            .json({ message: 'Type and number are required' });
-    }
-
-    try {
-        // Check if the hostel number already exists
-        const existingHostel = await Hostel.findOne({ number });
-        if (existingHostel) {
-            return res
-                .status(400)
-                .json({ message: 'Hostel number already exists' });
-        }
-
-        // Create a new hostel
-        const hostel = new Hostel({ type, number, canteenId });
-        await hostel.save();
-
-        res.status(201).json({ message: 'Hostel added successfully', hostel });
-    } catch (error) {
-        next(error);
-    }
-});
-
-// Remove a hostel and detach its canteen
-const removeHostel = tryCatch('remove hostel', async (req, res, next) => {
-    const { id } = req.params;
-    const hostel = await hostel.findByIdAndDelete(id);
-
-    if (!hostel) {
-        return next(new ErrorHandler('Hostel not found', NOT_FOUND));
-    }
-
-    // Unassign the canteen associated with this hostel
-    if (hostel.canteenId) {
-        await Canteen.findByIdAndUpdate(hostel.canteenId, { hostelId: null });
-    }
-
-    return res.status(OK).json({ message: 'Hostel removed successfully' });
-});
-
 export {
     login,
     updateAccountDetails,
@@ -400,7 +360,5 @@ export {
     addCanteen,
     removeCanteen,
     getCanteens,
-    addHostel,
-    removeHostel,
     register,
 };

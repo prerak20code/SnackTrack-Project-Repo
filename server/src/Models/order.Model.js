@@ -52,4 +52,4 @@ const orderSchema = new Schema(
 
 orderSchema.plugin(aggregatePaginate);
 
-export const Order = model('Order', orderSchema);
+export const Order = new model('Order', orderSchema);

@@ -13,6 +13,7 @@ import UpdateAccountDetails from './User/UpdateAccountDetails';
 import UpdatePassword from './User/UpdatePassword';
 import UpdateAvatar from './User/UpdateAvatar';
 import RemoveStudentPopup from './Popups/RemoveStudent.Popup';
+import RemoveAllStudentsPopup from './Popups/RemoveAllStudents.Popup';
 import EditStudentPopup from './Popups/EditStudent.Popup';
 import UpdateAvatarPopup from './Popups/UpdateAvatar.Popup';
 import SnackView from './Snack/SnackView';
@@ -34,6 +35,7 @@ export {
     UpdateAvatar,
     Popup,
     RemoveStudentPopup,
+    RemoveAllStudentsPopup,
     EditStudentPopup,
     UpdateAvatarPopup,
     SnackView,

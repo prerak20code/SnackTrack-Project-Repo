@@ -9,9 +9,19 @@ const canteenSchema = new Schema(
             type: Types.ObjectId,
             ref: 'Contractor',
         },
-        hostelId: {
-            type: Types.ObjectId,
+        hostelType: {
+            type: String,
+            enum: ['GH', 'BH', 'IH'],
             required: true,
+        },
+        hostelName: {
+            type: String,
+            required: true,
+        },
+        hostelNumber: {
+            type: Number,
+            required: true,
+            unique: true,
         },
         snacks: [
             {
@@ -29,4 +39,4 @@ const canteenSchema = new Schema(
     { timestamps: true }
 );
 
-export const Canteen = model('Canteen', canteenSchema);
+export const Canteen = new model('Canteen', canteenSchema);

@@ -30,4 +30,4 @@ const snackSchema = new Schema(
 
 snackSchema.plugin(mongooseAggregatePaginate);
 
-export const Snack = model('Snack', snackSchema);
+export const Snack = new model('Snack', snackSchema);

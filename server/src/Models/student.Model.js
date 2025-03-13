@@ -4,10 +4,10 @@ import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const studentSchema = new Schema(
     {
-        hostelId: {
+        canteenId: {
             type: Types.ObjectId,
             required: true,
-            ref: 'Hostel',
+            ref: 'Canteen',
         },
         userName: {
             // ex: GH8-75  GH8 describes the hostel and 75 is the roll no
@@ -49,4 +49,4 @@ studentSchema.pre('save', async function (next) {
     next();
 });
 
-export const Student = model('Student', studentSchema);
+export const Student = new model('Student', studentSchema);

@@ -11,13 +11,7 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
-import {
-    Contractor,
-    Canteen,
-    Snack,
-    Student,
-    Hostel,
-} from '../Models/index.js';
+import { Canteen, Contractor, Snack, Student } from '../Models/index.js';
 
 // personal usage
 const login = tryCatch('login as contractor', async (req, res, next) => {
@@ -45,12 +39,14 @@ const login = tryCatch('login as contractor', async (req, res, next) => {
         role: 'contractor',
     });
 
-    const loggedInContractor = await Contractor.findByIdAndUpdate(
-        contractor._id,
-        {
+    const [loggedInContractor, canteen] = await Promise.all([
+        Contractor.findByIdAndUpdate(contractor._id, {
             $set: { refreshToken },
-        }
-    ).select('-password -refreshToken');
+        }).select('-password -refreshToken'),
+        Canteen.findById(contractor.canteenId).select(
+            'hostelNumber hostelNumber hostelName'
+        ),
+    ]);
 
     return res
         .status(OK)
@@ -62,7 +58,7 @@ const login = tryCatch('login as contractor', async (req, res, next) => {
             ...COOKIE_OPTIONS,
             maxAge: parseInt(process.env.REFRESH_TOKEN_MAXAGE),
         })
-        .json(loggedInContractor);
+        .json({ ...loggedInContractor, role: 'contractor', ...canteen });
 });
 
 const updateAccountDetails = tryCatch(
@@ -97,7 +93,9 @@ const updateAccountDetails = tryCatch(
         contractor.fullName = fullName || contractor.fullName;
         await contractor.save();
 
-        return res.status(OK).json(contractor);
+        return res
+            .status(OK)
+            .json({ mssage: 'account details updated successfully' });
     }
 );
 
@@ -141,7 +139,7 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
 
         // delete old avatar
         if (updatedContractor && avatar) await deleteFromCloudinary(avatar);
-        return res.status(OK).json(updatedContractor);
+        return res.status(OK).json({ newAvatar: updatedContractor.avatar });
     } catch (err) {
         if (avatarURL) await deleteFromCloudinary(avatarURL);
         throw err;
@@ -178,12 +176,11 @@ const registerNewStudent = tryCatch(
                     );
                 }
             }
-
-            const hostel = await Hostel.findOne({
-                canteenId: contractor.canteenId,
-            });
-
-            data.userName = hostel.type + hostel.number + '-' + data.rollNo;
+            data.userName =
+                contractor.hostelType +
+                contractor.hostelNumber +
+                '-' +
+                data.rollNo;
 
             // check if user already exists with this roll no
             const existingStudent = await Student.findOne({
@@ -195,13 +192,11 @@ const registerNewStudent = tryCatch(
                 );
             }
 
-            data.hostelId = hostel._id;
-
             // hash the password (auto done by pre hook in model)
 
             const student = await Student.create({
                 fullName: data.fullName,
-                hostelId: data.hostelId,
+                canteenId: contractor.canteenId,
                 userName: data.userName,
                 phoneNumber: data.phoneNumber,
                 password: data.password,
@@ -217,9 +212,21 @@ const registerNewStudent = tryCatch(
 const removeAllStudents = tryCatch(
     'remove all students',
     async (req, res, next) => {
+        const { password } = req.body;
         const contractor = req.user;
-        const canteen = await Canteen.findById(contractor.canteenId);
-        await Student.deleteMany({ hostelId: canteen.hostelId });
+        if (!password) {
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+
+        const isPasswordValid = bcrypt.compareSync(
+            password,
+            contractor.password
+        );
+        if (!isPasswordValid) {
+            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+        }
+
+        await Student.deleteMany({ canteenId: contractor.canteenId });
         return res
             .status(OK)
             .json({ message: 'all students removed successfully' });
@@ -233,17 +240,13 @@ const removeStudent = tryCatch(
         const contractor = req.user;
         const { password } = req.body;
 
-        const [canteen, student] = await Promise.all([
-            Canteen.findById(contractor.canteenId),
-            Student.findById(studentId),
-        ]);
+        // a contractor can remove the student only if the student belongs to his canteen
+        const student = await Student.findOne({
+            _id: studentId,
+            canteenId: contractor.canteenId,
+        });
         if (!student) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
-        }
-
-        // a contractor can remove the student only if the student belongs to his canteen
-        if (!canteen.hostelId.equals(student.hostelId)) {
-            return next(new ErrorHandler('unauthorized access', BAD_REQUEST));
         }
 
         const isPassValid = bcrypt.compareSync(password, contractor.password);
@@ -262,10 +265,9 @@ const removeStudent = tryCatch(
 const getStudents = tryCatch('get students', async (req, res) => {
     const contractor = req.user;
     const { limit = 10, page = 1 } = req.query; // for pagination
-    const hostel = await Hostel.findOne({ canteenId: contractor.canteenId });
     const result = await Student.aggregatePaginate(
         [
-            { $match: { hostelId: hostel._id } },
+            { $match: { canteenId: contractor.canteenId } },
             { $project: { password: 0, refreshToken: 0 } },
         ],
         {
@@ -298,15 +300,12 @@ const updateStudentAccountDetails = tryCatch(
         const { fullName, phoneNumber, rollNo, password, contractorPassword } =
             req.body;
 
-        const [student, hostel] = await Promise.all([
-            Student.findById(studentId),
-            Hostel.findOne({ canteenId: contractor.canteenId }),
-        ]);
+        const student = await Student.findOne({
+            _id: studentId,
+            canteenId: contractor.canteenId,
+        });
         if (!student) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
-        }
-        if (!student.hostelId.equals(hostel._id)) {
-            return next(new ErrorHandler('unauthorized access', BAD_REQUEST));
         }
 
         const [isStudentPassValid, isContractorPassValid] = await Promise.all([
@@ -323,15 +322,16 @@ const updateStudentAccountDetails = tryCatch(
         }
 
         const alreadyExists = await Student.findOne({
-            userName: hostel.type + hostel.number + '-' + rollNo,
+            userName:
+                contractor.hostelType + contractor.hostelNumber + '-' + rollNo,
         });
-
         if (alreadyExists) {
             return next(new ErrorHandler('user already exists', BAD_REQUEST));
         }
 
         student.userName =
-            hostel.type + hostel.number + '-' + rollNo || student.userName;
+            contractor.hostelType + contractor.hostelNumber + '-' + rollNo ||
+            student.userName;
         student.fullName = fullName || student.fullName;
         student.phoneNumber = phoneNumber || student.phoneNumber;
         await student.save();

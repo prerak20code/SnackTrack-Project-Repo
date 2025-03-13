@@ -2,6 +2,8 @@ import { OK } from '../Constants/index.js';
 import { tryCatch } from '../Utils/index.js';
 import { Order } from '../Models/index.js';
 
+const placeOrder = tryCatch('place order', async (req, res, next) => {});
+
 const getOrderHistory = tryCatch('get order history', async (req, res) => {
     const { limit = 10, page = 1, month } = req.query;
     const studentId = req.user.id;
@@ -36,4 +38,4 @@ const getOrderHistory = tryCatch('get order history', async (req, res) => {
     }
 });
 
-export { getOrderHistory };
+export { getOrderHistory, placeOrder };

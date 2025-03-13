@@ -34,4 +34,4 @@ const packagedFoodSchema = new Schema(
 
 packagedFoodSchema.plugin(aggregatePaginate);
 
-export const PackagedFood = model('PackagedFood', packagedFoodSchema);
+export const PackagedFood = new model('PackagedFood', packagedFoodSchema);

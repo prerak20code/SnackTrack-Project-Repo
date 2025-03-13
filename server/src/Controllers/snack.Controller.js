@@ -1,21 +1,19 @@
 import { OK } from '../Constants/index.js';
 import { tryCatch } from '../Utils/index.js';
-import { Snack, PackagedFood, Hostel } from '../Models/index.js';
+import { Snack, PackagedFood } from '../Models/index.js';
 
 const getSnacks = tryCatch('get snacks', async (req, res) => {
-    const user = req.user;
+    const user = req.user; // could be student or contractor
     const { limit = 10, page = 1 } = req.query; // for pagination
 
-    const canteenId =
-        user.role === 'student'
-            ? (await Hostel.findById(user.hostelId))?.canteenId
-            : user.canteenId;
-
-    const result = await Snack.aggregatePaginate([{ $match: { canteenId } }], {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        sort: { createdAt: -1 },
-    });
+    const result = await Snack.aggregatePaginate(
+        [{ $match: { canteenId: user.canteenId } }],
+        {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { createdAt: -1 },
+        }
+    );
 
     if (result.docs.length) {
         const data = {
@@ -35,16 +33,11 @@ const getSnacks = tryCatch('get snacks', async (req, res) => {
 const getPackagedFoodItems = tryCatch(
     'get packaged food items',
     async (req, res) => {
-        const user = req.user;
+        const user = req.user; // could be student or contractor
         const { limit = 10, page = 1 } = req.query; // for pagination
 
-        const canteenId =
-            user.role === 'student' // only student has a userName
-                ? (await Hostel.findById(user.hostelId))?.canteenId
-                : user.canteenId;
-
         const result = await PackagedFood.aggregatePaginate(
-            [{ $match: { canteenId } }],
+            [{ $match: { canteenId: user.canteenId } }],
             {
                 page: parseInt(page),
                 limit: parseInt(limit),

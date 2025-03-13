@@ -11,7 +11,7 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
-import { Student } from '../Models/index.js';
+import { Canteen, Student } from '../Models/index.js';
 
 const login = tryCatch('login as student', async (req, res, next) => {
     const { userName, password } = req.body;
@@ -37,9 +37,14 @@ const login = tryCatch('login as student', async (req, res, next) => {
     });
 
     // login user
-    const loggedInStudent = await Student.findByIdAndUpdate(student._id, {
-        $set: { refreshToken },
-    }).select('-password -refreshToken');
+    const [loggedInStudent, canteen] = await Promise.all([
+        Student.findByIdAndUpdate(student._id, {
+            $set: { refreshToken },
+        }).select('-password -refreshToken'),
+        Canteen.findById(student.canteenId).select(
+            'hostelNumber hostelNumber hostelName'
+        ),
+    ]);
 
     return res
         .status(OK)
@@ -51,7 +56,7 @@ const login = tryCatch('login as student', async (req, res, next) => {
             ...COOKIE_OPTIONS,
             maxAge: parseInt(process.env.REFRESH_TOKEN_MAXAGE),
         })
-        .json(loggedInStudent);
+        .json({ ...loggedInStudent, role: 'student', ...canteen });
 });
 
 const updatePassword = tryCatch('update password', async (req, res, next) => {
@@ -101,13 +106,11 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
             await deleteFromCloudinary(student.avatar);
         }
 
-        return res.status(OK).json(updatedStudent);
+        return res.status(OK).json({ newAvatar: updatedStudent.avatar });
     } catch (err) {
         if (avatarURL) await deleteFromCloudinary(avatarURL);
         throw err;
     }
 });
 
-const placeOrder = tryCatch('place order', async (req, res, next) => {});
-
-export { login, updateAvatar, updatePassword, placeOrder };
+export { login, updateAvatar, updatePassword };

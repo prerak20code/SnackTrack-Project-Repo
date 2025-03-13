@@ -6,6 +6,7 @@ const contractorSchema = new Schema(
         canteenId: {
             type: Types.ObjectId,
             ref: 'Canteen',
+            required: true,
         },
         fullName: {
             type: String,
@@ -40,4 +41,4 @@ contractorSchema.pre('save', async function (next) {
     next();
 });
 
-export const Contractor = model('Contractor', contractorSchema);
+export const Contractor = new model('Contractor', contractorSchema);

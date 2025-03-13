@@ -1,16 +1,9 @@
-import {
-    Hostel,
-    Canteen,
-    Contractor,
-    Student,
-    Snack,
-    Admin,
-} from './Models/index.js';
+import { Canteen, Contractor, Student, Snack, Admin } from './Models/index.js';
 import bcrypt from 'bcrypt';
 
 export const seedDatabase = async () => {
     try {
-        await Hostel.deleteMany();
+        // Clear existing data
         await Canteen.deleteMany();
         await Contractor.deleteMany();
         await Student.deleteMany();
@@ -19,28 +12,21 @@ export const seedDatabase = async () => {
 
         console.log('Existing data cleared');
 
-        // Seed Hostels
-        const hostel1 = await Hostel.create({
-            type: 'GH',
-            number: 8,
-        });
-        const hostel2 = await Hostel.create({
-            type: 'BH',
-            number: 2,
+        // Seed Canteens (Previously, this was under Hostels)
+        const canteen1 = await Canteen.create({
+            hostelType: 'GH',
+            hostelNumber: 8,
+            hostelName: 'Flouerence Nightingale',
         });
 
-        // Seed Canteens
-        const canteen1 = await Canteen.create({ hostelId: hostel1._id });
-        const canteen2 = await Canteen.create({ hostelId: hostel2._id });
-
-        // Assign canteen to hostels
-        hostel1.canteenId = canteen1._id;
-        hostel2.canteenId = canteen2._id;
-        await hostel1.save();
-        await hostel2.save();
+        const canteen2 = await Canteen.create({
+            hostelType: 'BH',
+            hostelNumber: 2,
+            hostelName: 'Mother Teresa',
+        });
 
         // Seed Contractors
-        const password = 'password';
+        const password = 'password'; // hashed using pre hook
 
         await Contractor.create({
             canteenId: canteen1._id,
@@ -50,31 +36,31 @@ export const seedDatabase = async () => {
             phoneNumber: '1234567890',
         });
 
-        // Seed Students with userName format GH8-75
+        // Seed Students (now referencing `canteenId` instead of `hostelId`)
         await Student.create([
             {
-                hostelId: hostel1._id,
+                canteenId: canteen1._id,
                 userName: 'GH8-101',
                 fullName: 'Alice Smith',
                 phoneNumber: '9876543210',
                 password: password,
             },
             {
-                hostelId: hostel1._id,
+                canteenId: canteen1._id,
                 userName: 'GH8-75',
                 fullName: 'Bob Johnson',
                 phoneNumber: '9876543211',
                 password: password,
             },
             {
-                hostelId: hostel2._id,
+                canteenId: canteen2._id,
                 userName: 'BH2-248',
                 fullName: 'Charlie Brown',
                 phoneNumber: '9876543212',
                 password: password,
             },
             {
-                hostelId: hostel2._id,
+                canteenId: canteen2._id,
                 userName: 'BH2-3',
                 fullName: 'Daisy Miller',
                 phoneNumber: '9876543213',
@@ -82,8 +68,8 @@ export const seedDatabase = async () => {
             },
         ]);
 
-        // Seed Snacks (excluding packaged food items like chips and cold drinks)
-        await Snack.create([
+        // Seed Snacks (Now directly assigned to Canteens)
+        const snacks = await Snack.create([
             {
                 canteenId: canteen1._id,
                 name: 'Samosa',
@@ -103,7 +89,7 @@ export const seedDatabase = async () => {
                 isAvailable: false,
             },
             {
-                canteenId: canteen2._id,
+                canteenId: canteen1._id,
                 name: 'Burger',
                 price: 40,
                 isAvailable: true,
@@ -122,6 +108,12 @@ export const seedDatabase = async () => {
             },
         ]);
 
+        // Associate Snacks with their respective canteens
+        canteen1.snacks = [snacks[0]._id, snacks[1]._id, snacks[2]._id];
+        canteen2.snacks = [snacks[3]._id, snacks[4]._id, snacks[5]._id];
+        await canteen1.save();
+        await canteen2.save();
+
         // Seed Admin
         await Admin.create({
             fullName: 'Admin User',
@@ -130,7 +122,7 @@ export const seedDatabase = async () => {
             password: password,
         });
 
-        console.log('Seeding completed');
+        console.log('Seeding completed successfully');
     } catch (error) {
         console.error('Seeding error:', error);
     }

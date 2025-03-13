@@ -7,7 +7,6 @@ import { getRollNo } from '../../Utils';
 
 export default function StudentView({ student, reference, children }) {
     const { _id, avatar, fullName, userName, phoneNumber } = student;
-    const navigate = useNavigate();
     const { setShowPopup, setPopupInfo } = usePopupContext();
     const { setTargetStudent } = useContractorContext();
 

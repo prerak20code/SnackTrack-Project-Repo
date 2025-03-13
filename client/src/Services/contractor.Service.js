@@ -153,11 +153,13 @@ class ContractorService {
         }
     }
 
-    async removeAllStudents() {
+    async removeAllStudents(password) {
         try {
             const res = await fetch(`/api/contractors/students`, {
                 method: 'DELETE',
                 credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password }),
             });
 
             const data = await res.json();

@@ -8,5 +8,6 @@ import {
 import { verifyJwt } from '../Middlewares/index.js';
 
 snackRouter.use(verifyJwt);
+
 snackRouter.route('/packaged').get(getPackagedFoodItems);
 snackRouter.route('/').get(getSnacks);

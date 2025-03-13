@@ -14,8 +14,6 @@ import {
     addCanteen,
     removeCanteen,
     getCanteens,
-    addHostel,
-    removeHostel,
 } from '../Controllers/admin.Controller.js';
 
 adminRouter.route('/register').post(register);
@@ -36,11 +34,8 @@ adminRouter
     .get(getContractor);
 
 // canteen management tasks
-adminRouter.route('/canteens').post(addCanteen).delete(removeCanteen);
-
-// hostel management tasks
 adminRouter
-    .route('/hostels')
+    .route('/canteens')
     .get(getCanteens)
-    .post(addHostel)
-    .delete(removeHostel);
+    .post(addCanteen)
+    .delete(removeCanteen);

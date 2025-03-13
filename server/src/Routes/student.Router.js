@@ -6,7 +6,6 @@ import {
     login,
     updateAvatar,
     updatePassword,
-    placeOrder,
 } from '../Controllers/student.Controller.js';
 
 studentRouter.route('/login').post(login);
@@ -15,4 +14,3 @@ studentRouter.use(verifyJwt);
 
 studentRouter.route('/password').patch(updatePassword);
 studentRouter.route('/avatar').patch(upload.single('avatar'), updateAvatar);
-studentRouter.route('/order').post(placeOrder);

@@ -192,8 +192,12 @@ class ContractorService {
             }
             return data;
         } catch (err) {
-            console.error('error in getStudents service', err);
-            throw err;
+            if (err.name === 'AbortError') {
+                console.log('getStudents request aborted.');
+            } else {
+                console.error('error in getStudents service', err);
+                throw err;
+            }
         }
     }
 

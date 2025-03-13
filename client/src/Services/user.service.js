@@ -1,11 +1,12 @@
 import { SERVER_ERROR } from '../Constants/constants';
 
 class UserService {
-    async getCurrentUser() {
+    async getCurrentUser(signal) {
         try {
             const res = await fetch('/api/users/current', {
                 method: 'GET',
                 credentials: 'include',
+                signal,
             });
 
             const data = await res.json();
@@ -16,8 +17,12 @@ class UserService {
             }
             return data;
         } catch (err) {
-            console.error('error in getCurrentUser service', err);
-            throw err;
+            if (err.name === 'AbortError') {
+                console.log('fetch current user request aborted');
+            } else {
+                console.error('error in getCurrentUser service', err);
+                throw err;
+            }
         }
     }
 }

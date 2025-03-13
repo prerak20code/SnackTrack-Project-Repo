@@ -15,10 +15,13 @@ export default function App() {
 
     // get current user
     useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
         (async function currentUser() {
             try {
                 setLoading(true);
-                const data = await userService.getCurrentUser();
+                const data = await userService.getCurrentUser(signal);
                 setUser(data && !data.message ? data : null);
             } catch (err) {
                 navigate('/server-error');
@@ -26,6 +29,11 @@ export default function App() {
                 setLoading(false);
             }
         })();
+
+        return () => {
+            controller.abort();
+            setUser(null);
+        };
     }, []);
 
     // Close sidebar & popups on window resize and location change

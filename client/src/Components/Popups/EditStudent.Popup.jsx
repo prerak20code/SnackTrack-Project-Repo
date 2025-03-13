@@ -145,9 +145,8 @@ export default function EditStudentPopup() {
                 }
             />
         ) : (
-            <div className="w-full">
+            <div className="w-full" key={field.name}>
                 <InputField
-                    key={field.name}
                     field={field}
                     handleChange={handleChange}
                     error={error}

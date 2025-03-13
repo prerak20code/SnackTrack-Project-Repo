@@ -12,6 +12,7 @@
     "license": "ISC",
     "description": "A web application to track your snacks",
     "dependencies": {
+        "bcrypt": "^5.1.1",
         "concurrently": "^9.1.2",
         "nodemon": "^3.1.9",
         "prettier": "^3.5.3"

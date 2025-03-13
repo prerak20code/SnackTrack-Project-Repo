@@ -33,16 +33,10 @@ export const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<App />}>
             {/* private routes */}
-            <Route
-                path=""
-                element={
-                    <Redirect path="/new-user">
-                        <HomePage />
-                    </Redirect>
-                }
-            />
-
-            <Route path="" element={<Redirect to="/login" />}>
+            <Route path="" element={<Redirect path="/new-user" />}>
+                <Route path="" element={<HomePage />} />
+            </Route>
+            <Route element={<Redirect to="/login" />}>
                 <Route path="register" element={<RegisterPage />} />
                 <Route path="admin" element={<AdminPage />} />
                 <Route path="students" element={<StudentsPage />} />

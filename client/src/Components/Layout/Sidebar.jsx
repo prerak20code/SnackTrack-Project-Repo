@@ -153,7 +153,7 @@ export default function Sidebar() {
                                 {/* avatar */}
                                 <div className="size-[40px] rounded-full overflow-hidden drop-shadow-md hover:brightness-90">
                                     <img
-                                        src={user.user_avatar || icons.avatar}
+                                        src={user.avatar || icons.avatar}
                                         alt="user avatar"
                                         className="size-full object-cover"
                                     />

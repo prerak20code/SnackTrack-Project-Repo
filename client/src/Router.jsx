@@ -1,64 +1,69 @@
-// import { useRoutes } from 'react-router-dom';
+import App from './App';
 
-// import {
-//     HomePage,
-//     LoginPage,
-//     RegisterPage,
-//     SettingsPage,
-//     AdminPage,
-//     SupportPage,
-//     AboutUsPage,
-//     ContactUsPage,
-//     ServerErrorPage,
-//     NotFoundPage,
-//     FAQpage,
-//     NewUserPage,
-// } from './Pages';
+import {
+    Route,
+    createBrowserRouter,
+    createRoutesFromElements,
+} from 'react-router-dom';
 
-// import {
-//     DeleteAccount,
-//     UpdateAccountDetails,
-//     UpdatePassword,
-// } from './Components';
+import {
+    HomePage,
+    LoginPage,
+    RegisterPage,
+    SettingsPage,
+    AdminPage,
+    StudentsPage,
+    SupportPage,
+    AboutUsPage,
+    ContactUsPage,
+    ServerErrorPage,
+    NotFoundPage,
+    Redirect,
+    FAQpage,
+    NewUserPage,
+} from './Pages';
 
-// import { useUserContext } from './Contexts';
+import {
+    DeleteAccount,
+    UpdateAccountDetails,
+    UpdatePassword,
+} from './Components';
 
-// export default function AppRouter() {
-//     const { user } = useUserContext();
+export const router = createBrowserRouter(
+    createRoutesFromElements(
+        <Route path="/" element={<App />}>
+            {/* private routes */}
+            <Route
+                path=""
+                element={
+                    <Redirect path="/new-user">
+                        <HomePage />
+                    </Redirect>
+                }
+            />
 
-//     const routes = useRoutes([
-//         { path: '/login', element: <LoginPage /> },
-//         { path: '/server-error', element: <ServerErrorPage /> },
+            <Route path="" element={<Redirect to="/login" />}>
+                <Route path="register" element={<RegisterPage />} />
+                <Route path="admin" element={<AdminPage />} />
+                <Route path="students" element={<StudentsPage />} />
+                <Route path="settings" element={<SettingsPage />}>
+                    <Route path="" element={<UpdateAccountDetails />} />
+                    <Route path="password" element={<UpdatePassword />} />
+                    <Route path="delete-account" element={<DeleteAccount />} />
+                </Route>
+                <Route path="support" element={<SupportPage />} />
+                <Route path="about-us" element={<AboutUsPage />} />
+                <Route path="contact-us" element={<ContactUsPage />} />
+                <Route path="faqs" element={<FAQpage />} />
+            </Route>
 
-//         ...(user
-//             ? [
-//                   // Routes for logged-in users
-//                   { path: '/', element: <HomePage /> },
-//                   {
-//                       path: '/settings',
-//                       element: <SettingsPage />,
-//                       children: [
-//                           { path: '', element: <UpdateAccountDetails /> },
-//                           { path: 'password', element: <UpdatePassword /> },
-//                           {
-//                               path: 'delete-account',
-//                               element: <DeleteAccount />,
-//                           },
-//                       ],
-//                   },
-//                   { path: '/register', element: <RegisterPage /> },
-//                   { path: '/admin', element: <AdminPage /> },
-//                   { path: '/support', element: <SupportPage /> },
-//                   { path: '/about-us', element: <AboutUsPage /> },
-//                   { path: '/contact-us', element: <ContactUsPage /> },
-//                   { path: '/faqs', element: <FAQpage /> },
-//                   { path: '*', element: <NotFoundPage /> },
-//               ]
-//             : [
-//                   // Routes for non-logged-in users
-//                   { path: '*', element: <NewUserPage /> },
-//               ]),
-//     ]);
+            {/* public routes */}
+            <Route path="login" element={<LoginPage />} />
+            <Route path="new-user" element={<NewUserPage />} />
+            <Route path="server-error" element={<ServerErrorPage />} />
 
-//     return useRoutes(routes);
-// }
+            {/* other gibberish */}
+            <Route path="*" element={<NotFoundPage />} />
+        </Route>
+    )
+);

@@ -156,7 +156,7 @@ export default function Header() {
                 )}
 
                 {/* login/register btn */}
-                {user && user.role !== 'student' && (
+                {user.role !== 'student' && (
                     <div className="flex items-center justify-center gap-4">
                         <Button
                             onClick={() => navigate('/register')}

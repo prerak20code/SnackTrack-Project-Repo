@@ -11,11 +11,13 @@ export default function UpdateAccountDetails() {
     const initialInputs = {
         fullName: user.fullName,
         email: user.email,
+        phoneNumber: user.phoneNumber,
         password: '',
     };
     const nullErrors = {
         fullName: '',
         email: '',
+        phoneNumber: '',
         password: '',
     };
     const [inputs, setInputs] = useState(initialInputs);
@@ -89,6 +91,13 @@ export default function UpdateAccountDetails() {
             type: 'text',
             placeholder: 'Enter your full name',
             label: 'First name',
+            required: true,
+        },
+        {
+            name: 'phoneNumber',
+            type: 'text',
+            placeholder: 'Enter your phone number',
+            label: 'Phone Number',
             required: true,
         },
         {

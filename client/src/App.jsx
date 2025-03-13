@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Layout } from './Components';
 import { useSideBarContext, useUserContext, usePopupContext } from './Contexts';
 import { userService } from './Services';
@@ -51,8 +51,10 @@ export default function App() {
                         Please refresh the page, if it takes too long
                     </p>
                 </div>
-            ) : (
+            ) : user ? (
                 <Layout />
+            ) : (
+                <Outlet />
             )}
         </div>
     );

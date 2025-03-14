@@ -1,4 +1,4 @@
-const LIMIT = 10;
+const LIMIT = 20;
 import SANIAIMAGE from '../Assets/images/sania.jpg';
 import LOGO from '../Assets/images/logo.png';
 const EMAIL = 'snacktrack@gmail.com';

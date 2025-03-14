@@ -1,10 +1,5 @@
 import { useRef } from 'react';
-import {
-    UpdateAvatarPopup,
-    RemoveStudentPopup,
-    EditStudentPopup,
-    RemoveAllStudentsPopup,
-} from '..';
+import { UpdateAvatarPopup, RemoveStudentPopup, EditStudentPopup } from '..';
 import { usePopupContext } from '../../Contexts';
 
 export default function Popup() {
@@ -17,7 +12,7 @@ export default function Popup() {
 
     const Wrapper = ({ children }) => (
         <div
-            className="fixed inset-0 z-[1] backdrop-blur-sm flex items-center justify-center drop-shadow-md"
+            className="fixed inset-0 z-[1000] backdrop-blur-sm flex items-center justify-center drop-shadow-md"
             ref={ref}
             onClick={close}
         >
@@ -38,12 +33,6 @@ export default function Popup() {
             return (
                 <Wrapper>
                     <EditStudentPopup />
-                </Wrapper>
-            );
-        case 'removeAllStudents':
-            return (
-                <Wrapper>
-                    <RemoveAllStudentsPopup />
                 </Wrapper>
             );
         case 'updateAvatar':

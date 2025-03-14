@@ -132,7 +132,7 @@ export default function UpdateAccountDetails() {
                 setShowPassword={setShowPassword}
             />
             {error[field.name] && (
-                <div className="mt-1 text-red-500 text-sm font-medium">
+                <div className="text-red-500 text-xs font-medium">
                     {error[field.name]}
                 </div>
             )}
@@ -160,7 +160,7 @@ export default function UpdateAccountDetails() {
                         <div className="flex flex-col gap-2">
                             {inputElements}
                         </div>
-                        <div className="flex gap-6 mt-6">
+                        <div className="flex gap-4 mt-6">
                             <Button
                                 onMouseOver={onMouseOver}
                                 btnText="Cancel"
@@ -169,7 +169,7 @@ export default function UpdateAccountDetails() {
                                     setError(initialErrors);
                                 }}
                                 disabled={loading}
-                                className="text-white rounded-md py-2 text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                                className="text-white rounded-md h-[40px] text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
                             />
                             <Button
                                 btnText={
@@ -186,7 +186,7 @@ export default function UpdateAccountDetails() {
                                 disabled={disabled}
                                 type="submit"
                                 onMouseOver={onMouseOver}
-                                className="text-white rounded-md py-2 text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                                className="text-white rounded-md h-[40px] text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
                             />
                         </div>
                     </form>

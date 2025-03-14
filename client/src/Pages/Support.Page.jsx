@@ -15,9 +15,9 @@ export default function SupportPage() {
                 initial={{ opacity: 0, y: -50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
-                className="text-center flex flex-col items-center gap-4"
+                className="text-center flex flex-col items-center gap-4 mb-6"
             >
-                <div className="bg-white rounded-full p-4 shadow-lg hover:scale-105 transition">
+                <div className="bg-white rounded-full p-3 shadow-lg hover:scale-105 transition">
                     <div className="size-[95px] fill-[#3a67d8]">
                         {icons.support}
                     </div>

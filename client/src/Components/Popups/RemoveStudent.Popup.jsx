@@ -1,4 +1,4 @@
-import { Button } from '..';
+import { Button, InputField } from '..';
 import { usePopupContext, useContractorContext } from '../../Contexts';
 import { icons } from '../../Assets/icons';
 import { useNavigate } from 'react-router-dom';
@@ -86,29 +86,19 @@ export default function RemoveStudentPopup() {
                 </div>
 
                 <div className="w-full relative -top-4">
-                    <div className="bg-white z-[1] ml-2 px-2 w-fit relative top-3 font-medium">
-                        <label htmlFor="password">
-                            <span className="text-red-500">* </span>
-                            Password :
-                        </label>
-                    </div>
-                    <div className="relative">
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            name="password"
-                            id="password"
-                            placeholder="Enter password to confirm delete"
-                            className="shadow-md shadow-[#f7f7f7] px-2 py-3 rounded-md indent-2 w-full border-[0.01rem] border-gray-500 bg-transparent placeholder:text-[15px]"
-                        />
-                        <div
-                            onClick={() => setShowPassword((prev) => !prev)}
-                            className="size-[20px] absolute right-0 top-[50%] transform translate-y-[-50%] mr-4 cursor-pointer fill-[#474747]"
-                        >
-                            {showPassword ? icons.eyeOff : icons.eye}
-                        </div>
-                    </div>
+                    <InputField
+                        field={{
+                            type: showPassword ? 'text' : 'password',
+                            name: 'password',
+                            label: 'Password',
+                            required: true,
+                            placeholder: 'Enter password to confirm delete',
+                        }}
+                        inputs={{ password }}
+                        setShowPassword={setShowPassword}
+                        showPassword={showPassword}
+                        handleChange={(e) => setPassword(e.target.value)}
+                    />
                 </div>
                 <Button
                     btnText={

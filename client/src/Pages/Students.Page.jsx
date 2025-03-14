@@ -35,7 +35,11 @@ export default function StudentsPage() {
                     LIMIT
                 );
                 if (res && !res.message) {
-                    setStudents((prev) => [...prev, ...res.students]);
+                    setStudents((prev) => [
+                        ...prev,
+                        ...res.students,
+                        // ...res.students,
+                    ]);
                     setStudentsInfo(res.studentsInfo);
                 }
             } catch (err) {
@@ -56,7 +60,8 @@ export default function StudentsPage() {
         ?.filter(
             (student) =>
                 !search ||
-                student.name.toLowerCase().includes(search.toLowerCase())
+                student.fullName.toLowerCase().includes(search.toLowerCase()) ||
+                student.userName.toLowerCase().includes(search.toLowerCase())
         )
         .map((student, index) => (
             <StudentView
@@ -76,7 +81,7 @@ export default function StudentsPage() {
     }
 
     return (
-        <div>
+        <div className="lg:p-8 pt-4">
             {studentElements.length > 0 && (
                 <div className="w-full">
                     <div className=" w-full flex justify-center mb-8">
@@ -94,7 +99,9 @@ export default function StudentsPage() {
                             className="bg-red-700 text-white p-2 rounded-lg"
                         />
                     </div>
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
+                    <div
+                        className={`grid gap-6 ${studentElements.length <= 1 ? 'grid-cols-[repeat(auto-fit,minmax(300px,550px))]' : 'grid-cols-[repeat(auto-fit,minmax(300px,1fr))]'}`}
+                    >
                         {studentElements}
                     </div>
                 </div>
@@ -114,7 +121,7 @@ export default function StudentsPage() {
                     </div>
                 )
             ) : (
-                studentElements.length === 0 && <div>No students found !!</div>
+                studentElements.length === 0 && <div>No student found !!</div>
             )}
         </div>
     );

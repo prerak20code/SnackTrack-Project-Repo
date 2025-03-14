@@ -12,7 +12,7 @@ import {
     generateTokens,
 } from '../Helpers/index.js';
 import { Canteen, Contractor, Snack, Student } from '../Models/index.js';
-
+import { Types } from 'mongoose';
 // personal usage
 const login = tryCatch('login as contractor', async (req, res, next) => {
     const { emailOrPhoneNo, password } = req.body;
@@ -321,13 +321,30 @@ const updateStudentAccountDetails = tryCatch(
         const { fullName, phoneNumber, rollNo, password, contractorPassword } =
             req.body;
 
-        const student = await Student.findOne({
-            _id: studentId,
-            canteenId: contractor.canteenId,
-        });
+        const [student] = await Student.aggregate([
+            {
+                $match: {
+                    _id: new Types.ObjectId(studentId),
+                    canteenId: contractor.canteenId,
+                },
+            },
+            {
+                $lookup: {
+                    from: 'canteens',
+                    localField: 'canteenId',
+                    foreignField: '_id',
+                    as: 'canteen',
+                },
+            },
+            {
+                $unwind: '$canteen',
+            },
+        ]);
+
         if (!student) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
         }
+        console.log(student);
 
         const [isStudentPassValid, isContractorPassValid] = await Promise.all([
             bcrypt.compare(password, student.password),
@@ -341,23 +358,33 @@ const updateStudentAccountDetails = tryCatch(
         if (!isContractorPassValid) {
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
-
+        console.log(student);
         const alreadyExists = await Student.findOne({
             userName:
-                contractor.hostelType + contractor.hostelNumber + '-' + rollNo,
+                student.canteen.hostelType +
+                student.canteen.hostelNumber +
+                '-' +
+                rollNo,
         });
         if (alreadyExists) {
             return next(new ErrorHandler('user already exists', BAD_REQUEST));
         }
 
-        student.userName =
-            contractor.hostelType + contractor.hostelNumber + '-' + rollNo ||
-            student.userName;
-        student.fullName = fullName || student.fullName;
-        student.phoneNumber = phoneNumber || student.phoneNumber;
-        await student.save();
+        const updatedStudent = await Student.findByIdAndUpdate(studentId, {
+            $set: {
+                ...(rollNo && {
+                    userName:
+                        student.canteen.hostelType +
+                        student.canteen.hostelNumber +
+                        '-' +
+                        rollNo,
+                }),
+                ...(phoneNumber && { phoneNumber }),
+                ...(fullName && { fullName }),
+            },
+        });
 
-        return res.status(OK).json(student);
+        return res.status(OK).json(updatedStudent);
     }
 );
 

@@ -25,9 +25,9 @@ export default function ContactUsPage() {
     }
 
     return (
-        <div className="w-full min-h-screen bg-[#f9f9f9]">
+        <div className="w-full min-h-screen">
             {/* Hero Section */}
-            <section className="w-full bg-white shadow-md py-12 px-8 md:px-16">
+            <section className="w-full bg-white shadow-md rounded-xl py-12 px-8 md:px-16">
                 <h1 className="text-5xl font-bold text-gray-900">Contact Us</h1>
                 <p className="mt-4 text-lg text-gray-700 max-w-3xl">
                     We're here to help! Whether you need support, have feedback,

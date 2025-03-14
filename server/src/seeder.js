@@ -1,4 +1,11 @@
-import { Canteen, Contractor, Student, Snack, Admin } from './Models/index.js';
+import {
+    Canteen,
+    Contractor,
+    Student,
+    Snack,
+    Admin,
+    PackagedFood,
+} from './Models/index.js';
 import bcrypt from 'bcrypt';
 
 export const seedDatabase = async () => {
@@ -9,14 +16,15 @@ export const seedDatabase = async () => {
         await Student.deleteMany();
         await Snack.deleteMany();
         await Admin.deleteMany();
+        await PackagedFood.deleteMany(); // Clear packaged food items
 
         console.log('Existing data cleared');
 
-        // Seed Canteens (Previously, this was under Hostels)
+        // Seed Canteens
         const canteen1 = await Canteen.create({
             hostelType: 'GH',
             hostelNumber: 8,
-            hostelName: 'Flouerence Nightingale',
+            hostelName: 'Florence Nightingale',
         });
 
         const canteen2 = await Canteen.create({
@@ -26,7 +34,7 @@ export const seedDatabase = async () => {
         });
 
         // Seed Contractors
-        const password = 'password'; // hashed using pre hook
+        const password = 'password'; // Will be hashed using pre-save hook
 
         await Contractor.create({
             canteenId: canteen1._id,
@@ -36,7 +44,7 @@ export const seedDatabase = async () => {
             phoneNumber: '1234567890',
         });
 
-        // Seed Students (now referencing `canteenId` instead of `hostelId`)
+        // Seed Students
         await Student.create([
             {
                 canteenId: canteen1._id,
@@ -68,7 +76,7 @@ export const seedDatabase = async () => {
             },
         ]);
 
-        // Seed Snacks (Now directly assigned to Canteens)
+        // Seed Snacks
         const snacks = await Snack.create([
             {
                 canteenId: canteen1._id,
@@ -89,7 +97,7 @@ export const seedDatabase = async () => {
                 isAvailable: false,
             },
             {
-                canteenId: canteen1._id,
+                canteenId: canteen2._id,
                 name: 'Burger',
                 price: 40,
                 isAvailable: true,
@@ -108,11 +116,56 @@ export const seedDatabase = async () => {
             },
         ]);
 
-        // Associate Snacks with their respective canteens
+        // Associate Snacks with Canteens
         canteen1.snacks = [snacks[0]._id, snacks[1]._id, snacks[2]._id];
         canteen2.snacks = [snacks[3]._id, snacks[4]._id, snacks[5]._id];
         await canteen1.save();
         await canteen2.save();
+
+        // 🌟 Seed Packaged Food Items
+        await PackagedFood.create([
+            {
+                category: 'Biscuits',
+                canteenId: canteen1._id,
+                variants: [
+                    { price: 10, availableCount: 50 },
+                    { price: 20, availableCount: 30 },
+                    { price: 50, availableCount: 20 },
+                ],
+            },
+            {
+                category: 'Chips',
+                canteenId: canteen2._id,
+                variants: [
+                    { price: 10, availableCount: 40 },
+                    { price: 30, availableCount: 25 },
+                ],
+            },
+            {
+                category: 'Chocolates',
+                canteenId: canteen1._id,
+                variants: [
+                    { price: 20, availableCount: 35 },
+                    { price: 50, availableCount: 15 },
+                ],
+            },
+            {
+                category: 'Drinks',
+                canteenId: canteen2._id,
+                variants: [
+                    { price: 30, availableCount: 60 },
+                    { price: 50, availableCount: 40 },
+                ],
+            },
+            {
+                category: 'instant food',
+                canteenId: canteen1._id,
+                variants: [
+                    { price: 20, availableCount: 45 },
+                    { price: 40, availableCount: 30 },
+                ],
+            },
+        ]);
 
         // Seed Admin
         await Admin.create({

@@ -6,16 +6,14 @@ import { CONTRIBUTORS, LOGO } from '../../Constants/constants';
 import toast from 'react-hot-toast';
 
 export default function Footer() {
-    const [feedback, setFeedback] = useState('');
+    const [feedback, setFeedback] = useState({ content: '', email: '' });
 
     // Social media icons
     const socialElements = Object.entries(CONTRIBUTORS[0].socials).map(
         ([platform, url]) => (
             <Link key={platform} to={url} target="_blank">
-                <div className="bg-[#eaeaea] p-2 rounded-full drop-shadow-md hover:bg-[#d4d4d4] transition-colors duration-300 w-fit">
-                    <div className="size-[18px] sm:size-[20px] lg:size-[22px]">
-                        {icons[platform]}
-                    </div>
+                <div className="bg-white p-[6px] rounded-full drop-shadow-sm hover:bg-[#d4d4d4] transition-colors duration-300 w-fit">
+                    <div className="size-[18px]">{icons[platform]}</div>
                 </div>
             </Link>
         )
@@ -26,7 +24,7 @@ export default function Footer() {
         { path: '/', name: 'Home' },
         { path: '/support', name: 'Support' },
         { path: '/about-us', name: 'About Us' },
-        { path: '/order', name: 'Order Now' },
+        { path: '/contact-us', name: 'Contact Us' },
     ];
 
     const linkElements = links.map((link) => (
@@ -40,6 +38,11 @@ export default function Footer() {
         </p>
     ));
 
+    function handleChange() {
+        const { name, value } = e.target;
+        setFeedback((prev) => ({ ...prev, [name]: value }));
+    }
+
     // Submit feedback
     function submitFeedback(e) {
         e.preventDefault();
@@ -48,12 +51,12 @@ export default function Footer() {
     }
 
     return (
-        <footer className="px-6 py-8 bg-[#f6f6f6]">
-            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-12">
+        <footer className="p-6 bg-[#f9f9f9]">
+            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 lg:gap-12">
                 {/* Logo and Tagline */}
                 <div className="flex flex-col gap-4">
                     <Link to="/" className="flex items-center gap-3">
-                        <div className="size-[50px] rounded-full overflow-hidden drop-shadow-md">
+                        <div className="size-[50px] rounded-full overflow-hidden drop-shadow-sm">
                             <img
                                 src={LOGO}
                                 alt="Snack Track Logo"
@@ -71,7 +74,7 @@ export default function Footer() {
 
                 {/* Quick Links */}
                 <div className="flex flex-col gap-4">
-                    <p className="text-black font-semibold text-lg underline underline-offset-4">
+                    <p className="text-black font-semibold text-[18px] underline underline-offset-2">
                         Quick Links
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -84,21 +87,28 @@ export default function Footer() {
                     onSubmit={submitFeedback}
                     className="flex flex-col gap-4 max-w-[350px] w-full"
                 >
-                    <p className="text-black font-semibold text-lg underline underline-offset-4">
+                    <p className="text-black font-semibold text-[18px] underline underline-offset-2">
                         Provide Feedback
                     </p>
                     <div className="flex items-center gap-2">
                         <input
                             type="text"
-                            placeholder="Your feedback..."
-                            value={feedback}
-                            onChange={(e) => setFeedback(e.target.value)}
-                            className="flex-1 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm focus:border-[#4977ec] focus:outline-none"
+                            placeholder="Your Feedback..."
+                            value={feedback.content}
+                            onChange={handleChange}
+                            className="flex-1 bg-white shadow-sm border border-gray-300 rounded-lg px-3 h-[32px] text-sm focus:border-[#4977ec] focus:outline-none"
+                        />
+                        <input
+                            type="email"
+                            placeholder="Your Email"
+                            value={feedback.email}
+                            onChange={handleChange}
+                            className="flex-1 bg-white shadow-sm border border-gray-300 rounded-lg px-3 h-[32px] text-sm focus:border-[#4977ec] focus:outline-none"
                         />
                         <Button
                             btnText="Submit"
                             type="submit"
-                            className="bg-[#4977ec] hover:bg-[#3b62c2] text-white px-4 py-2 rounded-lg transition-colors duration-300"
+                            className="bg-[#4977ec] hover:bg-[#3b62c2] text-white px-3 h-[32px] rounded-md transition-colors duration-300"
                         />
                     </div>
                 </form>

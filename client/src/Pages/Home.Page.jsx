@@ -1,87 +1,106 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { SnackView } from '../Components';
-import { snackService } from '../Services';
-import { paginate } from '../Utils';
+import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Snacks, PackagedItems } from '../Components';
 import { icons } from '../Assets/icons';
-import { LIMIT } from '../Constants/constants';
-import { useSearchContext } from '../Contexts';
 
 export default function HomePage() {
-    const [snacks, setSnacks] = useState([]);
-    const [snacksInfo, setSnacksInfo] = useState({});
-    const [page, setPage] = useState(1);
-    const { search } = useSearchContext();
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const filter = searchParams.get('filter') || 'snacks'; // Default to 'snacks'
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null); 
 
-    // pagination
-    const paginateRef = paginate(snacksInfo?.hasNextPage, loading, setPage);
+    const options = [
+        { value: 'snacks', label: 'Snacks', icon: icons.snack },
+        { value: 'packaged', label: 'Packaged', icon: icons.soda },
+    ];
+
+    const handleOptionClick = (value) => {
+        setSearchParams({ filter: value });
+        setIsDropdownOpen(false);
+    };
 
     useEffect(() => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-
-        (async function getSnacks() {
-            try {
-                setLoading(true);
-                const res = await snackService.getSnacks(signal, page, LIMIT);
-                if (res && !res.message) {
-                    setSnacks((prev) => [...prev, ...res.snacks]);
-                    setSnacksInfo(res.snacksInfo);
-                }
-            } catch (err) {
-                navigate('/server-error');
-            } finally {
-                setLoading(false);
+        const handleClickOutside = (event) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target)
+            ) {
+                setIsDropdownOpen(false);
             }
-        })();
+        };
 
-        return () => controller.abort();
-    }, [page]);
+        if (isDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('touchstart', handleClickOutside);
+        }
 
-    const snackElements = snacks
-        ?.filter(
-            (snack) =>
-                !search ||
-                snack.name.toLowerCase().includes(search.toLowerCase())
-        )
-        .map((snack, index) => (
-            <SnackView
-                key={snack._id}
-                snack={snack}
-                reference={
-                    index + 1 === snacks.length && snacksInfo?.hasNextPage
-                        ? paginateRef
-                        : null
-                }
-            />
-        ));
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, [isDropdownOpen]);
 
     return (
         <div>
-            {snackElements.length > 0 && (
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-6">
-                    {snackElements}
-                </div>
-            )}
-
-            {loading ? (
-                page === 1 ? (
-                    <div className="w-full text-center">
-                        loading first batch...
-                        {/* pulses */}
-                    </div>
-                ) : (
-                    <div className="flex items-center justify-center my-2 w-full">
-                        <div className="size-7 fill-[#4977ec] dark:text-[#f7f7f7]">
-                            {icons.loading}
+            {/* Custom Dropdown Filter */}
+            <div className="flex justify-end mb-6">
+                <div className="relative inline-block w-48" ref={dropdownRef}>
+                    {/* Dropdown Button */}
+                    <button
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="w-full flex items-center cursor-pointer justify-between bg-white border border-gray-300 hover:border-gray-400 px-4 py-2 rounded-lg shadow-sm text-lg text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#4977ec] focus:border-[#4977ec] transition-all duration-200"
+                    >
+                        <div className="flex items-center gap-[10px]">
+                            {options.find((opt) => opt.value === filter)
+                                ?.icon && (
+                                <div className="size-[16px] fill-gray-700">
+                                    {
+                                        options.find(
+                                            (opt) => opt.value === filter
+                                        )?.icon
+                                    }
+                                </div>
+                            )}
+                            <span>
+                                {
+                                    options.find((opt) => opt.value === filter)
+                                        ?.label
+                                }
+                            </span>
                         </div>
-                    </div>
-                )
-            ) : (
-                snackElements.length === 0 && <div>No snacks found !!</div>
-            )}
+                        <div
+                            className={`size-[15px] fill-gray-700 transition-all duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}
+                        >
+                            {icons.arrowDown}
+                        </div>
+                    </button>
+
+                    {/* Dropdown Options */}
+                    {isDropdownOpen && (
+                        <div className="absolute z-10 mt-2 w-full cursor-pointer bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden">
+                            {options.map((option) => (
+                                <div
+                                    key={option.value}
+                                    onClick={() =>
+                                        handleOptionClick(option.value)
+                                    }
+                                    className="flex items-center gap-[10px] px-4 py-2 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+                                >
+                                    <div className="size-[16px] fill-gray-700">
+                                        {option.icon}
+                                    </div>
+                                    <span>{option.label}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Render Based on Filter */}
+            <div className="px-8 pb-8">
+                {filter === 'snacks' ? <Snacks /> : <PackagedItems />}
+            </div>
         </div>
     );
 }

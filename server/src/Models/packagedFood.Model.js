@@ -1,15 +1,12 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const packagedFoodSchema = new Schema(
     {
-        image: {
-            type: String,
-            required: false,
-        },
-        name: {
-            type: String,
+        canteenId: {
+            type: Types.ObjectId,
             required: true,
+            ref: 'Canteen',
         },
         category: {
             type: String,

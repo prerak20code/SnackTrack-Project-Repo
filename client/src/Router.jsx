@@ -21,12 +21,12 @@ import {
     Redirect,
     FAQpage,
     NewUserPage,
+    InventoryPage,
+    TodayOrdersPage,
+    StudentOrdersPage,
 } from './Pages';
 
-import {
-    UpdateAccountDetails,
-    UpdatePassword,
-} from './Components';
+import { UpdateAccountDetails, UpdatePassword } from './Components';
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -35,10 +35,17 @@ export const router = createBrowserRouter(
             <Route path="" element={<Redirect path="/new-user" />}>
                 <Route path="" element={<HomePage />} />
             </Route>
+
             <Route element={<Redirect to="/login" />}>
                 <Route path="register" element={<RegisterPage />} />
                 <Route path="admin" element={<AdminPage />} />
                 <Route path="students" element={<StudentsPage />} />
+                <Route path="inventory" element={<InventoryPage />} />
+                <Route path="today-orders" element={<TodayOrdersPage />} />
+                <Route
+                    path="orders/:studentId"
+                    element={<StudentOrdersPage />}
+                />
                 <Route path="settings" element={<SettingsPage />}>
                     <Route path="" element={<UpdateAccountDetails />} />
                     <Route path="password" element={<UpdatePassword />} />

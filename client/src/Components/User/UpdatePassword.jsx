@@ -138,9 +138,7 @@ export default function UpdatePassword() {
                     setShowPassword={setShowPassword}
                 />
                 {error[field.name] && (
-                    <div className="pt-[0.09rem] text-red-500 text-sm">
-                        {error[field.name]}
-                    </div>
+                    <p className="text-red-500 text-xs">{error[field.name]}</p>
                 )}
             </div>
         ) : (
@@ -163,14 +161,12 @@ export default function UpdatePassword() {
                     }
                 />
                 {!error.newPassword && field.name === 'newPassword' && (
-                    <div className="text-sm">
-                        Password must be 8-12 characters.
-                    </div>
+                    <p className="text-xs">Password must be 8-12 characters.</p>
                 )}
                 {error[field.name] && (
-                    <div className="pt-[0.09rem] text-red-500 text-sm">
+                    <p className="text-red-500 font-medium text-xs">
                         {error[field.name]}
-                    </div>
+                    </p>
                 )}
             </div>
         )
@@ -188,7 +184,7 @@ export default function UpdatePassword() {
                 </div>
                 <form onSubmit={handleSubmit} className="w-full max-w-[600px]">
                     <div className="flex flex-col gap-2">{inputElements}</div>
-                    <div className="flex gap-6 mt-6">
+                    <div className="flex gap-4 mt-6">
                         <Button
                             btnText="Cancel"
                             onMouseOver={onMouseOver}
@@ -197,7 +193,7 @@ export default function UpdatePassword() {
                                 setInputs(initialInputs);
                                 setError(nullErrors);
                             }}
-                            className="text-white rounded-md py-2 text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className="text-white rounded-md h-[40px] text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
                         />
                         <Button
                             btnText={
@@ -214,7 +210,7 @@ export default function UpdatePassword() {
                             type="submit"
                             disabled={disabled}
                             onMouseOver={onMouseOver}
-                            className="text-white rounded-md py-2 text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className="text-white rounded-md h-[40px] text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
                         />
                     </div>
                 </form>

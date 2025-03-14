@@ -129,7 +129,7 @@ export default function RegisterPage() {
                         setShowPassword={setShowPassword}
                     />
                     {error[field.name] && (
-                        <div className="mt-1 text-red-500 text-sm font-medium">
+                        <div className="text-red-500 text-xs font-medium">
                             {error[field.name]}
                         </div>
                     )}
@@ -152,7 +152,7 @@ export default function RegisterPage() {
                         showPrecautions={true}
                     />
                     {error[field.name] && (
-                        <div className="mt-1 text-red-500 text-sm font-medium">
+                        <div className="text-red-500 text-xs font-medium">
                             {error[field.name]}
                         </div>
                     )}
@@ -161,7 +161,7 @@ export default function RegisterPage() {
     );
 
     return (
-        <div className="py-10 text-black flex flex-col items-center justify-start gap-4 overflow-y-scroll z-[1] bg-white fixed inset-0">
+        <div className="py-10 text-black flex flex-col items-center justify-start gap-4 overflow-y-scroll z-[100] bg-white fixed inset-0">
             <Link
                 to={'/'}
                 className="w-fit flex items-center justify-center hover:brightness-95"

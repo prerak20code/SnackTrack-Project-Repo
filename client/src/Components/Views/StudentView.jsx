@@ -1,14 +1,15 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
 import { LOGO } from '../../Constants/constants';
 import { usePopupContext, useContractorContext } from '../../Contexts';
 import { getRollNo } from '../../Utils';
 
-export default function StudentView({ student, reference, children }) {
+export default function StudentView({ student, reference }) {
     const { _id, avatar, fullName, userName, phoneNumber } = student;
     const { setShowPopup, setPopupInfo } = usePopupContext();
     const { setTargetStudent } = useContractorContext();
+    const navigate = useNavigate();
 
     async function removeStudent() {
         setTargetStudent(student);
@@ -25,7 +26,7 @@ export default function StudentView({ student, reference, children }) {
     return (
         <div
             ref={reference}
-            className="min-w-[250px] flex flex-col items-start justify-center gap-6 relative w-full p-4 bg-white drop-shadow-md rounded-2xl overflow-hidden"
+            className="min-w-[250px] flex flex-col items-start justify-center gap-4 relative w-full p-4 bg-white drop-shadow-md rounded-2xl overflow-hidden"
         >
             <div className="w-full flex justify-between gap-4">
                 <div className="flex items-center justify-start gap-4">
@@ -58,11 +59,11 @@ export default function StudentView({ student, reference, children }) {
                     </div>
                 </div>
 
-                <div className="w-fit flex flex-col gap-4 items-end justify-center">
+                <div className="w-fit flex flex-col gap-3 items-end justify-center">
                     <div onClick={(e) => e.stopPropagation()}>
                         <Button
                             btnText={
-                                <div className="size-[16px] group-hover:fill-[#4977ec]">
+                                <div className="size-[15px] group-hover:fill-[#4977ec]">
                                     {icons.edit}
                                 </div>
                             }
@@ -73,7 +74,7 @@ export default function StudentView({ student, reference, children }) {
                     <div onClick={(e) => e.stopPropagation()}>
                         <Button
                             btnText={
-                                <div className="size-[16px] group-hover:fill-red-700">
+                                <div className="size-[15px] group-hover:fill-red-700">
                                     {icons.delete}
                                 </div>
                             }
@@ -84,7 +85,14 @@ export default function StudentView({ student, reference, children }) {
                 </div>
             </div>
 
-            {children}
+            <div className="flex justify-end w-full">
+                <Button
+                    onClick={() => navigate(`/orders/${_id}`)}
+                    btnText="View Orders"
+                    title="View Orders"
+                    className="text-white rounded-md py-[5px] w-fit px-3 h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                />
+            </div>
         </div>
     );
 }

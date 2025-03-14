@@ -22,6 +22,26 @@ class StudentService {
         }
     }
 
+    async logout() {
+        try {
+            const res = await fetch('/api/students/logout', {
+                method: 'PATCH',
+                credentials: 'include',
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in student logout service', err);
+            throw err;
+        }
+    }
+
     async updateAvatar(avatar) {
         try {
             const formData = new FormData();

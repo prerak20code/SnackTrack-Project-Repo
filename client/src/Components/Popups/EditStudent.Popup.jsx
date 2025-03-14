@@ -163,7 +163,7 @@ export default function EditStudentPopup() {
                     }
                 />
                 {error[field.name] && (
-                    <div className="mt-1 text-red-500 text-sm font-medium">
+                    <div className="text-red-500 text-xs font-medium">
                         {error[field.name]}
                     </div>
                 )}
@@ -172,7 +172,7 @@ export default function EditStudentPopup() {
     );
 
     return (
-        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-6 flex flex-col items-center justify-center gap-4">
+        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-6 flex flex-col items-center justify-center gap-3">
             <Button
                 btnText={
                     <div className="size-[20px] stroke-black">
@@ -190,7 +190,7 @@ export default function EditStudentPopup() {
                 {getRollNo(targetStudent.userName)}
             </p>
 
-            <div className="w-full flex flex-col items-center justify-center gap-3">
+            <div className="w-full flex flex-col items-center justify-center gap-3 relative -top-2">
                 {error.root && (
                     <div className="text-red-500 w-full text-center">
                         {error.root}

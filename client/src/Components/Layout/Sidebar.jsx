@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { useSideBarContext, useUserContext } from '../../Contexts';
 import { icons } from '../../Assets/icons';
-import { Button } from '..';
+import { Button, Logout } from '..';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRef } from 'react';
 
@@ -11,10 +11,16 @@ export default function Sidebar() {
     const items = [
         { path: '/', name: 'Home', icon: icons.home, show: true },
         {
-            path: '/history',
-            name: 'Order History',
+            path: '/today-orders',
+            name: 'Orders',
             icon: icons.clock,
-            show: true,
+            show: user.role === 'contractor',
+        },
+        {
+            path: `/orders/${user._id}`,
+            name: 'Orders',
+            icon: icons.clock,
+            show: user.role === 'student',
         },
         {
             path: '/students',
@@ -23,9 +29,15 @@ export default function Sidebar() {
             show: user.role === 'contractor',
         },
         {
-            path: '/cart',
-            name: 'Cart',
-            icon: icons.cart,
+            path: '/inventory',
+            name: 'Inventory',
+            icon: icons.snack,
+            show: user.role === 'contractor',
+        },
+        {
+            path: '/bills',
+            name: 'Bills',
+            icon: icons.rupee,
             show: user.role === 'student',
         },
         {
@@ -140,8 +152,8 @@ export default function Sidebar() {
                         exit="exit"
                         className="h-full w-[265px] flex justify-start"
                     >
-                        <div className="w-full px-3 bg-[#f6f6f6] drop-shadow-md flex flex-col items-start justify-start h-full">
-                            <div className="h-[60px] gap-5 w-full flex items-center justify-between">
+                        <div className="w-full px-3 bg-[#f9f9f9] drop-shadow-sm flex flex-col items-start justify-start h-full">
+                            <div className="h-[60px] gap-5 px-1 w-full flex items-center justify-between">
                                 {/* hamburgur menu btn */}
                                 <Button
                                     btnText={
@@ -153,27 +165,32 @@ export default function Sidebar() {
                                         setShowSideBar((prev) => !prev)
                                     }
                                     title="Close Sidebar"
-                                    className="bg-[#ffffff] p-[10px] group rounded-full drop-shadow-md w-fit"
+                                    className="bg-[#ffffff] p-[10px] group rounded-full drop-shadow-sm w-fit"
                                 />
 
-                                {/* avatar */}
-                                <div className="size-[40px] rounded-full overflow-hidden drop-shadow-md hover:brightness-90">
-                                    <img
-                                        src={user.avatar || icons.avatar}
-                                        alt="user avatar"
-                                        className="size-full object-cover"
-                                    />
+                                <div className="flex gap-4 items-center">
+                                    <div className="block sm:hidden">
+                                        <Logout />
+                                    </div>
+                                    {/* avatar */}
+                                    <div className="size-[40px] rounded-full overflow-hidden drop-shadow-sm hover:brightness-90">
+                                        <img
+                                            src={user.avatar || icons.avatar}
+                                            alt="user avatar"
+                                            className="size-full object-cover"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            <hr className="w-full" />
+                            <hr className="w-full border-gray-300" />
 
                             <div className="overflow-y-scroll text-[17px] text-black w-full h-[calc(100%-60px)] py-3 flex flex-col items-start justify-between">
-                                <div className="w-full flex flex-col gap-1 items-start justify-start">
+                                <div className="w-full flex flex-col gap-1 mb-1 items-start justify-start">
                                     {itemElements}
                                 </div>
                                 <div className="w-full flex flex-col gap-1 items-start justify-start">
-                                    <hr className="w-full" />
+                                    <hr className="w-full border-gray-300" />
                                     {systemItemElements}
                                 </div>
                             </div>

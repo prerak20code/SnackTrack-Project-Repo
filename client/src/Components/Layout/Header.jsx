@@ -1,18 +1,20 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Button, Logout } from '..';
+import { Button, Logout, Searchbar } from '..';
 import {
     useUserContext,
     useSideBarContext,
-    useSearchContext,
+    usePopupContext,
 } from '../../Contexts';
 import { LOGO } from '../../Constants/constants';
 import { icons } from '../../Assets/icons';
+import { useState } from 'react';
 
 export default function Header() {
     const { user } = useUserContext();
     const { setShowSideBar } = useSideBarContext();
     const navigate = useNavigate();
-    const { search, setSearch } = useSearchContext();
+    const { setShowPopup, setPopupInfo } = usePopupContext();
+    const [notifications, setNotifications] = useState([]);
 
     return (
         <header className="drop-shadow-sm fixed top-0 z-[10] w-full bg-[#f9f9f9] text-black h-[60px] px-4 font-medium flex items-center justify-between gap-8">
@@ -48,26 +50,7 @@ export default function Header() {
             </div>
 
             {/* search bar */}
-            <div className="w-full max-w-[500px] hidden sm:block group drop-shadow-sm">
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full bg-white border-transparent border-[0.1rem] indent-8 rounded-full p-[5px] text-black text-[16px] font-normal placeholder:text-[#525252] outline-none focus:border-[#4977ec]"
-                />
-                <div className="size-[16px] fill-gray-800 group-focus-within:fill-[#4977ec] absolute top-[50%] translate-y-[-50%] left-3">
-                    {icons.search}
-                </div>
-                <div
-                    onClick={() => setSearch('')}
-                    className="hover:bg-gray-100 rounded-full absolute right-2 p-[5px] cursor-pointer top-[50%] translate-y-[-50%]"
-                >
-                    <div className="size-[18px] stroke-gray-800">
-                        {icons.cross}
-                    </div>
-                </div>
-            </div>
+            <Searchbar />
 
             <div className="flex gap-4 items-center">
                 {user.role === 'student' ? (
@@ -82,16 +65,27 @@ export default function Header() {
                             onClick={() => navigate('/cart')}
                             className="bg-[#ffffff] p-[9px] group rounded-full drop-shadow-sm w-fit"
                         />
-                        <Button
-                            btnText={
-                                <div className="size-[20px] group-hover:fill-[#4977ec] fill-[#434343]">
-                                    {icons.bell}
-                                </div>
-                            }
-                            title="Notifications"
-                            onClick={() => {}}
-                            className="bg-[#ffffff] p-[9px] group rounded-full drop-shadow-sm w-fit"
-                        />
+                        <div className="relative">
+                            <Button
+                                btnText={
+                                    <div className="size-[20px] group-hover:fill-[#4977ec] fill-[#434343]">
+                                        {icons.bell}
+                                    </div>
+                                }
+                                title="Notifications"
+                                onClick={() => {
+                                    setShowPopup(true);
+                                    setPopupInfo({ type: 'notifications' });
+                                }}
+                                className="bg-[#ffffff] p-[9px] group rounded-full drop-shadow-sm w-fit"
+                            />
+                            {/* notifications count */}
+                            {notifications.length > 0 && (
+                                <span className="text-[13px] flex items-center justify-center leading-3 text-white absolute -top-1 -right-1 size-5 bg-red-600 rounded-full">
+                                    {notifications.length}
+                                </span>
+                            )}
+                        </div>
                     </div>
                 ) : (
                     <div className="flex items-center justify-center gap-4">

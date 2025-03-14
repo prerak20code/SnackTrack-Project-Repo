@@ -349,7 +349,7 @@ const updateContractorPassword = tryCatch(
 );
 
 // get all contractors
-const getContractor = tryCatch('get contractors', async (req, res) => {
+const getContractors = tryCatch('get contractors', async (req, res) => {
     const { limit = 10, page = 1 } = req.query; // Pagination
 
     const result = await Contractor.aggregatePaginate(
@@ -378,6 +378,11 @@ const getContractor = tryCatch('get contractors', async (req, res) => {
         return res.status(200).json({ message: 'No contractors found' });
     }
 });
+
+const removeContractor = tryCatch(
+    'remove contractor',
+    async (req, res, next) => {}
+);
 
 // canteen management tasks
 const addCanteen = tryCatch('add canteen', async (req, res, next) => {});
@@ -444,7 +449,8 @@ export {
     updateAvatar,
     registerContractor,
     changeContractor,
-    getContractor,
+    getContractors,
+    removeContractor,
     addCanteen,
     removeCanteen,
     getCanteens,

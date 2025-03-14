@@ -12,6 +12,7 @@ import {
     generateTokens,
 } from '../Helpers/index.js';
 import { Canteen, Student } from '../Models/index.js';
+import { Types } from 'mongoose';
 
 const login = tryCatch('login as student', async (req, res, next) => {
     const { userName, password } = req.body;
@@ -118,4 +119,34 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
     }
 });
 
-export { login, updateAvatar, updatePassword };
+const getStudents = tryCatch('get students', async (req, res) => {
+    const { canteenId } = req.params;
+    const { limit = 10, page = 1 } = req.query; // for pagination
+    const result = await Student.aggregatePaginate(
+        [
+            { $match: { canteenId: new Types.ObjectId(canteenId) } },
+            { $project: { password: 0, refreshToken: 0 } },
+        ],
+        {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { createdAt: -1 },
+        }
+    );
+
+    if (result.docs.length) {
+        const data = {
+            students: result.docs,
+            studentsInfo: {
+                hasNextPage: result.hasNextPage,
+                hasPrevPage: result.hasPrevPage,
+                totalStudents: result.totalDocs,
+            },
+        };
+        return res.status(OK).json(data);
+    } else {
+        return res.status(OK).json({ message: 'no students found' });
+    }
+});
+
+export { login, updateAvatar, updatePassword, getStudents };

@@ -10,7 +10,8 @@ import {
     updateAvatar,
     registerContractor,
     changeContractor,
-    getContractor,
+    getContractors,
+    removeContractor,
     addCanteen,
     removeCanteen,
     getCanteens,
@@ -29,9 +30,10 @@ adminRouter.route('/avatar').patch(upload.single('avatar'), updateAvatar);
 // contractor management tasks
 adminRouter
     .route('/contractors/:canteenId')
+    .delete(removeContractor)
     .post(registerContractor)
-    .patch(changeContractor)
-    .get(getContractor);
+    .patch(changeContractor);
+adminRouter.route('/contractors').get(getContractors);
 
 // canteen management tasks
 adminRouter

@@ -10,7 +10,6 @@ import {
     registerNewStudent,
     removeAllStudents,
     removeStudent,
-    getStudents,
     updateStudentAccountDetails,
     addSnack,
     deleteSnack,
@@ -34,7 +33,6 @@ contractorRouter.route('/avatar').patch(upload.single('avatar'), updateAvatar);
 // student management tasks
 contractorRouter
     .route('/students')
-    .get(getStudents)
     .post(registerNewStudent)
     .delete(removeAllStudents);
 contractorRouter
@@ -61,4 +59,3 @@ contractorRouter
 contractorRouter
     .route('/packaged/availability/:itemId')
     .patch(toggleAvaialbleCount);
-

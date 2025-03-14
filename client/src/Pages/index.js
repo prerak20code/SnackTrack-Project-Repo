@@ -17,6 +17,7 @@ import TodayOrdersPage from './TodayOrders.Page';
 import StudentOrdersPage from './StudentOrders.Page';
 import CanteensPage from './Canteens.Page';
 import ContractorsPage from './Contractors.Page';
+import CartPage from './Cart.Page';
 
 export {
     AboutUsPage,
@@ -37,5 +38,5 @@ export {
     TodayOrdersPage,
     StudentOrdersPage,
     CanteensPage,
-    ContractorsPage,
+    ContractorsPage,CartPage
 };

@@ -90,6 +90,34 @@ class StudentService {
             throw err;
         }
     }
+
+    async getStudents(canteenId, signal, page = 1, limit = 10) {
+        try {
+            const res = await fetch(
+                `/api/students/${canteenId}/?page=${page}&limit=${limit}`,
+                {
+                    method: 'GET',
+                    signal,
+                    credentials: 'include',
+                }
+            );
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            if (err.name === 'AbortError') {
+                console.log('getStudents request aborted.');
+            } else {
+                console.error('error in getStudents service', err);
+                throw err;
+            }
+        }
+    }
 }
 
 export const studentService = new StudentService();

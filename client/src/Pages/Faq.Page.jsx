@@ -82,7 +82,7 @@ export default function FAQpage() {
                         className="bg-white/50 backdrop-blur-lg border border-gray-200 shadow-lg p-5 rounded-lg cursor-pointer transition-transform hover:scale-[1.02]"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
                         onClick={() => toggleExpand(index)}
                     >
                         <div className="flex items-center justify-between">
@@ -92,9 +92,9 @@ export default function FAQpage() {
 
                             <motion.div
                                 animate={{
-                                    rotate: expanded === index ? 45 : 0,
+                                    rotate: expanded === index ? -45 : 0,
                                 }}
-                                transition={{ duration: 0.3 }}
+                                transition={{ duration: 0.1 }}
                                 className="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition"
                             >
                                 <div className="size-[16px]">{icons.plus}</div>

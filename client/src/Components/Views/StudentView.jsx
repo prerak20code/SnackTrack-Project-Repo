@@ -2,7 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
 import { LOGO } from '../../Constants/constants';
-import { usePopupContext, useContractorContext } from '../../Contexts';
+import {
+    usePopupContext,
+    useContractorContext,
+    useUserContext,
+} from '../../Contexts';
 import { getRollNo } from '../../Utils';
 
 export default function StudentView({ student, reference }) {
@@ -10,6 +14,7 @@ export default function StudentView({ student, reference }) {
     const { setShowPopup, setPopupInfo } = usePopupContext();
     const { setTargetStudent } = useContractorContext();
     const navigate = useNavigate();
+    const { user } = useUserContext();
 
     async function removeStudent() {
         setTargetStudent(student);
@@ -59,40 +64,44 @@ export default function StudentView({ student, reference }) {
                     </div>
                 </div>
 
-                <div className="w-fit flex flex-col gap-3 items-end justify-center">
-                    <div onClick={(e) => e.stopPropagation()}>
-                        <Button
-                            btnText={
-                                <div className="size-[15px] group-hover:fill-[#4977ec]">
-                                    {icons.edit}
-                                </div>
-                            }
-                            className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
-                            onClick={editStudent}
-                        />
+                {user.role === 'contractor' && (
+                    <div className="w-fit flex flex-col gap-3 items-end justify-center">
+                        <div onClick={(e) => e.stopPropagation()}>
+                            <Button
+                                btnText={
+                                    <div className="size-[15px] group-hover:fill-[#4977ec]">
+                                        {icons.edit}
+                                    </div>
+                                }
+                                className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                                onClick={editStudent}
+                            />
+                        </div>
+                        <div onClick={(e) => e.stopPropagation()}>
+                            <Button
+                                btnText={
+                                    <div className="size-[15px] group-hover:fill-red-700">
+                                        {icons.delete}
+                                    </div>
+                                }
+                                className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                                onClick={removeStudent}
+                            />
+                        </div>
                     </div>
-                    <div onClick={(e) => e.stopPropagation()}>
-                        <Button
-                            btnText={
-                                <div className="size-[15px] group-hover:fill-red-700">
-                                    {icons.delete}
-                                </div>
-                            }
-                            className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
-                            onClick={removeStudent}
-                        />
-                    </div>
-                </div>
+                )}
             </div>
 
-            <div className="flex justify-end w-full">
-                <Button
-                    onClick={() => navigate(`/orders/${_id}`)}
-                    btnText="View Orders"
-                    title="View Orders"
-                    className="text-white rounded-md py-[5px] w-fit px-3 h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
-                />
-            </div>
+            {user.role === 'contractor' && (
+                <div className="flex justify-end w-full">
+                    <Button
+                        onClick={() => navigate(`/orders/${_id}`)}
+                        btnText="View Orders"
+                        title="View Orders"
+                        className="text-white rounded-md py-[5px] w-fit px-3 h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                    />
+                </div>
+            )}
         </div>
     );
 }

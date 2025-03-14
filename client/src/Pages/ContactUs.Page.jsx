@@ -142,7 +142,7 @@ export default function ContactUsPage() {
                     {/* Feedback Form */}
                     <form
                         onSubmit={submitFeedback}
-                        className="mt-6 bg-white p-6 pt-2 rounded-xl shadow-md"
+                        className="mt-6 bg-white px-6 py-5 pt-2 rounded-xl shadow-md"
                     >
                         {/* Email Input */}
                         <div className="mb-1">

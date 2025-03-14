@@ -1,5 +1,10 @@
 import { useRef } from 'react';
-import { UpdateAvatarPopup, RemoveStudentPopup, EditStudentPopup } from '..';
+import {
+    UpdateAvatarPopup,
+    RemoveStudentPopup,
+    EditStudentPopup,
+    NotificationsPopup,
+} from '..';
 import { usePopupContext } from '../../Contexts';
 
 export default function Popup() {
@@ -39,6 +44,12 @@ export default function Popup() {
             return (
                 <Wrapper>
                     <UpdateAvatarPopup />
+                </Wrapper>
+            );
+        case 'notifications':
+            return (
+                <Wrapper>
+                    <NotificationsPopup />
                 </Wrapper>
             );
         default:

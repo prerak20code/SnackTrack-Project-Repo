@@ -283,35 +283,6 @@ const removeStudent = tryCatch(
     }
 );
 
-const getStudents = tryCatch('get students', async (req, res) => {
-    const contractor = req.user;
-    const { limit = 10, page = 1 } = req.query; // for pagination
-    const result = await Student.aggregatePaginate(
-        [
-            { $match: { canteenId: contractor.canteenId } },
-            { $project: { password: 0, refreshToken: 0 } },
-        ],
-        {
-            page: parseInt(page),
-            limit: parseInt(limit),
-            sort: { createdAt: -1 },
-        }
-    );
-    if (result.docs.length) {
-        const data = {
-            students: result.docs,
-            studentsInfo: {
-                hasNextPage: result.hasNextPage,
-                hasPrevPage: result.hasPrevPage,
-                totalStudents: result.totalDocs,
-            },
-        };
-        return res.status(OK).json(data);
-    } else {
-        return res.status(OK).json({ message: 'no students found' });
-    }
-});
-
 // if two students are exchanging there roll no due to some reason then will have to delete one and update details of there and register first one again
 const updateStudentAccountDetails = tryCatch(
     'update account details',
@@ -640,7 +611,6 @@ export {
     registerNewStudent,
     removeAllStudents,
     removeStudent,
-    getStudents,
     updateStudentAccountDetails,
     addSnack,
     deleteSnack,

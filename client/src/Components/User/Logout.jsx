@@ -1,26 +1,19 @@
 import { Button } from '..';
-import {
-    studentService,
-    adminService,
-    contractorService,
-} from '../../Services';
+import { userService } from '../../Services';
 import { icons } from '../../Assets/icons';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '../../Contexts';
 
 export default function Logout() {
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const { setUser } = useUserContext();
 
     async function logout() {
         setLoading(true);
         try {
-            let res = null;
-            if (user.role === 'student') {
-                res = await studentService.logout();
-            } else if (user.role === 'admin') {
-                res = await adminService.logout();
-            } else {
-                res = await contractorService.logout();
-            }
+            const res = await userService.logout();
             if (res && res.message === 'user loggedout successfully') {
                 setUser(null);
                 toast.success('Logged out Successfully 🙂');

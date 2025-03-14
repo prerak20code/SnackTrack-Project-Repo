@@ -81,7 +81,7 @@ export default function StudentsPage() {
     }
 
     return (
-        <div className="lg:p-8 pt-4">
+        <div className="lg:p-8 pt-4 lg:pt-4">
             {studentElements.length > 0 && (
                 <div className="w-full">
                     <div className=" w-full flex justify-center mb-8">

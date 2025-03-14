@@ -24,6 +24,8 @@ import {
     InventoryPage,
     TodayOrdersPage,
     StudentOrdersPage,
+    CanteensPage,
+    ContractorsPage,
 } from './Pages';
 
 import { UpdateAccountDetails, UpdatePassword } from './Components';
@@ -40,6 +42,8 @@ export const router = createBrowserRouter(
                 <Route path="register" element={<RegisterPage />} />
                 <Route path="admin" element={<AdminPage />} />
                 <Route path="students" element={<StudentsPage />} />
+                <Route path="canteens" element={<CanteensPage />} />
+                <Route path="contractors" element={<ContractorsPage />} />
                 <Route path="inventory" element={<InventoryPage />} />
                 <Route path="today-orders" element={<TodayOrdersPage />} />
                 <Route

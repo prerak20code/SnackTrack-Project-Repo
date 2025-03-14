@@ -114,11 +114,13 @@ export default function Header() {
                                     ? 'Add Student'
                                     : 'Add Contractor'
                             }
-                            className="text-white rounded-md py-[5px] w-fit px-3 h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className="text-white rounded-md w-fit text-nowrap px-3 h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
                         />
                     </div>
                 )}
-                <div className="hidden sm:block">
+                <div
+                    className={`hidden ${user.role === 'student' ? 'sm:block' : 'md:block'}`}
+                >
                     <Logout />
                 </div>
             </div>

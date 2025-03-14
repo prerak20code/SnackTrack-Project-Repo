@@ -43,7 +43,13 @@ export default function Sidebar() {
         {
             path: '/canteens',
             name: 'Canteens',
-            icon: icons.clock,
+            icon: icons.store,
+            show: user.role === 'admin',
+        },
+        {
+            path: '/contractors',
+            name: 'Contractors',
+            icon: icons.user,
             show: user.role === 'admin',
         },
     ];

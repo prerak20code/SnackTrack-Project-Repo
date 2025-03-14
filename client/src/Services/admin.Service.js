@@ -44,7 +44,35 @@ class AdminService {
         }
     }
 
-    async updateAccountDetails() {}
+    async updateAccountDetails({ email, phoneNumber, fullName, password }) {
+        try {
+            const res = await fetch('/api/admins/account', {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email,
+                    phoneNumber,
+                    fullName,
+                    password,
+                }),
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error(
+                'error in admin updateAccountDetails service',
+                err
+            );
+            throw err;
+        }
+    }
 
     async updatePassword(oldPassword, newPassword) {
         try {

@@ -41,11 +41,11 @@ contractorRouter
     .patch(updateStudentAccountDetails);
 
 // snack management tasks
-contractorRouter.route('/snacks/add').post(addSnack);
+contractorRouter.route('/snacks').post(upload.single('image'), addSnack);
 contractorRouter
     .route('/snacks/:snackId')
     .delete(deleteSnack)
-    .patch(updateSnackDetails);
+    .patch(upload.single('image'), updateSnackDetails);
 contractorRouter
     .route('/snacks/availability/:snackId')
     .patch(toggleSnackAvailability);

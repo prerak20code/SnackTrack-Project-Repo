@@ -29,12 +29,6 @@ export default function Sidebar() {
             show: user.role === 'contractor',
         },
         {
-            path: '/inventory',
-            name: 'Inventory',
-            icon: icons.snack,
-            show: user.role === 'contractor',
-        },
-        {
             path: '/bills',
             name: 'Bills',
             icon: icons.rupee,

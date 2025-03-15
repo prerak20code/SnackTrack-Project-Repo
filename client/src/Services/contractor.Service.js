@@ -228,11 +228,13 @@ class ContractorService {
 
     // snack management tasks
 
-    async deleteSnack(snackId) {
+    async removeSnack(snackId, password) {
         try {
             const res = await fetch(`/api/contractors/snacks/${snackId}`, {
                 method: 'DELETE',
                 credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password }),
             });
 
             const data = await res.json();
@@ -256,7 +258,7 @@ class ContractorService {
                 formData.append(key, value);
             });
 
-            const res = await fetch('/api/contractors/snacks/add', {
+            const res = await fetch('/api/contractors/snacks', {
                 method: 'POST',
                 credentials: 'include',
                 body: formData,
@@ -275,9 +277,10 @@ class ContractorService {
         }
     }
 
-    async updateSnackDetails({ name, price, image }, snackId) {
+    async updateSnackDetails({ name, price, image, password }, snackId) {
         try {
-            const inputs = { image, name, price };
+            const inputs = { image, name, price, password };
+            console.log(inputs);
             const formData = new FormData();
             Object.entries(inputs).forEach(([key, value]) => {
                 formData.append(key, value);
@@ -326,7 +329,78 @@ class ContractorService {
     }
 
     // packaged food management tasks
-    // TODO:
+
+    async removeItem(itemId) {
+        try {
+            const res = await fetch(`/api/contractors/packaged/${itemId}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in deleteItem service', err);
+            throw err;
+        }
+    }
+
+    async addItem({ variants, category }) {
+        try {
+            const res = await fetch('/api/contractors/packaged', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    variants,
+                    category,
+                }),
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in addItem service', err);
+            throw err;
+        }
+    }
+
+    async updateItemDetails({ category, variants }, itemId) {
+        try {
+            const res = await fetch(`/api/contractors/packaged/${itemId}`, {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    variants,
+                    category,
+                }),
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in updateItemDetails service', err);
+            throw err;
+        }
+    }
+
+    async toggleAvailableCount(snackId) {}
 }
 
 export const contractorService = new ContractorService();

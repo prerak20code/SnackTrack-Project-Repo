@@ -13,7 +13,6 @@ import ContactUsPage from './ContactUs.Page';
 import FAQpage from './FAQ.page';
 import NewUserPage from './NewUser.Page';
 import StudentsPage from './Students.Page';
-import InventoryPage from './Inventory.Page';
 import TodayOrdersPage from './TodayOrders.Page';
 import StudentOrdersPage from './StudentOrders.Page';
 import CanteensPage from './Canteens.Page';
@@ -38,7 +37,6 @@ export {
     FAQpage,
     NewUserPage,
     StudentsPage,
-    InventoryPage,
     TodayOrdersPage,
     StudentOrdersPage,
     CanteensPage,

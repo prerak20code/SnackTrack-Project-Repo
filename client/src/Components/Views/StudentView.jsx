@@ -65,25 +65,23 @@ export default function StudentView({ student, reference }) {
 
                 {user.role === 'contractor' && (
                     <div className="w-fit flex flex-col gap-3 items-end justify-center">
-                        <div onClick={(e) => e.stopPropagation()}>
-                            <Button
-                                btnText={
-                                    <div className="size-[15px] group-hover:fill-[#4977ec]">
-                                        {icons.edit}
-                                    </div>
-                                }
-                                className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
-                                onClick={editStudent}
-                            />
-                        </div>
-                        <div onClick={(e) => e.stopPropagation()}>
+                        <Button
+                            btnText={
+                                <div className="size-[15px] group-hover:fill-[#4977ec]">
+                                    {icons.edit}
+                                </div>
+                            }
+                            className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                            onClick={editStudent}
+                        />
+                        <div>
                             <Button
                                 btnText={
                                     <div className="size-[15px] group-hover:fill-red-700">
                                         {icons.delete}
                                     </div>
                                 }
-                                className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                                className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
                                 onClick={removeStudent}
                             />
                         </div>

@@ -7,7 +7,7 @@ import { verifyExpression, getRollNo } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
 
-export default function EditStudentPopup() {
+export default function EditItemPopup() {
     const { targetStudent, setStudents } = useStudentContext();
     const [inputs, setInputs] = useState({
         fullName: targetStudent?.fullName || '',
@@ -151,7 +151,16 @@ export default function EditStudentPopup() {
                     handleChange={handleChange}
                     error={error}
                     inputs={inputs}
-                    handleBlur={handleBlur}
+                    showPassword={
+                        field.name === 'contractorPassword'
+                            ? showContractorPassword
+                            : showPassword
+                    }
+                    setShowPassword={
+                        field.name === 'contractorPassword'
+                            ? setShowContractorPassword
+                            : setShowPassword
+                    }
                 />
                 {error[field.name] && (
                     <div className="text-red-500 text-xs font-medium">

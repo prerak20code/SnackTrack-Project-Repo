@@ -48,7 +48,7 @@ export const icons = {
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="fill-none size-full stroke-black"
+            className="fill-none size-full stroke-gray-900"
         >
             <path d="m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8" />
             <path d="M5 8h14" />

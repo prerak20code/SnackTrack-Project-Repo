@@ -1,10 +1,21 @@
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
-import { useUserContext } from '../../Contexts';
+import { usePopupContext, useUserContext } from '../../Contexts';
 
 export default function PackagedItemView({ item, reference }) {
-    const { _id, image, category, variants } = item;
+    const { _id, category, variants } = item;
     const { user } = useUserContext();
+    const { setShowPopup, setPopupInfo } = usePopupContext();
+
+    function editItem() {
+        setShowPopup(true);
+        setPopupInfo({ type: 'editItem', target: item });
+    }
+
+    function removeItem() {
+        setShowPopup(true);
+        setPopupInfo({ type: 'removeItem', target: item });
+    }
 
     return (
         <div
@@ -12,28 +23,36 @@ export default function PackagedItemView({ item, reference }) {
             onClick={() => {}}
             className="p-6 relative bg-white shadow-lg rounded-2xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl"
         >
-            {/* Category and Image */}
-            <div className="flex flex-col gap-4 mb-6">
-                <p className="text-xl  flex items-center gap-2 font-bold text-gray-800 truncate">
-                    {category}{' '}
-                    <span className="text-sm text-gray-600">(1pc)</span>
-                </p>
-
-                {/* Image (if available) */}
-                {image && (
-                    <div className="w-full h-40 rounded-lg overflow-hidden">
-                        <img
-                            src={image}
-                            alt={category}
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                )}
+            <div className="absolute right-6 top-4 flex gap-3 justify-end">
+                <Button
+                    btnText={
+                        <div className="size-[18px] group-hover:fill-[#4977ec]">
+                            {icons.edit}
+                        </div>
+                    }
+                    className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-sm hover:bg-[#ebeaea]"
+                    onClick={editItem}
+                />
+                <div>
+                    <Button
+                        btnText={
+                            <div className="size-[18px] group-hover:fill-red-700">
+                                {icons.delete}
+                            </div>
+                        }
+                        className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                        onClick={removeItem}
+                    />
+                </div>
             </div>
+
+            {/* Category */}
+            <p className="text-xl mb-4 flex items-center gap-2 font-bold text-gray-800 truncate">
+                {category} <span className="text-sm text-gray-600">(1pc)</span>
+            </p>
 
             {/* Variants Grid with Scrollable Container */}
             <div className="overflow-x-auto pb-4">
-                {' '}
                 {/* Horizontal scroll for small screens */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 min-w-[max-content]">
                     {variants?.map(({ price, _id, availableCount }) => (

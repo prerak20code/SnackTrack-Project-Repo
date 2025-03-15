@@ -7,6 +7,7 @@ import {
     ContractorContextProvider,
 } from './Contractor.Context';
 import { useStudentContext, StudentContextProvider } from './Student.Context';
+import { useSnackContext, SnackContextProvider } from './Snack.Context';
 
 export {
     useUserContext,
@@ -21,4 +22,6 @@ export {
     ContractorContextProvider,
     useStudentContext,
     StudentContextProvider,
+    useSnackContext,
+    SnackContextProvider,
 };

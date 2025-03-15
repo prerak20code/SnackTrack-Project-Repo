@@ -1,52 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { PackagedItemView } from '../../Components';
-import { snackService } from '../../Services';
-import { paginate } from '../../Utils';
+import { PackagedItemView, Button } from '../../Components';
+import {
+    useSnackContext,
+    useSearchContext,
+    usePopupContext,
+} from '../../Contexts';
 import { icons } from '../../Assets/icons';
-import { LIMIT } from '../../Constants/constants';
-import { useContractorContext, useSearchContext } from '../../Contexts';
 
 export default function PackagedItems() {
-    const { items, setItems } = useContractorContext();
-    const [itemsInfo, setItemsInfo] = useState({});
-    const [page, setPage] = useState(1);
+    const { loading, items } = useSnackContext();
     const { search } = useSearchContext();
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-
-    // pagination
-    const paginateRef = paginate(itemsInfo?.hasNextPage, loading, setPage);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-
-        (async function getSnacks() {
-            try {
-                setLoading(true);
-                const res = await snackService.getPackagedFoodItems(
-                    signal,
-                    page,
-                    LIMIT
-                );
-                if (res && !res.message) {
-                    setItems((prev) => [...prev, ...res.items]);
-                    setItemsInfo(res.itemsInfo);
-                }
-            } catch (err) {
-                navigate('/server-error');
-            } finally {
-                setLoading(false);
-            }
-        })();
-
-        return () => {
-            controller.abort();
-            setItems([]);
-            setItemsInfo({});
-        };
-    }, [page]);
+    const { setShowPopup, setPopupInfo } = usePopupContext();
 
     const itemElements = items
         ?.filter(
@@ -54,38 +17,38 @@ export default function PackagedItems() {
                 !search ||
                 item.category?.toLowerCase().includes(search.toLowerCase())
         )
-        .map((item, index) => (
-            <PackagedItemView
-                key={item._id}
-                item={item}
-                reference={
-                    index + 1 === items.length && itemsInfo?.hasNextPage
-                        ? paginateRef
-                        : null
-                }
-            />
-        ));
+        .map((item) => <PackagedItemView key={item._id} item={item} />);
+
+    function addItem() {
+        setShowPopup(true);
+        setPopupInfo({ type: 'addItem' });
+    }
 
     return (
-        <div>
-            {itemElements.length > 0 && (
-                <div className="flex flex-col gap-5">{itemElements}</div>
-            )}
+        <div className="md:px-6">
             {loading ? (
-                page === 1 ? (
-                    <div className="w-full text-center">
-                        loading first batch...
-                        {/* pulses */}
+                <div className="w-full text-center">loading...</div>
+            ) : itemElements.length > 0 ? (
+                <div className="relative">
+                    <Button
+                        onClick={addItem}
+                        btnText={
+                            <div className="flex items-center justify-center gap-2">
+                                <div className="size-[20px] fill-white">
+                                    {icons.plus}
+                                </div>
+                                <span className="text-lg">Add Item</span>
+                            </div>
+                        }
+                        title="Add Snack"
+                        className="absolute z-[10] -top-16 text-white rounded-md w-fit text-nowrap px-3 h-[40px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                    />
+                    <div className={`flex flex-col w-full gap-6`}>
+                        {itemElements}
                     </div>
-                ) : (
-                    <div className="flex items-center justify-center my-2 w-full">
-                        <div className="size-7 fill-[#4977ec] dark:text-[#f7f7f7]">
-                            {icons.loading}
-                        </div>
-                    </div>
-                )
+                </div>
             ) : (
-                itemElements.length === 0 && <div>No Items Found !!</div>
+                <div>No Items Found !!</div>
             )}
         </div>
     );

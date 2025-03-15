@@ -13,8 +13,15 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
-import { Canteen, Contractor, Snack, Student } from '../Models/index.js';
+import {
+    Canteen,
+    Contractor,
+    Snack,
+    Student,
+    PackagedFood,
+} from '../Models/index.js';
 import { Types } from 'mongoose';
+import fs from 'fs';
 
 // personal usage
 const login = tryCatch('login as contractor', async (req, res, next) => {
@@ -149,8 +156,7 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
         }
 
         // upload new avatar on cloudinary
-        avatarURL = await uploadOnCloudinary(req.file.path);
-        avatarURL = avatarURL.secure_url;
+        avatarURL = (await uploadOnCloudinary(req.file.path))?.secure_url;
 
         // update user avatar
         const updatedContractor = await Contractor.findByIdAndUpdate(
@@ -204,7 +210,7 @@ const registerNewStudent = tryCatch(
             data.userName =
                 canteen.hostelType + canteen.hostelNumber + '-' + data.rollNo;
 
-                // check if user already exists with this roll no
+            // check if user already exists with this roll no
             const existingStudent = await Student.findOne({
                 $or: [
                     { userName: data.userName },
@@ -312,15 +318,12 @@ const updateStudentAccountDetails = tryCatch(
                     as: 'canteen',
                 },
             },
-            {
-                $unwind: '$canteen',
-            },
+            { $unwind: '$canteen' },
         ]);
 
         if (!student) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
         }
-        console.log(student);
 
         const [isStudentPassValid, isContractorPassValid] = await Promise.all([
             bcrypt.compare(password, student.password),
@@ -334,14 +337,19 @@ const updateStudentAccountDetails = tryCatch(
         if (!isContractorPassValid) {
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
-        console.log(student);
-        const alreadyExists = await Student.findOne({
-            userName:
-                student.canteen.hostelType +
-                student.canteen.hostelNumber +
-                '-' +
-                rollNo,
-        });
+
+        let alreadyExists = null;
+        const newUserName =
+            student.canteen.hostelType +
+            student.canteen.hostelNumber +
+            '-' +
+            rollNo;
+
+        if (student.userName !== newUserName) {
+            alreadyExists = await Student.findOne({ userName: newUserName });
+        } else if (student.phoneNumber !== phoneNumber) {
+            alreadyExists = await Student.findOne({ phoneNumber });
+        }
         if (alreadyExists) {
             return next(new ErrorHandler('user already exists', BAD_REQUEST));
         }
@@ -379,8 +387,7 @@ const addSnack = tryCatch('add snack', async (req, res, next) => {
         }
         // upload image on cloudinary if have any
         if (image) {
-            image = await uploadOnCloudinary(image);
-            image = image.secure_url;
+            image = (await uploadOnCloudinary(image))?.secure_url;
             imageURL = image;
         }
 
@@ -397,9 +404,14 @@ const addSnack = tryCatch('add snack', async (req, res, next) => {
     }
 });
 
-const deleteSnack = tryCatch('delete post', async (req, res) => {
+const deleteSnack = tryCatch('delete post', async (req, res, next) => {
     const { snackId } = req.params;
     const contractor = req.user;
+    const { password } = req.body;
+    const isPassValid = bcrypt.compareSync(password, contractor.password);
+    if (!isPassValid) {
+        return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+    }
     // to delete a snack that should belong to the contractor's canteen
     const snack = await Snack.findOneAndDelete({
         _id: snackId,
@@ -419,38 +431,49 @@ const updateSnackDetails = tryCatch(
         try {
             const { snackId } = req.params;
             const contractor = req.user;
-            const { name, price } = req.body;
+            const { name, price, password } = req.body;
             let image = req.file?.path;
 
-            if (!name && !price && !req.file) {
+            if (!name && !price && !image) {
                 return next(new ErrorHandler('missing fields', BAD_REQUEST));
+            }
+            const isPassValid = bcrypt.compareSync(
+                password,
+                contractor.password
+            );
+            if (!isPassValid) {
+                return next(
+                    new ErrorHandler('invalid credentials', BAD_REQUEST)
+                );
+            }
+
+            const snack = await Snack.findOne({
+                _id: snackId,
+                canteenId: contractor.canteenId,
+            });
+            if (!snack) {
+                if (image) fs.unlinkSync(image);
+                return next(new ErrorHandler('snack not found', NOT_FOUND));
+            }
+
+            if (snack.name.toLowerCase() !== name.toLowerCase()) {
+                const alreadyExists = await Snack.findOne({ name });
+                if (alreadyExists) {
+                    return next(
+                        new ErrorHandler('snack already exists', BAD_REQUEST)
+                    );
+                }
             }
 
             if (image) {
                 imageURL = (await uploadOnCloudinary(image))?.secure_url;
             }
+            snack.image = imageURL || snack.image;
+            snack.name = name || snack.name;
+            snack.price = price || snack.price;
+            await snack.save();
 
-            // a contractor can update the snack details only if the snack belongs to his canteen
-            const snack = await Snack.findOneAndUpdate(
-                { _id: snackId, canteenId: contractor.canteenId },
-                {
-                    $set: {
-                        ...(name && { name }),
-                        ...(price && { price }),
-                        ...(image && { image: imageURL }),
-                    },
-                },
-                { new: true }
-            );
-
-            if (!snack) {
-                if (imageURL) await deleteFromCloudinary(imageURL);
-                return next(new ErrorHandler('snack not found', NOT_FOUND));
-            }
-
-            return res
-                .status(OK)
-                .json({ message: 'snack details updated successfully' });
+            return res.status(OK).json(snack);
         } catch (err) {
             if (imageURL) await deleteFromCloudinary(imageURL);
             throw err;
@@ -482,19 +505,18 @@ const toggleSnackAvailability = tryCatch(
 // packaged food management tasks
 const addItem = tryCatch('add item', async (req, res, next) => {
     const contractor = req.user;
-    const { name, price, availableCount } = req.body;
+    const { category, variants } = req.body;
 
     // Validate required fields
-    if (!name || !price || !availableCount) {
+    if (!category || !variants.length) {
         return next(new ErrorHandler('missing fields', BAD_REQUEST));
     }
 
     // Create new packaged food item
     const item = await PackagedFood.create({
         canteenId: contractor.canteenId,
-        name,
-        price,
-        availableCount,
+        category,
+        variants,
     });
 
     return res.status(OK).json(item);
@@ -503,7 +525,11 @@ const addItem = tryCatch('add item', async (req, res, next) => {
 const deleteItem = tryCatch('delete item', async (req, res, next) => {
     const { itemId } = req.params;
     const contractor = req.user;
-
+    const { password } = req.body;
+    const isPassValid = bcrypt.compareSync(password, contractor.password);
+    if (!isPassValid) {
+        return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+    }
     // Find the item and ensure it belongs to the contractor's canteen
     const item = await PackagedFood.findOneAndDelete({
         _id: itemId,
@@ -521,29 +547,38 @@ const updateItemDetails = tryCatch(
     async (req, res, next) => {
         const { itemId } = req.params;
         const contractor = req.user;
-        const { name, category, variants } = req.body;
+        const { category, variants, password } = req.body;
 
         // Validate required fields
-        if (!name && !category && !variants) {
+        if (!category && !variants.length) {
             return next(new ErrorHandler('missing fields', BAD_REQUEST));
         }
 
-        // Find the item and ensure it belongs to the contractor's canteen
-        const item = await PackagedFood.findOneAndUpdate(
-            {
-                _id: itemId,
-                canteenId: contractor.canteenId,
-            },
-            {
-                $set: {
-                    ...(name && { name }),
-                    ...(category && { category }),
-                    ...(variants && { variants }),
-                },
-            },
-            { new: true }
-        );
+        const isPassValid = bcrypt.compareSync(password, contractor.password);
+        if (!isPassValid) {
+            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+        }
+
+        const item = await PackagedFood.findOne({
+            _id: itemId,
+            canteenId: contractor.canteenId,
+        });
         if (!item) return next(new ErrorHandler('item not found', NOT_FOUND));
+
+        if (item.category !== category) {
+            const existingItem = await PackagedFood.findOne({
+                canteenId: contractor.canteenId,
+                category,
+            });
+            if (existingItem) {
+                return next(
+                    new ErrorHandler('category already exists', BAD_REQUEST)
+                );
+            }
+        }
+        item.category = category || item.category;
+        item.variants = variants || item.variants;
+        await item.save();
         return res.status(OK).json(item);
     }
 );

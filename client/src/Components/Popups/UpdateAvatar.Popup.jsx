@@ -109,9 +109,9 @@ export default function UpdateAvatarPopup() {
                 <div className="w-full mt-4 flex items-center justify-center">
                     <Button
                         btnText={
-                            !loading ? (
+                            loading ? (
                                 <div className="flex items-center justify-center w-full">
-                                    <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
+                                    <div className="size-5 text-center fill-[#4977ec] dark:text-[#a2bdff]">
                                         {icons.loading}
                                     </div>
                                 </div>

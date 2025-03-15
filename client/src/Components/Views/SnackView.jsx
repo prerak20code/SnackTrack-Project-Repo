@@ -1,14 +1,19 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
-import { useContractorContext, useUserContext } from '../../Contexts';
+import {
+    usePopupContext,
+    useSnackContext,
+    useUserContext,
+} from '../../Contexts';
 import { contractorService } from '../../Services';
 
 export default function SnackView({ snack, reference }) {
     const { _id, image, name, price, info, createdAt, isAvailable } = snack;
     const { user } = useUserContext();
-    const { setSnacks } = useContractorContext();
+    const { setSnacks } = useSnackContext();
     const navigate = useNavigate();
+    const { setShowPopup, setPopupInfo } = usePopupContext();
 
     async function toggleAvailability() {
         try {
@@ -30,12 +35,45 @@ export default function SnackView({ snack, reference }) {
         }
     }
 
+    function editSnack() {
+        setShowPopup(true);
+        setPopupInfo({ type: 'editSnack', target: snack });
+    }
+
+    function removeSnack() {
+        setShowPopup(true);
+        setPopupInfo({ type: 'removeSnack', target: snack });
+    }
+
     return (
         <div
             ref={reference}
             onClick={() => {}}
             className="p-4 relative cursor-pointer bg-white shadow-lg rounded-2xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl"
         >
+            <div className="absolute right-6 top-6 flex gap-3 justify-end">
+                <Button
+                    btnText={
+                        <div className="size-[18px] group-hover:fill-[#4977ec]">
+                            {icons.edit}
+                        </div>
+                    }
+                    className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-sm hover:bg-[#ebeaea]"
+                    onClick={editSnack}
+                />
+                <div>
+                    <Button
+                        btnText={
+                            <div className="size-[18px] group-hover:fill-red-700">
+                                {icons.delete}
+                            </div>
+                        }
+                        className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                        onClick={removeSnack}
+                    />
+                </div>
+            </div>
+
             {/* Image */}
             <div className="h-[180px] w-full rounded-xl overflow-hidden shadow-md">
                 <img
@@ -99,10 +137,7 @@ export default function SnackView({ snack, reference }) {
                             className="rounded-md px-3 py-[5px] text-white bg-[#4977ec] hover:bg-[#3b62c2] shadow-md transition-colors duration-300"
                         />
                     ) : (
-                        <div
-                            onClick={(e) => e.stopPropagation()}
-                            className="flex items-center justify-center"
-                        >
+                        <div className="flex items-center justify-center">
                             <label
                                 htmlFor={_id}
                                 className="relative inline-flex items-center cursor-pointer"

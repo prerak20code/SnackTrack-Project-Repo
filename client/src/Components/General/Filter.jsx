@@ -56,7 +56,7 @@ export default function Filter({
                 >
                     <div className="flex items-center gap-[10px]">
                         {options.find((opt) => opt.value === filter)?.icon && (
-                            <div className="size-[16px] fill-gray-700">
+                            <div className="size-[16px] fill-gray-900">
                                 {
                                     options.find((opt) => opt.value === filter)
                                         ?.icon
@@ -68,7 +68,7 @@ export default function Filter({
                         </span>
                     </div>
                     <div
-                        className={`size-[15px] fill-gray-700 transition-all duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}
+                        className={`size-[15px] fill-gray-800 transition-all duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}
                     >
                         {icons.arrowDown}
                     </div>
@@ -84,7 +84,7 @@ export default function Filter({
                                 className="flex items-center gap-[10px] px-4 py-2 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
                             >
                                 {option.icon && (
-                                    <div className="size-[16px] fill-gray-700">
+                                    <div className="size-[16px] fill-gray-900">
                                         {option.icon}
                                     </div>
                                 )}

@@ -16,6 +16,10 @@ import RemoveAllStudentsPopup from './Popups/RemoveAllStudents.Popup';
 import EditStudentPopup from './Popups/EditStudent.Popup';
 import UpdateAvatarPopup from './Popups/UpdateAvatar.Popup';
 import NotificationsPopup from './Popups/Notifications.Popup';
+import EditSnackPopup from './Popups/EditSnack.Popup';
+import EditItemPopup from './Popups/EditItem.Popup';
+import RemoveSnackPopup from './Popups/RemoveSnack.Popup';
+import RemoveItemPopup from './Popups/RemoveItem.Popup';
 import SnackView from './Views/SnackView';
 import PackagedItemView from './Views/PackagedItemView';
 import StudentView from './Views/StudentView';
@@ -23,8 +27,8 @@ import Snacks from './Views/Snacks';
 import PackagedItems from './Views/PackagedItems';
 import PendingOrders from './Views/PendingOrders';
 import CompletedOrders from './Views/CompletedOrders';
-import EditSnacks from './Views/EditSnacks';
-import EditPackagedItems from './Views/EditPackagedItems';
+import AddSnackPopup from './Popups/AddSnack.Popup';
+import AddItemPopup from './Popups/AddItem.Popup';
 
 export {
     Header,
@@ -52,6 +56,9 @@ export {
     PackagedItems,
     PendingOrders,
     CompletedOrders,
-    EditPackagedItems,
-    EditSnacks,
+    RemoveItemPopup,
+    RemoveSnackPopup,
+    EditItemPopup,
+    EditSnackPopup,
+    AddSnackPopup,AddItemPopup
 };

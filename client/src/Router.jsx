@@ -21,7 +21,6 @@ import {
     OwnResourceRedirect,
     FAQpage,
     NewUserPage,
-    InventoryPage,
     TodayOrdersPage,
     StudentOrdersPage,
     CanteensPage,
@@ -100,7 +99,6 @@ export const router = createBrowserRouter(
 
                 <Route element={<Redirect who={['contractor']} />}>
                     <Route element={<Layout />}>
-                        <Route path="inventory" element={<InventoryPage />} />
                         <Route
                             path="today-orders"
                             element={<TodayOrdersPage />}

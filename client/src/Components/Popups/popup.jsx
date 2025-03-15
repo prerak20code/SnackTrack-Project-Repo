@@ -4,6 +4,12 @@ import {
     RemoveStudentPopup,
     EditStudentPopup,
     NotificationsPopup,
+    RemoveItemPopup,
+    RemoveSnackPopup,
+    EditItemPopup,
+    EditSnackPopup,
+    AddSnackPopup,
+    AddItemPopup,
 } from '..';
 import { usePopupContext } from '../../Contexts';
 
@@ -40,10 +46,46 @@ export default function Popup() {
                     <EditStudentPopup />
                 </Wrapper>
             );
+        case 'removeSnack':
+            return (
+                <Wrapper>
+                    <RemoveSnackPopup />
+                </Wrapper>
+            );
+        case 'editSnack':
+            return (
+                <Wrapper>
+                    <EditSnackPopup />
+                </Wrapper>
+            );
+        case 'removeItem':
+            return (
+                <Wrapper>
+                    <RemoveItemPopup />
+                </Wrapper>
+            );
+        case 'editItem':
+            return (
+                <Wrapper>
+                    <EditItemPopup />
+                </Wrapper>
+            );
         case 'updateAvatar':
             return (
                 <Wrapper>
                     <UpdateAvatarPopup />
+                </Wrapper>
+            );
+        case 'addSnack':
+            return (
+                <Wrapper>
+                    <AddSnackPopup />
+                </Wrapper>
+            );
+        case 'addItem':
+            return (
+                <Wrapper>
+                    <AddItemPopup />
                 </Wrapper>
             );
         case 'notifications':

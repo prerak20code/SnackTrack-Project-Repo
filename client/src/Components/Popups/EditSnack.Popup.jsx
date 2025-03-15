@@ -1,44 +1,57 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { contractorService } from '../../Services';
-import { usePopupContext, useStudentContext } from '../../Contexts';
+import { usePopupContext, useSnackContext } from '../../Contexts';
 import { useNavigate } from 'react-router-dom';
 import { Button, InputField } from '..';
-import { verifyExpression, getRollNo } from '../../Utils';
+import { verifyExpression, fileRestrictions } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
+import { MAX_FILE_SIZE } from '../../Constants/constants';
 
-export default function EditStudentPopup() {
-    const { targetStudent, setStudents } = useStudentContext();
+export default function EditSnackPopup() {
+    const { setSnacks } = useSnackContext();
+    const { setShowPopup, popupInfo } = usePopupContext();
+    const ref = useRef();
+    const [imagePreview, setImagePreview] = useState(popupInfo.target.image);
     const [inputs, setInputs] = useState({
-        fullName: targetStudent?.fullName || '',
-        rollNo: getRollNo(targetStudent?.userName) || '',
+        name: popupInfo.target.name || '',
         password: '',
-        contractorPassword: '',
-        phoneNumber: targetStudent?.phoneNumber || '',
+        price: popupInfo.target.price || '',
+        image: null,
     });
     const [error, setError] = useState({
         root: '',
-        fullName: '',
-        rollNo: '',
+        name: '',
         password: '',
-        contractorPassword: '',
-        phoneNumber: '',
+        price: '',
+        image: '',
     });
     const [disabled, setDisabled] = useState(false);
-    const { setShowPopup } = usePopupContext();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [showContractorPassword, setShowContractorPassword] = useState(false);
     const navigate = useNavigate();
 
     async function handleChange(e) {
-        const { value, name } = e.target;
-        setInputs((prev) => ({ ...prev, [name]: value }));
+        const { value, name, files, type } = e.target;
+        setInputs((prev) => ({
+            ...prev,
+            [name]: type === 'file' ? files[0] : value,
+        }));
+        if (type === 'file') {
+            const file = files[0];
+            setImagePreview(URL.createObjectURL(file));
+            if (!fileRestrictions(files[0])) {
+                setError((prev) => ({
+                    ...prev,
+                    image: `only PNG, JPG/JPEG files are allowed and File size should not exceed ${MAX_FILE_SIZE} MB`,
+                }));
+            } else setError((prev) => ({ ...prev, image: '' }));
+        }
     }
 
     const handleBlur = (e) => {
-        let { name, value } = e.target;
-        if (value) verifyExpression(name, value, setError);
+        let { name, value, type, files } = e.target;
+        if (value && type !== 'file') verifyExpression(name, value, setError);
     };
 
     function onMouseOver() {
@@ -57,24 +70,22 @@ export default function EditStudentPopup() {
         setLoading(true);
         setDisabled(true);
         try {
-            const res = await contractorService.updateStudentAccountDetails(
-                targetStudent._id,
-                inputs
+            const res = await contractorService.updateSnackDetails(
+                inputs,
+                popupInfo.target._id
             );
             if (res && !res.message) {
                 toast.success('Details updated successfully 👍');
-                setStudents((prev) =>
-                    prev.map((student) => {
-                        if (student._id === targetStudent._id) {
+                setSnacks((prev) =>
+                    prev.map((snack) => {
+                        if (snack._id === popupInfo.target._id) {
                             return {
-                                ...student,
-                                fullName: inputs.fullName,
-                                phoneNumber: inputs.phoneNumber,
-                                userName:
-                                    targetStudent.userName.slice(0, 4) +
-                                    inputs.rollNo,
+                                ...snack,
+                                name: inputs.name,
+                                price: inputs.price,
+                                image: res.image,
                             };
-                        } else return student;
+                        } else return snack;
                     })
                 );
                 setShowPopup(false);
@@ -90,35 +101,21 @@ export default function EditStudentPopup() {
     const inputFields = [
         {
             type: 'text',
-            name: 'rollNo',
-            label: 'Roll No',
-            placeholder: 'Enter new Roll Number',
+            name: 'name',
+            label: 'Name',
+            placeholder: 'Enter new Name',
             required: true,
         },
         {
-            type: 'text',
-            name: 'fullName',
-            label: 'FullName',
-            placeholder: 'Enter new full name',
-            required: true,
-        },
-        {
-            type: 'text',
-            name: 'phoneNumber',
-            label: 'PhoneNumber',
-            placeholder: 'Enter new Phone Number',
+            type: 'number',
+            name: 'price',
+            label: 'Price',
+            placeholder: 'Enter new Price',
             required: true,
         },
         {
             type: showPassword ? 'text' : 'password',
             name: 'password',
-            label: "Student's Password",
-            placeholder: "Enter student's password",
-            required: true,
-        },
-        {
-            type: showContractorPassword ? 'text' : 'password',
-            name: 'contractorPassword',
             label: 'Password',
             placeholder: 'Enter password to confirm update',
             required: true,
@@ -126,23 +123,15 @@ export default function EditStudentPopup() {
     ];
 
     const inputElements = inputFields.map((field) =>
-        field.name === 'password' || field.name === 'contractorPassword' ? (
+        field.name === 'password' ? (
             <InputField
                 key={field.name}
                 field={field}
                 handleChange={handleChange}
                 error={error}
                 inputs={inputs}
-                showPassword={
-                    field.name === 'contractorPassword'
-                        ? showContractorPassword
-                        : showPassword
-                }
-                setShowPassword={
-                    field.name === 'contractorPassword'
-                        ? setShowContractorPassword
-                        : setShowPassword
-                }
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
             />
         ) : (
             <div className="w-full" key={field.name}>
@@ -175,10 +164,10 @@ export default function EditStudentPopup() {
                 className="absolute top-2 right-2"
             />
 
-            <p className="text-2xl font-bold">Update Student Details</p>
+            <p className="text-2xl font-bold">Update Snack Details</p>
             <p className="text-[15px]">
-                <span className="font-medium">Roll No: </span>
-                {getRollNo(targetStudent.userName)}
+                <span className="font-medium">Name: </span>
+                {popupInfo.target.name}
             </p>
 
             <div className="w-full flex flex-col items-center justify-center gap-3 relative -top-2">
@@ -188,10 +177,39 @@ export default function EditStudentPopup() {
                     </div>
                 )}
 
+                {/* preview */}
+                <div
+                    className="cursor-pointer w-full mt-4 flex items-center justify-center"
+                    onClick={() => ref.current.click()}
+                >
+                    <img
+                        src={imagePreview}
+                        alt="preview"
+                        className={`hover:brightness-75 size-[120px] rounded-xl border-[0.2rem] object-cover ${
+                            error.image ? 'border-red-500' : 'border-green-500'
+                        }`}
+                    />
+                </div>
+
                 <form
                     onSubmit={handleSubmit}
                     className="flex flex-col items-start justify-center gap-2 w-full"
                 >
+                    <input
+                        type="file"
+                        name="image"
+                        id="image"
+                        className="hidden"
+                        onChange={handleChange}
+                        ref={ref}
+                    />
+
+                    {error.image && (
+                        <div className="text-sm px-2 text-red-500 w-full text-center">
+                            {error.image}
+                        </div>
+                    )}
+
                     {inputElements}
 
                     <div className="w-full">

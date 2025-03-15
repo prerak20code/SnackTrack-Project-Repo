@@ -1,48 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { SnackView } from '../../Components';
-import { snackService } from '../../Services';
-import { paginate } from '../../Utils';
+import { SnackView, Button } from '../../Components';
+import {
+    useSnackContext,
+    useSearchContext,
+    usePopupContext,
+} from '../../Contexts';
 import { icons } from '../../Assets/icons';
-import { LIMIT } from '../../Constants/constants';
-import { useContractorContext, useSearchContext } from '../../Contexts';
 
 export default function Snacks() {
-    const { snacks, setSnacks } = useContractorContext();
-    const [snacksInfo, setSnacksInfo] = useState({});
-    const [page, setPage] = useState(1);
+    const { snacks, loading } = useSnackContext();
     const { search } = useSearchContext();
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-
-    // pagination
-    const paginateRef = paginate(snacksInfo?.hasNextPage, loading, setPage);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-
-        (async function getSnacks() {
-            try {
-                setLoading(true);
-                const res = await snackService.getSnacks(signal, page, LIMIT);
-                if (res && !res.message) {
-                    setSnacks((prev) => [...prev, ...res.snacks]);
-                    setSnacksInfo(res.snacksInfo);
-                }
-            } catch (err) {
-                navigate('/server-error');
-            } finally {
-                setLoading(false);
-            }
-        })();
-
-        return () => {
-            controller.abort();
-            setSnacks([]);
-            setSnacksInfo({});
-        };
-    }, [page]);
+    const { setShowPopup, setPopupInfo } = usePopupContext();
 
     const snackElements = snacks
         ?.filter(
@@ -50,43 +17,40 @@ export default function Snacks() {
                 !search ||
                 snack.name.toLowerCase().includes(search.toLowerCase())
         )
-        .map((snack, index) => (
-            <SnackView
-                key={snack._id}
-                snack={snack}
-                reference={
-                    index + 1 === snack.length && snacksInfo?.hasNextPage
-                        ? paginateRef
-                        : null
-                }
-            />
-        ));
+        .map((snack) => <SnackView key={snack._id} snack={snack} />);
+
+    function addSnack() {
+        setShowPopup(true);
+        setPopupInfo({ type: 'addSnack' });
+    }
 
     return (
-        <div>
-            {snackElements.length > 0 && (
-                <div
-                    className={`grid gap-5 ${snackElements.length <= 2 ? 'grid-cols-[repeat(auto-fit,minmax(250px,350px))]' : 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))]'}`}
-                >
-                    {snackElements}
-                </div>
-            )}
-
+        <div className="md:px-6">
             {loading ? (
-                page === 1 ? (
-                    <div className="w-full text-center">
-                        loading first batch...
-                        {/* pulses */}
+                <div className="w-full text-center">loading...</div>
+            ) : snackElements.length > 0 ? (
+                <div className="relative">
+                    <Button
+                        onClick={addSnack}
+                        btnText={
+                            <div className="flex items-center justify-center gap-2">
+                                <div className="size-[20px] fill-white">
+                                    {icons.plus}
+                                </div>
+                                <span className="text-lg">Add Snack</span>
+                            </div>
+                        }
+                        title="Add Snack"
+                        className="absolute z-[10] -top-16 text-white rounded-md w-fit text-nowrap px-3 h-[40px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                    />
+                    <div
+                        className={`grid gap-5 ${snackElements.length <= 2 ? 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(250px,350px))]' : 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))]'}`}
+                    >
+                        {snackElements}
                     </div>
-                ) : (
-                    <div className="flex items-center justify-center my-2 w-full">
-                        <div className="size-7 fill-[#4977ec] dark:text-[#f7f7f7]">
-                            {icons.loading}
-                        </div>
-                    </div>
-                )
+                </div>
             ) : (
-                snackElements.length === 0 && <div>No Snacks Found !!</div>
+                <div>No Snacks Found !!</div>
             )}
         </div>
     );

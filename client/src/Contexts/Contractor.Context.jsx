@@ -3,22 +3,16 @@ import { createContext, useContext, useState } from 'react';
 const ContractorContext = createContext();
 
 const ContractorContextProvider = ({ children }) => {
-    const [snacks, setSnacks] = useState([]);
-    const [items, setItems] = useState([]);
-    const [targetSnack, setTargetSnack] = useState({});
-    const [targetItem, setTargetItem] = useState({});
+    const [contractors, setContractors] = useState([]);
+    const [targetContractor, setTargetContractor] = useState({});
 
     return (
         <ContractorContext.Provider
             value={{
-                snacks,
-                setSnacks,
-                targetSnack,
-                setTargetSnack,
-                items,
-                setItems,
-                targetItem,
-                setTargetItem,
+                contractors,
+                setContractors,
+                targetContractor,
+                setTargetContractor,
             }}
         >
             {children}

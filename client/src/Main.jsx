@@ -10,20 +10,23 @@ import {
     SideBarContextProvider,
     SearchContextProvider,
     ContractorContextProvider,
+    StudentContextProvider,
 } from './Contexts';
 
 function Root() {
     return (
         <UserContextProvider>
-            <ContractorContextProvider>
-                <PopupContextProvider>
-                    <SideBarContextProvider>
-                        <SearchContextProvider>
-                            <RouterProvider router={router} />
-                        </SearchContextProvider>
-                    </SideBarContextProvider>
-                </PopupContextProvider>
-            </ContractorContextProvider>
+            <StudentContextProvider>
+                <ContractorContextProvider>
+                    <PopupContextProvider>
+                        <SideBarContextProvider>
+                            <SearchContextProvider>
+                                <RouterProvider router={router} />
+                            </SearchContextProvider>
+                        </SideBarContextProvider>
+                    </PopupContextProvider>
+                </ContractorContextProvider>
+            </StudentContextProvider>
         </UserContextProvider>
     );
 }

@@ -145,7 +145,7 @@ export default function Sidebar() {
                 <motion.div
                     ref={sideBarRef}
                     onClick={closeSideBar}
-                    className="fixed inset-0 z-[1000]"
+                    className="fixed inset-0 z-[100] min-h-screen"
                     variants={backdropVariants}
                     initial="hidden"
                     animate="visible"
@@ -175,13 +175,15 @@ export default function Sidebar() {
                                 />
 
                                 <div className="flex gap-4 items-center">
-                                    <div className="block sm:hidden">
+                                    <div
+                                        className={`block ${user.role === 'student' ? 'sm:hidden' : 'md:hidden'}`}
+                                    >
                                         <Logout />
                                     </div>
                                     {/* avatar */}
                                     <div className="size-[40px] rounded-full overflow-hidden drop-shadow-sm hover:brightness-90">
                                         <img
-                                            src={user.avatar || icons.avatar}
+                                            src={user.avatar}
                                             alt="user avatar"
                                             className="size-full object-cover"
                                         />

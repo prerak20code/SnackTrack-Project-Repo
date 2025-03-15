@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { icons } from '../../Assets/icons';
 import { useSearchContext } from '../../Contexts';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 export default function Searchbar() {
     const { search, setSearch } = useSearchContext();
@@ -9,6 +9,7 @@ export default function Searchbar() {
     const [isTyping, setIsTyping] = useState(true);
     const typingIntervalRef = useRef(null);
     const location = useLocation();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     // List of random snack names for the typing effect
     const snackNames = [
@@ -21,16 +22,30 @@ export default function Searchbar() {
         'Search "Tikki"',
     ];
 
-    // Clear search when location changes
-    useEffect(() => setSearch(''), [location]);
+    // Sync search query with URL
+    useEffect(() => {
+        const urlSearch = searchParams.get('search') || '';
+        setSearch(urlSearch); // Update search state from URL
+    }, [location.search]); // Trigger when URL search changes
+
+    // Update URL when search state changes
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+        if (search) {
+            params.set('search', search); // Set search query in URL
+        } else {
+            params.delete('search'); // Remove search query from URL
+        }
+        setSearchParams(params);
+    }, [search]); // Trigger when search state changes
 
     // Function to simulate typing effect with smooth transitions
     const startTypingEffect = () => {
-        let currentIndex = 0;
-        let currentText = '';
-        let isDeleting = false;
+        let currentIndex = 0,
+            currentText = '',
+            isDeleting = false;
 
-        const type = () => {
+        (function type() {
             const currentSnack = snackNames[currentIndex];
 
             if (isDeleting) {
@@ -41,7 +56,6 @@ export default function Searchbar() {
                 currentText = currentSnack.substring(0, currentText.length + 1);
             }
 
-            // Update the placeholder
             setPlaceholder(currentText);
 
             // Check if the current snack name is fully typed or deleted
@@ -57,10 +71,7 @@ export default function Searchbar() {
             // Schedule the next character typing/deletion
             const delay = isDeleting ? 50 : 100; // Faster deletion for smoother effect
             typingIntervalRef.current = setTimeout(type, delay);
-        };
-
-        // Start typing
-        type();
+        })();
     };
 
     // Start the typing effect when the component mounts
@@ -78,10 +89,8 @@ export default function Searchbar() {
     // Stop the typing effect when the input is focused
     const handleFocus = () => {
         setIsTyping(false);
-        if (typingIntervalRef.current) {
-            clearTimeout(typingIntervalRef.current);
-        }
-        setPlaceholder(''); // Clear the placeholder
+        if (typingIntervalRef.current) clearTimeout(typingIntervalRef.current);
+        setPlaceholder('');
     };
 
     // Restart the typing effect when the input loses focus
@@ -110,9 +119,7 @@ export default function Searchbar() {
                 <div
                     onClick={() => {
                         setSearch('');
-                        setTimeout(() => {
-                            setIsTyping(true);
-                        }, 1000);
+                        setTimeout(() => setIsTyping(true), 1000);
                     }}
                     className="hover:bg-gray-100 rounded-full absolute right-2 p-[5px] cursor-pointer top-[50%] translate-y-[-50%]"
                 >

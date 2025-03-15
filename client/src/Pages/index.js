@@ -18,8 +18,10 @@ import StudentOrdersPage from './StudentOrders.Page';
 import CanteensPage from './Canteens.Page';
 import ContractorsPage from './Contractors.Page';
 import CartPage from './Cart.Page';
+import BillsPage from './Bills.Page';
 
 export {
+    BillsPage,
     AboutUsPage,
     HomePage,
     LoginPage,
@@ -38,5 +40,6 @@ export {
     TodayOrdersPage,
     StudentOrdersPage,
     CanteensPage,
-    ContractorsPage,CartPage
+    ContractorsPage,
+    CartPage,
 };

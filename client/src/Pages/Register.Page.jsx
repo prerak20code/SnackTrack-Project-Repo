@@ -12,12 +12,13 @@ import toast from 'react-hot-toast';
 export default function RegisterPage() {
     const initialInputs = {
         fullName: '',
-        rollNo: '',
         password: '',
         phoneNumber: '',
     };
     const { user } = useUserContext();
-    if (user.role !== 'contractor') initialInputs.email = '';
+    user.role === 'contractor'
+        ? (initialInputs.rollNo = '')
+        : (initialInputs.email = '');
     const initialError = { ...initialInputs, root: '' };
     const [inputs, setInputs] = useState(initialInputs);
     const [error, setError] = useState(initialError);
@@ -52,7 +53,7 @@ export default function RegisterPage() {
         setLoading(true);
         setDisabled(true);
         try {
-            let res;
+            let res = null;
             if (user.role === 'contractor') {
                 res = await contractorService.registerStudent(inputs);
             } else if (user.role === 'admin') {
@@ -60,14 +61,17 @@ export default function RegisterPage() {
             }
             if (res && !res.message) {
                 toast.success('Account created successfully');
-            } else setError((prev) => ({ ...prev, root: res.message }));
+                setError(initialError);
+                setInputs(initialInputs);
+            } else {
+                setError((prev) => ({ ...prev, root: res.message }));
+            }
         } catch (err) {
             navigate('/server-error');
         } finally {
             setDisabled(false);
             setLoading(false);
-            setError(initialError);
-            setInputs(initialInputs);
+            setShowPassword(false);
         }
     }
 
@@ -188,7 +192,7 @@ export default function RegisterPage() {
                 />
             </div>
 
-            <div className="w-[400px] flex flex-col items-center justify-center gap-3">
+            <div className="max-w-[400px] flex flex-col items-center justify-center gap-3">
                 {error.root && (
                     <div className="text-red-500 w-full text-center">
                         {error.root}

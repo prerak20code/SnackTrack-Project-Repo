@@ -66,7 +66,7 @@ export default function Snacks() {
         <div>
             {snackElements.length > 0 && (
                 <div
-                    className={`grid gap-5 ${snackElements.length <= 2 ? 'grid-cols-[repeat(auto-fit,minmax(300px,350px))]' : 'grid-cols-[repeat(auto-fit,minmax(300px,1fr))]'}`}
+                    className={`grid gap-5 ${snackElements.length <= 2 ? 'grid-cols-[repeat(auto-fit,minmax(250px,350px))]' : 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))]'}`}
                 >
                     {snackElements}
                 </div>

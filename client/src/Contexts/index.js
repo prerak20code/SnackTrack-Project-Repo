@@ -6,6 +6,7 @@ import {
     useContractorContext,
     ContractorContextProvider,
 } from './Contractor.Context';
+import { useStudentContext, StudentContextProvider } from './Student.Context';
 
 export {
     useUserContext,
@@ -18,4 +19,6 @@ export {
     useSearchContext,
     useContractorContext,
     ContractorContextProvider,
+    useStudentContext,
+    StudentContextProvider,
 };

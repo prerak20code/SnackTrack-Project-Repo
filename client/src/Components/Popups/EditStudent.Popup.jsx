@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { contractorService } from '../../Services';
-import { usePopupContext, useContractorContext } from '../../Contexts';
+import { usePopupContext, useStudentContext } from '../../Contexts';
 import { useNavigate } from 'react-router-dom';
 import { Button, InputField } from '..';
 import { verifyExpression, getRollNo } from '../../Utils';
@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
 
 export default function EditStudentPopup() {
-    const { targetStudent, setStudents } = useContractorContext();
+    const { targetStudent, setStudents } = useStudentContext();
     const [inputs, setInputs] = useState({
         fullName: targetStudent?.fullName || '',
         rollNo: getRollNo(targetStudent?.userName) || '',

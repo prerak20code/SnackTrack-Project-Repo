@@ -1,5 +1,5 @@
 import { Button, InputField } from '..';
-import { usePopupContext, useContractorContext } from '../../Contexts';
+import { usePopupContext, useStudentContext } from '../../Contexts';
 import { icons } from '../../Assets/icons';
 import { useNavigate } from 'react-router-dom';
 import { contractorService } from '../../Services';
@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 export default function RemoveStudentPopup() {
     const [loading, setLoading] = useState(false);
     const { setShowPopup } = usePopupContext();
-    const { setStudents, targetStudent } = useContractorContext();
+    const { setStudents, targetStudent } = useStudentContext();
     const navigate = useNavigate();
     const [check, setCheck] = useState(false);
     const [disabled, setDisabled] = useState(false);

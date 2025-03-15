@@ -2,7 +2,8 @@ import Header from './Layout/Header';
 import Footer from './Layout/Footer';
 import Sidebar from './Layout/Sidebar';
 import Layout from './Layout/Layout';
-import Searchbar from './Layout/Searchbar';
+import Searchbar from './General/Searchbar';
+import Filter from './General/Filter';
 import Button from './General/Button';
 import InputField from './General/InputField';
 import ContributorCard from './General/ContributorCard';
@@ -20,11 +21,16 @@ import PackagedItemView from './Views/PackagedItemView';
 import StudentView from './Views/StudentView';
 import Snacks from './Views/Snacks';
 import PackagedItems from './Views/PackagedItems';
+import PendingOrders from './Views/PendingOrders';
+import CompletedOrders from './Views/CompletedOrders';
+import EditSnacks from './Views/EditSnacks';
+import EditPackagedItems from './Views/EditPackagedItems';
 
 export {
     Header,
     Footer,
     Sidebar,
+    Filter,
     Logout,
     Layout,
     Button,
@@ -44,4 +50,8 @@ export {
     PackagedItemView,
     Snacks,
     PackagedItems,
+    PendingOrders,
+    CompletedOrders,
+    EditPackagedItems,
+    EditSnacks,
 };

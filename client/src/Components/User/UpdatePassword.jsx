@@ -99,6 +99,9 @@ export default function UpdatePassword() {
         } finally {
             setDisabled(false);
             setLoading(false);
+            setShowPassword(false);
+            setShowNewPassword(false);
+            setShowConfirmPassword(false);
         }
     }
 

@@ -3,6 +3,7 @@ import {
     BAD_REQUEST,
     NOT_FOUND,
     COOKIE_OPTIONS,
+    USER_PLACEHOLDER_IMAGE_URL,
 } from '../Constants/index.js';
 import bcrypt from 'bcrypt';
 import { verifyExpression, tryCatch, ErrorHandler } from '../Utils/index.js';
@@ -253,6 +254,7 @@ const registerContractor = tryCatch(
 
             const contractor = await Contractor.create({
                 ...data,
+                avatar: USER_PLACEHOLDER_IMAGE_URL,
                 canteenId: canteen._id,
             });
             canteen.contractorId = contractor._id;
@@ -263,54 +265,50 @@ const registerContractor = tryCatch(
         }
     }
 );
+
 const changeContractor = tryCatch(
     'change contractor',
     async (req, res, next) => {
-        try {
-            const data = {
-                fullName: req.body.fullName.trim(),
-                email: req.body.email.trim(),
-                phoneNumber: req.body.phoneNumber,
-                password: req.body.password,
-                refreshToken: '',
-            };
+        const data = {
+            fullName: req.body.fullName.trim(),
+            email: req.body.email.trim(),
+            phoneNumber: req.body.phoneNumber,
+            password: req.body.password,
+            refreshToken: '',
+        };
 
-            const { canteenId } = req.params;
+        const { canteenId } = req.params;
 
-            // input error handling
-            if (!fullName || !email || !phoneNumber || !canteenId) {
-                return next(new ErrorHandler('missing fields', BAD_REQUEST));
-            }
-            for (const [key, value] of Object.entries(data)) {
-                if (value) {
-                    const isValid = verifyExpression(key, value);
-                    if (!isValid) {
-                        return next(
-                            new ErrorHandler(`${key} is invalid.`, BAD_REQUEST)
-                        );
-                    }
+        // input error handling
+        if (!fullName || !email || !phoneNumber || !canteenId) {
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+        for (const [key, value] of Object.entries(data)) {
+            if (value) {
+                const isValid = verifyExpression(key, value);
+                if (!isValid) {
+                    return next(
+                        new ErrorHandler(`${key} is invalid.`, BAD_REQUEST)
+                    );
                 }
             }
-
-            const canteen = await Canteen.findById(canteenId);
-            if (!canteen) {
-                return next(new ErrorHandler('canteen not found', NOT_FOUND));
-            }
-
-            // update contractor details
-            const updatedContractor = await Contractor.findByIdAndUpdate(
-                canteen.contractorId,
-                data,
-                { new: true }
-            );
-            return res.status(OK).json({
-                message: 'Contractor details updated successfully',
-                updatedContractor,
-            });
-        } catch (err) {
-            if (avatarURL) await deleteFromCloudinary(avatarURL);
-            throw err;
         }
+
+        const canteen = await Canteen.findById(canteenId);
+        if (!canteen) {
+            return next(new ErrorHandler('canteen not found', NOT_FOUND));
+        }
+
+        // update contractor details
+        const updatedContractor = await Contractor.findByIdAndUpdate(
+            canteen.contractorId,
+            { $set: { ...data, avatar: USER_PLACEHOLDER_IMAGE_URL } },
+            { new: true }
+        );
+        return res.status(OK).json({
+            message: 'Contractor details updated successfully',
+            updatedContractor,
+        });
     }
 );
 
@@ -391,55 +389,8 @@ const removeCanteen = tryCatch('remove canteen', async (req, res, next) => {});
 
 // hostel management tasks
 const getCanteens = tryCatch('get canteens', async (req, res) => {
-    const { limit = 10, page = 1 } = req.query; // Pagination
-
-    const result = await Canteen.aggregatePaginate(
-        [
-            { $match: {} }, // Fetch all canteens
-            {
-                $lookup: {
-                    from: 'hostels',
-                    localField: 'hostelId',
-                    foreignField: '_id',
-                    as: 'hostelInfo',
-                },
-            },
-            {
-                $unwind: {
-                    path: '$hostelInfo',
-                    preserveNullAndEmptyArrays: true,
-                },
-            }, // Keeps canteens even if no hostel is linked
-            {
-                $project: {
-                    name: 1,
-                    location: 1,
-                    contractor: 1,
-                    'hostelInfo.type': 1,
-                    'hostelInfo.number': 1,
-                },
-            },
-        ],
-        {
-            page: parseInt(page),
-            limit: parseInt(limit),
-            sort: { createdAt: -1 },
-        }
-    );
-
-    if (result.docs.length) {
-        const data = {
-            canteens: result.docs,
-            canteensInfo: {
-                hasNextPage: result.hasNextPage,
-                hasPrevPage: result.hasPrevPage,
-                totalCanteens: result.totalDocs,
-            },
-        };
-        return res.status(200).json(data);
-    } else {
-        return res.status(200).json({ message: 'No canteens found' });
-    }
+    const canteens = await Canteen.find();
+    return res.status(200).json(canteens);
 });
 
 export {

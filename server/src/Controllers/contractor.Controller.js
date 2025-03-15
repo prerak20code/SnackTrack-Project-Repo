@@ -3,6 +3,8 @@ import {
     BAD_REQUEST,
     NOT_FOUND,
     COOKIE_OPTIONS,
+    USER_PLACEHOLDER_IMAGE_URL,
+    SNACK_PLACEHOLDER_IMAGE_URL,
 } from '../Constants/index.js';
 import bcrypt from 'bcrypt';
 import { verifyExpression, tryCatch, ErrorHandler } from '../Utils/index.js';
@@ -13,6 +15,7 @@ import {
 } from '../Helpers/index.js';
 import { Canteen, Contractor, Snack, Student } from '../Models/index.js';
 import { Types } from 'mongoose';
+
 // personal usage
 const login = tryCatch('login as contractor', async (req, res, next) => {
     const { emailOrPhoneNo, password } = req.body;
@@ -197,15 +200,16 @@ const registerNewStudent = tryCatch(
                     );
                 }
             }
+            const canteen = await Canteen.findById(contractor.canteenId);
             data.userName =
-                contractor.hostelType +
-                contractor.hostelNumber +
-                '-' +
-                data.rollNo;
+                canteen.hostelType + canteen.hostelNumber + '-' + data.rollNo;
 
-            // check if user already exists with this roll no
+                // check if user already exists with this roll no
             const existingStudent = await Student.findOne({
-                userName: data.userName,
+                $or: [
+                    { userName: data.userName },
+                    { phoneNumber: data.phoneNumber },
+                ],
             });
             if (existingStudent) {
                 return next(
@@ -221,6 +225,7 @@ const registerNewStudent = tryCatch(
                 userName: data.userName,
                 phoneNumber: data.phoneNumber,
                 password: data.password,
+                avatar: USER_PLACEHOLDER_IMAGE_URL,
             });
 
             return res.status(OK).json(student);
@@ -261,8 +266,13 @@ const removeStudent = tryCatch(
         const contractor = req.user;
         const { password } = req.body;
 
+        const isPassValid = bcrypt.compareSync(password, contractor.password);
+        if (!isPassValid) {
+            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+        }
+
         // a contractor can remove the student only if the student belongs to his canteen
-        const student = await Student.findOne({
+        const student = await Student.findOneAndDelete({
             _id: studentId,
             canteenId: contractor.canteenId,
         });
@@ -270,14 +280,9 @@ const removeStudent = tryCatch(
             return next(new ErrorHandler('student not found', NOT_FOUND));
         }
 
-        const isPassValid = bcrypt.compareSync(password, contractor.password);
-        if (!isPassValid) {
-            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+        if (student.avatar !== USER_PLACEHOLDER_IMAGE_URL) {
+            await deleteFromCloudinary(student.avatar);
         }
-
-        if (student.avatar) await deleteFromCloudinary(student.avatar);
-
-        await Student.findByIdAndDelete(studentId);
 
         return res.status(OK).json({ message: 'account deleted successfully' });
     }
@@ -383,7 +388,7 @@ const addSnack = tryCatch('add snack', async (req, res, next) => {
             canteenId: contractor.canteenId,
             name,
             price,
-            image,
+            image: image || SNACK_PLACEHOLDER_IMAGE_URL,
         });
         return res.status(OK).json(snack);
     } catch (err) {
@@ -396,46 +401,60 @@ const deleteSnack = tryCatch('delete post', async (req, res) => {
     const { snackId } = req.params;
     const contractor = req.user;
     // to delete a snack that should belong to the contractor's canteen
-    const snack = await Snack.findOne({
+    const snack = await Snack.findOneAndDelete({
         _id: snackId,
         canteenId: contractor.canteenId,
     });
     if (!snack) return next(new ErrorHandler('snack not found', NOT_FOUND));
-    if (snack.image) await deleteFromCloudinary(snack.image);
-    await snack.remove();
+    if (snack.image !== SNACK_PLACEHOLDER_IMAGE_URL) {
+        await deleteFromCloudinary(snack.image);
+    }
     return res.status(OK).json({ message: 'snack deleted successfully' });
 });
 
 const updateSnackDetails = tryCatch(
     'update snack details',
     async (req, res, next) => {
-        const { snackId } = req.params;
-        const contractor = req.user;
-        const { name, price } = req.body;
-        const image = req.file?.path;
+        let imageURL;
+        try {
+            const { snackId } = req.params;
+            const contractor = req.user;
+            const { name, price } = req.body;
+            let image = req.file?.path;
 
-        if (!name && !price && !req.file) {
-            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+            if (!name && !price && !req.file) {
+                return next(new ErrorHandler('missing fields', BAD_REQUEST));
+            }
+
+            if (image) {
+                imageURL = (await uploadOnCloudinary(image))?.secure_url;
+            }
+
+            // a contractor can update the snack details only if the snack belongs to his canteen
+            const snack = await Snack.findOneAndUpdate(
+                { _id: snackId, canteenId: contractor.canteenId },
+                {
+                    $set: {
+                        ...(name && { name }),
+                        ...(price && { price }),
+                        ...(image && { image: imageURL }),
+                    },
+                },
+                { new: true }
+            );
+
+            if (!snack) {
+                if (imageURL) await deleteFromCloudinary(imageURL);
+                return next(new ErrorHandler('snack not found', NOT_FOUND));
+            }
+
+            return res
+                .status(OK)
+                .json({ message: 'snack details updated successfully' });
+        } catch (err) {
+            if (imageURL) await deleteFromCloudinary(imageURL);
+            throw err;
         }
-
-        // a contractor can update the snack details only if the snack belongs to his canteen
-        const snack = await Snack.findOne({
-            _id: snackId,
-            canteenId: contractor.canteenId,
-        });
-        if (!snack) {
-            if (image) fs.unlinkSync(image);
-            return next(new ErrorHandler('snack not found', NOT_FOUND));
-        }
-
-        snack.image = image || snack.image;
-        snack.name = name || snack.name;
-        snack.price = price || snack.price;
-        await snack.save();
-
-        return res
-            .status(OK)
-            .json({ message: 'snack details updated successfully' });
     }
 );
 
@@ -444,15 +463,13 @@ const toggleSnackAvailability = tryCatch(
     async (req, res) => {
         const { snackId } = req.params;
         const contractor = req.user;
+
         // a contractor can update the snack details only if the snack belongs to his canteen
         const snack = await Snack.findOne({
             _id: snackId,
             canteenId: contractor.canteenId,
         });
-        if (!snack) {
-            if (image) fs.unlinkSync(image);
-            return next(new ErrorHandler('snack not found', NOT_FOUND));
-        }
+        if (!snack) return next(new ErrorHandler('snack not found', NOT_FOUND));
 
         snack.isAvailable = !snack.isAvailable;
         await snack.save();
@@ -464,40 +481,23 @@ const toggleSnackAvailability = tryCatch(
 
 // packaged food management tasks
 const addItem = tryCatch('add item', async (req, res, next) => {
-    let imageURL;
-    try {
-        const contractor = req.user;
-        const { name, price, availableCount } = req.body;
-        let image = req.file?.path;
+    const contractor = req.user;
+    const { name, price, availableCount } = req.body;
 
-        // Validate required fields
-        if (!name || !price || !availableCount) {
-            if (image) fs.unlinkSync(image);
-            return next(new ErrorHandler('missing fields', BAD_REQUEST));
-        }
-
-        // Upload image on cloudinary if provided
-        if (image) {
-            image = await uploadOnCloudinary(image);
-            image = image.secure_url;
-            imageURL = image;
-        }
-
-        // Create new packaged food item
-        const item = await PackagedFood.create({
-            canteenId: contractor.canteenId,
-            name,
-            price,
-            availableCount,
-            image,
-        });
-
-        return res.status(OK).json(item);
-    } catch (err) {
-        // Clean up uploaded image if error occurs
-        if (imageURL) await deleteFromCloudinary(imageURL);
-        throw err;
+    // Validate required fields
+    if (!name || !price || !availableCount) {
+        return next(new ErrorHandler('missing fields', BAD_REQUEST));
     }
+
+    // Create new packaged food item
+    const item = await PackagedFood.create({
+        canteenId: contractor.canteenId,
+        name,
+        price,
+        availableCount,
+    });
+
+    return res.status(OK).json(item);
 });
 
 const deleteItem = tryCatch('delete item', async (req, res, next) => {
@@ -505,21 +505,13 @@ const deleteItem = tryCatch('delete item', async (req, res, next) => {
     const contractor = req.user;
 
     // Find the item and ensure it belongs to the contractor's canteen
-    const item = await PackagedFood.findOne({
+    const item = await PackagedFood.findOneAndDelete({
         _id: itemId,
         canteenId: contractor.canteenId,
     });
     if (!item) {
         return next(new ErrorHandler('item not found', NOT_FOUND));
     }
-
-    // Delete the item's image from Cloudinary if it exists
-    if (item.image) {
-        await deleteFromCloudinary(item.image);
-    }
-
-    // Delete the item
-    await item.remove();
 
     return res.status(OK).json({ message: 'item deleted successfully' });
 });
@@ -530,50 +522,29 @@ const updateItemDetails = tryCatch(
         const { itemId } = req.params;
         const contractor = req.user;
         const { name, category, variants } = req.body;
-        const image = req.file?.path;
 
         // Validate required fields
-        if (!name && !category && !variants && !req.file) {
-            if (image) fs.unlinkSync(image);
+        if (!name && !category && !variants) {
             return next(new ErrorHandler('missing fields', BAD_REQUEST));
         }
 
         // Find the item and ensure it belongs to the contractor's canteen
-        const item = await PackagedFood.findOne({
-            _id: itemId,
-            canteenId: contractor.canteenId,
-        });
-        if (!item) {
-            if (image) fs.unlinkSync(image);
-            return next(new ErrorHandler('item not found', NOT_FOUND));
-        }
-
-        let imageURL;
-        try {
-            // Upload new image on cloudinary if provided
-            if (image) {
-                imageURL = await uploadOnCloudinary(image);
-                imageURL = imageURL.secure_url;
-            }
-
-            // Update item details
-            item.name = name || item.name;
-            item.category = category || item.category;
-            item.variants = variants || item.variants;
-            item.image = imageURL || item.image;
-
-            await item.save();
-
-            // Delete old image if it exists and a new image was uploaded
-            if (imageURL && item.image !== imageURL) {
-                await deleteFromCloudinary(item.image);
-            }
-
-            return res.status(OK).json(item);
-        } catch (err) {
-            if (imageURL) await deleteFromCloudinary(imageURL);
-            throw err;
-        }
+        const item = await PackagedFood.findOneAndUpdate(
+            {
+                _id: itemId,
+                canteenId: contractor.canteenId,
+            },
+            {
+                $set: {
+                    ...(name && { name }),
+                    ...(category && { category }),
+                    ...(variants && { variants }),
+                },
+            },
+            { new: true }
+        );
+        if (!item) return next(new ErrorHandler('item not found', NOT_FOUND));
+        return res.status(OK).json(item);
     }
 );
 

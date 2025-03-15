@@ -50,7 +50,7 @@ export default function SettingsPage() {
                                     setShowPopup(true);
                                     setPopupInfo({ type: 'updateAvatar' });
                                 }}
-                                className="drop-shadow-md absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%] rounded-md p-1 bg-[#d3d3d3] border-[0.01rem] border-[#c7c7c7]"
+                                className="drop-shadow-md absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%] rounded-md p-1 bg-[#f9f9f9] border-[0.01rem] border-[#4977ec]"
                             />
                         </div>
                     </div>

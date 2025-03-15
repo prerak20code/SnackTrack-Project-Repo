@@ -86,6 +86,7 @@ export default function UpdateAccountDetails() {
         } finally {
             setDisabled(false);
             setLoading(false);
+            setShowPassword(false);
         }
     }
 

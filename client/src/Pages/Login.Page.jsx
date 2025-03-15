@@ -1,22 +1,37 @@
 import { LOGO } from '../Constants/constants';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useUserContext } from '../Contexts';
 import { studentService, contractorService, adminService } from '../Services';
-import { Button, InputField } from '../Components';
+import { Button, Filter, InputField } from '../Components';
 import { icons } from '../Assets/icons';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [inputs, setInputs] = useState({ loginInput: '', password: '' });
-    const [role, setRole] = useState('');
+    const role = searchParams.get('role') || '';
+    const hostel = searchParams.get('hostel') || '';
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const { setUser } = useUserContext();
     const navigate = useNavigate();
+    const [hostels, setHostels] = useState([
+        { value: '', label: 'Select Hostel' },
+    ]);
+
+    // Clear query parameters on initial load
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+        if (params.has('role') || params.has('hostel')) {
+            params.delete('role');
+            params.delete('hostel');
+            setSearchParams(params);
+        }
+    }, []); // Empty dependency array ensures this runs only once on mount
 
     function handleChange(e) {
         const { value, name } = e.target;
@@ -24,9 +39,45 @@ export default function LoginPage() {
     }
 
     function onMouseOver() {
-        if (!inputs.loginInput || !inputs.password) setDisabled(true);
-        else setDisabled(false);
+        if (
+            !inputs.loginInput ||
+            !inputs.password ||
+            (role === 'student' && !hostel) ||
+            !role
+        ) {
+            setDisabled(true);
+        } else setDisabled(false);
     }
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        (async function getCanteens() {
+            try {
+                const res = await adminService.getCanteens(signal);
+                if (res && !res.message) {
+                    setHostels((prev) => [
+                        ...prev,
+                        ...res.map(
+                            ({ hostelType, hostelNumber, hostelName }) => ({
+                                value: hostelType + hostelNumber,
+                                label:
+                                    hostelType +
+                                    hostelNumber +
+                                    ' - ' +
+                                    hostelName,
+                            })
+                        ),
+                    ]);
+                }
+            } catch (err) {
+                navigate('/server-error');
+            }
+        })();
+
+        return () => controller.abort();
+    }, []);
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -47,7 +98,7 @@ export default function LoginPage() {
                 });
             } else {
                 res = await studentService.login({
-                    userName: inputs.loginInput,
+                    userName: `${hostel}-${inputs.loginInput}`,
                     password: inputs.password,
                 });
             }
@@ -67,18 +118,21 @@ export default function LoginPage() {
         }
     }
 
-    const roles = ['student', 'contractor', 'admin'];
+    const roles = [
+        { value: '', label: 'Select Role' },
+        { value: 'student', label: 'Student' },
+        { value: 'contractor', label: 'Contractor' },
+        { value: 'admin', label: 'Admin' },
+    ];
 
     const inputFields = [
         {
-            type: 'text',
+            type: role === 'student' ? 'number' : 'email',
             name: 'loginInput',
-            label: role === 'student' ? 'Username' : 'Email',
+            label: role === 'student' ? 'Roll No' : 'Email',
             value: inputs.loginInput,
             placeholder:
-                role === 'student'
-                    ? 'Enter your username, ex: GH8-123'
-                    : 'Enter your email',
+                role === 'student' ? 'Enter your Roll no' : 'Enter your email',
             required: true,
             show: role,
         },
@@ -133,45 +187,35 @@ export default function LoginPage() {
                     className="h-[0.05rem] relative -top-1 bg-[#333333]"
                 />
             </div>
-            <div className="mt-3 text-black w-[400px]">
+            <div className="text-black max-w-[500px] min-w-[300px] mt-4 flex flex-col items-center">
                 {error && (
-                    <div className="text-red-500 w-full text-center mb-2">
+                    <div className="text-red-500 relative -top-2 w-full text-center mb-6">
                         {error}
                     </div>
                 )}
 
-                {/* ROLE SELECTION CHECKBOXES */}
-                <div className="w-full">
-                    <p className="font-medium mb-2">Are you a:</p>
-                    <div className="flex gap-4">
-                        {roles.map((option) => (
-                            <label
-                                key={option}
-                                className="flex items-center gap-2 cursor-pointer"
-                            >
-                                <input
-                                    type="radio"
-                                    name="role"
-                                    value={option}
-                                    checked={role === option}
-                                    onChange={(e) => setRole(e.target.value)}
-                                    className="hidden"
-                                />
-                                <div
-                                    className={`w-5 h-5 border-2 rounded-full flex items-center justify-center
-                                ${role === option ? 'border-blue-500' : 'border-gray-400'}`}
-                                >
-                                    {role === option && (
-                                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                                    )}
-                                </div>
-                                {option}
-                            </label>
-                        ))}
-                    </div>
-                </div>
+                <Filter
+                    options={roles}
+                    defaultOption=""
+                    className="mb-6 w-full"
+                    queryParamName="role"
+                />
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <form
+                    onSubmit={handleSubmit}
+                    className="w-full flex flex-col gap-4"
+                >
+                    {role === 'student' && (
+                        <div className="w-full flex justify-center">
+                            <Filter
+                                options={hostels}
+                                defaultOption=""
+                                className="mb-0 w-full"
+                                queryParamName="hostel"
+                            />
+                        </div>
+                    )}
+
                     {inputElements}
 
                     <div>

@@ -74,7 +74,7 @@ export default function Footer() {
 
                 {/* Quick Links */}
                 <div className="flex flex-col gap-4">
-                    <p className="text-black font-semibold text-[18px] underline underline-offset-2">
+                    <p className="text-center text-black font-semibold text-[18px] underline underline-offset-2">
                         Quick Links
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -87,28 +87,32 @@ export default function Footer() {
                     onSubmit={submitFeedback}
                     className="flex flex-col gap-4 max-w-[350px] w-full"
                 >
-                    <p className="text-black font-semibold text-[18px] underline underline-offset-2">
+                    <p className="text-black text-center font-semibold text-[18px] underline underline-offset-2">
                         Provide Feedback
                     </p>
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="text"
-                            placeholder="Your Feedback..."
-                            value={feedback.content}
-                            onChange={handleChange}
-                            className="flex-1 bg-white shadow-sm border border-gray-300 rounded-lg px-3 h-[32px] text-sm focus:border-[#4977ec] focus:outline-none"
-                        />
-                        <input
-                            type="email"
-                            placeholder="Your Email"
-                            value={feedback.email}
-                            onChange={handleChange}
-                            className="flex-1 bg-white shadow-sm border border-gray-300 rounded-lg px-3 h-[32px] text-sm focus:border-[#4977ec] focus:outline-none"
-                        />
+                    <div className="flex flex-col items-center w-full gap-2">
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Your Feedback..."
+                                value={feedback.content}
+                                onChange={handleChange}
+                                className="flex-1 bg-white shadow-sm border border-gray-300 rounded-lg px-3 h-[32px] text-sm focus:border-[#4977ec] focus:outline-none"
+                            />
+                        </div>
+                        <div>
+                            <input
+                                type="email"
+                                placeholder="Your Email"
+                                value={feedback.email}
+                                onChange={handleChange}
+                                className="flex-1 bg-white shadow-sm border border-gray-300 rounded-lg px-3 h-[32px] text-sm focus:border-[#4977ec] focus:outline-none"
+                            />
+                        </div>
                         <Button
                             btnText="Submit"
                             type="submit"
-                            className="bg-[#4977ec] hover:bg-[#3b62c2] text-white px-3 h-[32px] rounded-md transition-colors duration-300"
+                            className="bg-[#4977ec] hover:bg-[#3b62c2] text-white px-3 w-fit h-[32px] rounded-md transition-colors duration-300"
                         />
                     </div>
                 </form>

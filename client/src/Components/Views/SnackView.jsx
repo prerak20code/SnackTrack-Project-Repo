@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
-import { LOGO } from '../../Constants/constants';
 import { useContractorContext, useUserContext } from '../../Contexts';
 import { contractorService } from '../../Services';
 
@@ -41,7 +40,7 @@ export default function SnackView({ snack, reference }) {
             <div className="h-[180px] w-full rounded-xl overflow-hidden shadow-md">
                 <img
                     alt="snack image"
-                    src={image || LOGO}
+                    src={image}
                     className="w-full h-full object-cover"
                 />
             </div>

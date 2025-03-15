@@ -6,7 +6,10 @@ import {
     Admin,
     PackagedFood,
 } from './Models/index.js';
-import bcrypt from 'bcrypt';
+import {
+    USER_PLACEHOLDER_IMAGE_URL,
+    SNACK_PLACEHOLDER_IMAGE_URL,
+} from './Constants/index.js';
 
 export const seedDatabase = async () => {
     try {
@@ -42,6 +45,7 @@ export const seedDatabase = async () => {
             email: 'john@example.com',
             password: password,
             phoneNumber: '1234567890',
+            avatar: USER_PLACEHOLDER_IMAGE_URL,
         });
 
         // Seed Students
@@ -52,6 +56,7 @@ export const seedDatabase = async () => {
                 fullName: 'Alice Smith',
                 phoneNumber: '9876543210',
                 password: password,
+                avatar: USER_PLACEHOLDER_IMAGE_URL,
             },
             {
                 canteenId: canteen1._id,
@@ -59,6 +64,7 @@ export const seedDatabase = async () => {
                 fullName: 'Bob Johnson',
                 phoneNumber: '9876543211',
                 password: password,
+                avatar: USER_PLACEHOLDER_IMAGE_URL,
             },
             {
                 canteenId: canteen2._id,
@@ -66,6 +72,7 @@ export const seedDatabase = async () => {
                 fullName: 'Charlie Brown',
                 phoneNumber: '9876543212',
                 password: password,
+                avatar: USER_PLACEHOLDER_IMAGE_URL,
             },
             {
                 canteenId: canteen2._id,
@@ -73,6 +80,7 @@ export const seedDatabase = async () => {
                 fullName: 'Daisy Miller',
                 phoneNumber: '9876543213',
                 password: password,
+                avatar: USER_PLACEHOLDER_IMAGE_URL,
             },
         ]);
 
@@ -82,36 +90,42 @@ export const seedDatabase = async () => {
                 canteenId: canteen1._id,
                 name: 'Samosa',
                 price: 15,
+                image: SNACK_PLACEHOLDER_IMAGE_URL,
                 isAvailable: true,
             },
             {
                 canteenId: canteen1._id,
                 name: 'Sandwich',
                 price: 30,
+                image: SNACK_PLACEHOLDER_IMAGE_URL,
                 isAvailable: true,
             },
             {
                 canteenId: canteen1._id,
                 name: 'Puff',
                 price: 20,
+                image: SNACK_PLACEHOLDER_IMAGE_URL,
                 isAvailable: false,
             },
             {
                 canteenId: canteen2._id,
                 name: 'Burger',
                 price: 40,
+                image: SNACK_PLACEHOLDER_IMAGE_URL,
                 isAvailable: true,
             },
             {
                 canteenId: canteen2._id,
                 name: 'Paneer Roll',
                 price: 50,
+                image: SNACK_PLACEHOLDER_IMAGE_URL,
                 isAvailable: true,
             },
             {
                 canteenId: canteen2._id,
                 name: 'Vada Pav',
                 price: 20,
+                image: SNACK_PLACEHOLDER_IMAGE_URL,
                 isAvailable: false,
             },
         ]);
@@ -173,6 +187,7 @@ export const seedDatabase = async () => {
             phoneNumber: '9999999999',
             email: 'admin@example.com',
             password: password,
+            avatar: USER_PLACEHOLDER_IMAGE_URL,
         });
 
         console.log('Seeding completed successfully');

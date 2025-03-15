@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Layout } from './Components';
 import { useSideBarContext, useUserContext, usePopupContext } from './Contexts';
 import { userService } from './Services';
 import { icons } from './Assets/icons';
 
 export default function App() {
     const [loading, setLoading] = useState(true);
-    const { user, setUser } = useUserContext();
+    const { setUser } = useUserContext();
     const { setShowSideBar } = useSideBarContext();
     const { setShowPopup } = usePopupContext();
     const navigate = useNavigate();
@@ -59,8 +58,6 @@ export default function App() {
                         Please refresh the page, if it takes too long
                     </p>
                 </div>
-            ) : user ? (
-                <Layout />
             ) : (
                 <Outlet />
             )}

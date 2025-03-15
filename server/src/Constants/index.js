@@ -1,4 +1,9 @@
-import { MAX_FILE_SIZE, ALLOWED_EXT } from './files.js';
+import {
+    MAX_FILE_SIZE,
+    ALLOWED_EXT,
+    USER_PLACEHOLDER_IMAGE_URL,
+    SNACK_PLACEHOLDER_IMAGE_URL,
+} from './files.js';
 import { COOKIE_OPTIONS, CORS_OPTIONS, WHITELIST } from './options.js';
 import {
     OK,
@@ -12,6 +17,8 @@ import {
 export {
     MAX_FILE_SIZE,
     ALLOWED_EXT,
+    USER_PLACEHOLDER_IMAGE_URL,
+    SNACK_PLACEHOLDER_IMAGE_URL,
     COOKIE_OPTIONS,
     CORS_OPTIONS,
     WHITELIST,

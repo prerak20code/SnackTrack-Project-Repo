@@ -105,7 +105,7 @@ export default function AboutUsPage() {
                     dining experience.
                 </p>
                 <div className="flex w-full justify-center">
-                    <div className="mt-8 flex flex-wrap justify-evenly w-full">
+                    <div className="mt-8 flex flex-wrap justify-evenly gap-x-4 gap-y-8 w-full">
                         {CONTRIBUTORS.map((contributor) => (
                             <div
                                 key={contributor.name}

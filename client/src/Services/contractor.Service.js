@@ -195,8 +195,6 @@ class ContractorService {
         }
     }
 
-    
-
     async updateStudentAccountDetails(
         studentId,
         { fullName, phoneNumber, rollNo, password, contractorPassword }

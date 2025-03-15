@@ -3,7 +3,7 @@ import { studentService } from '../Services';
 import { paginate } from '../Utils';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-    useContractorContext,
+    useStudentContext,
     usePopupContext,
     useSearchContext,
     useUserContext,
@@ -13,7 +13,7 @@ import { Button, StudentView } from '../Components';
 import { icons } from '../Assets/icons';
 
 export default function StudentsPage() {
-    const { students, setStudents } = useContractorContext();
+    const { students, setStudents } = useStudentContext();
     const { setPopupInfo, setShowPopup } = usePopupContext();
     const [studentsInfo, setStudentsInfo] = useState({});
     const [loading, setLoading] = useState(false);
@@ -22,6 +22,8 @@ export default function StudentsPage() {
     const { search } = useSearchContext();
     const navigate = useNavigate();
     const { canteenId } = useParams();
+
+    // pagination
     const paginateRef = paginate(studentsInfo?.hasNextPage, loading, setPage);
 
     useEffect(() => {
@@ -80,7 +82,7 @@ export default function StudentsPage() {
     }
 
     return (
-        <div className="lg:p-8 pt-4 lg:pt-4">
+        <div className="sm:p-8 pt-4 sm:pt-4">
             {studentElements.length > 0 && (
                 <div className="w-full">
                     {user.role === 'contractor' && (
@@ -101,7 +103,7 @@ export default function StudentsPage() {
                         </div>
                     )}
                     <div
-                        className={`grid gap-6 ${studentElements.length <= 1 ? 'grid-cols-[repeat(auto-fit,minmax(300px,550px))]' : 'grid-cols-[repeat(auto-fit,minmax(300px,1fr))]'}`}
+                        className={`grid gap-6 ${studentElements.length <= 1 ? 'grid-cols-[repeat(auto-fit,minmax(350px,550px))]' : 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'}`}
                     >
                         {studentElements}
                     </div>

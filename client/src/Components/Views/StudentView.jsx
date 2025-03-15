@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
-import { LOGO } from '../../Constants/constants';
 import {
     usePopupContext,
-    useContractorContext,
+    useStudentContext,
     useUserContext,
 } from '../../Contexts';
 import { getRollNo } from '../../Utils';
@@ -12,7 +11,7 @@ import { getRollNo } from '../../Utils';
 export default function StudentView({ student, reference }) {
     const { _id, avatar, fullName, userName, phoneNumber } = student;
     const { setShowPopup, setPopupInfo } = usePopupContext();
-    const { setTargetStudent } = useContractorContext();
+    const { setTargetStudent } = useStudentContext();
     const navigate = useNavigate();
     const { user } = useUserContext();
 
@@ -40,7 +39,7 @@ export default function StudentView({ student, reference }) {
                         <div className="size-[80px] overflow-hidden rounded-full drop-shadow-md">
                             <img
                                 alt="student avatar"
-                                src={avatar || LOGO}
+                                src={avatar}
                                 className="size-full object-cover"
                             />
                         </div>

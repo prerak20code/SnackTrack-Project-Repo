@@ -1,7 +1,7 @@
 import { Button, InputField } from '..';
 import {
     usePopupContext,
-    useContractorContext,
+    useStudentContext,
     useUserContext,
 } from '../../Contexts';
 import { icons } from '../../Assets/icons';
@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 export default function RemoveAllStudentsPopup() {
     const [loading, setLoading] = useState(false);
     const { setShowPopup } = usePopupContext();
-    const { setStudents } = useContractorContext();
+    const { setStudents } = useStudentContext();
     const navigate = useNavigate();
     const { user } = useUserContext();
     const [check, setCheck] = useState(false);

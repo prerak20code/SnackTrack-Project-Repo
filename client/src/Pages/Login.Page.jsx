@@ -3,7 +3,12 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useUserContext } from '../Contexts';
-import { studentService, contractorService, adminService } from '../Services';
+import {
+    studentService,
+    contractorService,
+    adminService,
+    userService,
+} from '../Services';
 import { Button, Filter, InputField } from '../Components';
 import { icons } from '../Assets/icons';
 import toast from 'react-hot-toast';
@@ -55,7 +60,7 @@ export default function LoginPage() {
 
         (async function getCanteens() {
             try {
-                const res = await adminService.getCanteens(signal);
+                const res = await userService.getCanteens(signal);
                 if (res && !res.message) {
                     setHostels((prev) => [
                         ...prev,

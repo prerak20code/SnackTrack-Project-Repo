@@ -17,10 +17,7 @@ export default function Redirect({ who = ['admin', 'contractor', 'student'] }) {
         }
     }, [user, navigate]);
 
-    if (!user || !who.includes(user.role)) {
-        // removes that fraction of seconds lag
-        return null;
-    }
+    if (!user || !who.includes(user.role)) return null; // removes that fraction of seconds lag
 
     return <Outlet />;
 }

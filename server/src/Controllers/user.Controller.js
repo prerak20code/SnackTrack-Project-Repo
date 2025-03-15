@@ -46,4 +46,9 @@ const logout = tryCatch('logout user', async (req, res, next) => {
         .json({ message: 'user loggedout successfully' });
 });
 
-export { getCurrentUser, logout };
+const getCanteens = tryCatch('get canteens', async (req, res) => {
+    const canteens = await Canteen.find();
+    return res.status(200).json(canteens);
+});
+
+export { getCurrentUser, logout, getCanteens };

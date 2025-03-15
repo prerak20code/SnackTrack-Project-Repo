@@ -18,6 +18,7 @@ import {
     ServerErrorPage,
     NotFoundPage,
     Redirect,
+    OwnResourceRedirect,
     FAQpage,
     NewUserPage,
     InventoryPage,
@@ -57,11 +58,13 @@ export const router = createBrowserRouter(
                     <Route element={<Layout renderTemplate={false} />}>
                         <Route path="register" element={<RegisterPage />} />
                     </Route>
-                    <Route element={<Layout />}>
-                        <Route
-                            path="students/:canteenId"
-                            element={<StudentsPage />} // only that particular canteen
-                        />
+                    <Route
+                        path="students/:canteenId"
+                        element={<OwnResourceRedirect />}
+                    >
+                        <Route element={<Layout />}>
+                            <Route path="" element={<StudentsPage />} />
+                        </Route>
                     </Route>
                 </Route>
 
@@ -69,23 +72,27 @@ export const router = createBrowserRouter(
 
                 <Route element={<Redirect who={['student', 'contractor']} />}>
                     <Route element={<Layout />}>
-                        <Route
-                            path="orders/:studentId"
-                            element={<StudentOrdersPage />} // only that particular student
-                        />
+                        <Route path="bills" element={<BillsPage />} />
+                    </Route>
+                    <Route
+                        path="orders/:studentId"
+                        element={<OwnResourceRedirect />}
+                    >
+                        <Route element={<Layout />}>
+                            <Route path="" element={<StudentOrdersPage />} />
+                        </Route>
                     </Route>
                 </Route>
 
                 {/* accessable to admin only */}
 
-                <Route element={<Redirect who={['student', 'contractor']} />}>
+                <Route element={<Redirect who={['admin']} />}>
                     <Route element={<Layout />}>
                         <Route path="canteens" element={<CanteensPage />} />
                         <Route
                             path="contractors"
                             element={<ContractorsPage />}
                         />
-                        <Route path="bills" element={<BillsPage />} />
                     </Route>
                 </Route>
 

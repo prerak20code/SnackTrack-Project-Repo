@@ -389,8 +389,7 @@ const removeCanteen = tryCatch('remove canteen', async (req, res, next) => {});
 
 // hostel management tasks
 const getCanteens = tryCatch('get canteens', async (req, res) => {
-    const canteens = await Canteen.find();
-    return res.status(200).json(canteens);
+    // return canteens populated with contractor info
 });
 
 export {

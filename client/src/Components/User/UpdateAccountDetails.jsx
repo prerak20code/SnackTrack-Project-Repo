@@ -15,14 +15,8 @@ export default function UpdateAccountDetails() {
         phoneNumber: user.phoneNumber,
         password: '',
     };
-    const initialErrors = {
-        fullName: '',
-        email: '',
-        phoneNumber: '',
-        password: '',
-    };
     const [inputs, setInputs] = useState(initialInputs);
-    const [error, setError] = useState(initialErrors);
+    const [error, setError] = useState({});
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -61,7 +55,7 @@ export default function UpdateAccountDetails() {
         e.preventDefault();
         setLoading(true);
         setDisabled(true);
-        setError(initialErrors);
+        setError({});
         try {
             let res = null;
             if (user.role === 'contractor') {
@@ -167,7 +161,7 @@ export default function UpdateAccountDetails() {
                                 btnText="Cancel"
                                 onClick={() => {
                                     setInputs(initialInputs);
-                                    setError(initialErrors);
+                                    setError({});
                                 }}
                                 disabled={loading}
                                 className="text-white rounded-md h-[40px] text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"

@@ -17,13 +17,8 @@ export default function UpdatePassword() {
         newPassword: '',
         confirmPassword: '',
     };
-    const nullErrors = {
-        oldPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-    };
     const [inputs, setInputs] = useState(initialInputs);
-    const [error, setError] = useState(nullErrors);
+    const [error, setError] = useState({});
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const navigate = useNavigate();
@@ -56,7 +51,7 @@ export default function UpdatePassword() {
         e.preventDefault();
         setLoading(true);
         setDisabled(true);
-        setError(nullErrors);
+        setError({});
         try {
             if (inputs.newPassword !== inputs.confirmPassword) {
                 setError((prevError) => ({
@@ -70,22 +65,14 @@ export default function UpdatePassword() {
                     newPassword: 'new password should not match old password',
                 }));
             } else {
-                let res = null;
+                let res = null,
+                    payload = [inputs.oldPassword, inputs.newPassword];
                 if (user.role === 'student') {
-                    res = await studentService.updatePassword(
-                        inputs.oldPassword,
-                        inputs.newPassword
-                    );
+                    res = await studentService.updatePassword(...payload);
                 } else if (user.role === 'admin') {
-                    res = await adminService.updatePassword(
-                        inputs.oldPassword,
-                        inputs.newPassword
-                    );
+                    res = await adminService.updatePassword(...payload);
                 } else {
-                    res = await contractorService.updatePassword(
-                        inputs.oldPassword,
-                        inputs.newPassword
-                    );
+                    res = await contractorService.updatePassword(...payload);
                 }
                 if (res && res.message === 'password updated successfully') {
                     setInputs(initialInputs);
@@ -194,7 +181,7 @@ export default function UpdatePassword() {
                             disabled={loading}
                             onClick={() => {
                                 setInputs(initialInputs);
-                                setError(nullErrors);
+                                setError({});
                             }}
                             className="text-white rounded-md h-[40px] text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
                         />

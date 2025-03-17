@@ -6,7 +6,10 @@ import { Button, InputField } from '..';
 import { verifyExpression, fileRestrictions } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
-import { MAX_FILE_SIZE , SNACK_PLACEHOLDER_IMAGE} from '../../Constants/constants';
+import {
+    MAX_FILE_SIZE,
+    SNACK_PLACEHOLDER_IMAGE,
+} from '../../Constants/constants';
 
 export default function EditSnackPopup() {
     const { setSnacks } = useSnackContext();
@@ -19,13 +22,7 @@ export default function EditSnackPopup() {
         price: popupInfo.target.price || '',
         image: null,
     });
-    const [error, setError] = useState({
-        root: '',
-        name: '',
-        password: '',
-        price: '',
-        image: '',
-    });
+    const [error, setError] = useState({});
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);

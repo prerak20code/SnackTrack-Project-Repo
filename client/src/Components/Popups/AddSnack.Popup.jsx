@@ -22,13 +22,7 @@ export default function AddSnackPopup() {
         price: '',
         image: null,
     });
-    const [error, setError] = useState({
-        root: '',
-        name: '',
-        password: '',
-        price: '',
-        image: '',
-    });
+    const [error, setError] = useState({});
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -58,12 +52,15 @@ export default function AddSnackPopup() {
 
     const handleBlur = (e) => {
         let { name, value, type } = e.target;
-        if (value && type !== 'file') verifyExpression(name, value, setError);
+        if (value && type !== 'file' && name !== 'password')
+            verifyExpression(name, value, setError);
     };
 
     function onMouseOver() {
         if (
-            Object.values(inputs).some((value) => !value) ||
+            Object.entries(inputs).some(
+                ([key, value]) => !value && key !== 'image'
+            ) ||
             Object.entries(error).some(
                 ([key, value]) => value && key !== 'root'
             )
@@ -76,13 +73,16 @@ export default function AddSnackPopup() {
         e.preventDefault();
         setLoading(true);
         setDisabled(true);
+        setError({});
         try {
             const res = await contractorService.addSnack(inputs);
             if (res && !res.message) {
-                toast.success('Details updated successfully 👍');
+                toast.success('Snack added successfully 👍');
                 setSnacks((prev) => [res, ...prev]);
                 setShowPopup(false);
-            } else setError((prev) => ({ ...prev, root: res.message }));
+            } else {
+                setError((prev) => ({ ...prev, root: res.message }));
+            }
         } catch (err) {
             navigate('/server-error');
         } finally {
@@ -159,7 +159,7 @@ export default function AddSnackPopup() {
 
             <p className="text-2xl font-bold">Add New Snack</p>
 
-            <div className="w-full flex flex-col items-center justify-center gap-3 relative -top-2">
+            <div className="w-full flex flex-col items-center justify-center gap-3">
                 {error.root && (
                     <div className="text-red-500 w-full text-center">
                         {error.root}
@@ -168,7 +168,7 @@ export default function AddSnackPopup() {
 
                 {/* preview */}
                 <div
-                    className="cursor-pointer w-full mt-4 flex items-center justify-center"
+                    className="cursor-pointer w-full mt-3 flex items-center justify-center"
                     onClick={() => ref.current.click()}
                 >
                     <img

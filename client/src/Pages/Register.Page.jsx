@@ -19,9 +19,8 @@ export default function RegisterPage() {
     user.role === 'contractor'
         ? (initialInputs.rollNo = '')
         : (initialInputs.email = '');
-    const initialError = { ...initialInputs, root: '' };
     const [inputs, setInputs] = useState(initialInputs);
-    const [error, setError] = useState(initialError);
+    const [error, setError] = useState({});
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -52,6 +51,7 @@ export default function RegisterPage() {
         e.preventDefault();
         setLoading(true);
         setDisabled(true);
+        setError({});
         try {
             let res = null;
             if (user.role === 'contractor') {
@@ -61,7 +61,6 @@ export default function RegisterPage() {
             }
             if (res && !res.message) {
                 toast.success('Account created successfully');
-                setError(initialError);
                 setInputs(initialInputs);
             } else {
                 setError((prev) => ({ ...prev, root: res.message }));

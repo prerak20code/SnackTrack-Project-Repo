@@ -13,13 +13,10 @@ export default function AddItemPopup() {
         category: '',
         password: '',
     });
+
     const [variants, setVariants] = useState([]);
-    const [error, setError] = useState({
-        root: '',
-        category: '',
-        password: '',
-    });
-    const [variantErrors, setVariantErrors] = useState({}); 
+    const [error, setError] = useState({});
+    const [variantErrors, setVariantErrors] = useState({});
     const [disabled, setDisabled] = useState(false);
     const { setShowPopup } = usePopupContext();
     const [loading, setLoading] = useState(false);
@@ -84,7 +81,7 @@ export default function AddItemPopup() {
             Object.entries(error).some(
                 ([key, value]) => value && key !== 'root'
             ) ||
-            Object.values(variantErrors).some((error) => error) 
+            Object.values(variantErrors).some((error) => error)
         ) {
             setDisabled(true);
         } else setDisabled(false);
@@ -98,6 +95,7 @@ export default function AddItemPopup() {
         }
         setLoading(true);
         setDisabled(true);
+        setError({});
         try {
             const res = await contractorService.addItem({
                 ...inputs,

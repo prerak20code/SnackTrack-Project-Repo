@@ -16,14 +16,7 @@ export default function EditStudentPopup() {
         contractorPassword: '',
         phoneNumber: targetStudent?.phoneNumber || '',
     });
-    const [error, setError] = useState({
-        root: '',
-        fullName: '',
-        rollNo: '',
-        password: '',
-        contractorPassword: '',
-        phoneNumber: '',
-    });
+    const [error, setError] = useState({});
     const [disabled, setDisabled] = useState(false);
     const { setShowPopup } = usePopupContext();
     const [loading, setLoading] = useState(false);

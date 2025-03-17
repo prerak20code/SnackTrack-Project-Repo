@@ -392,20 +392,22 @@ const addSnack = tryCatch('add snack', async (req, res, next) => {
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
-        // upload image on cloudinary if have any
-        if (image) {
-            image = (await uploadOnCloudinary(image))?.secure_url;
-            imageURL = image;
-        }
-
         const alreadyExists = await Snack.findOne({
-            name: name.toLowerCase(),
+            // case insensitive
+            name: { $regex: new RegExp(`^${name}$`, 'i') },
             canteenId: new Types.ObjectId(contractor.canteenId),
         });
         if (alreadyExists) {
             if (image) await deleteFromCloudinary(image);
             return next(new ErrorHandler('snack already exists', BAD_REQUEST));
         }
+
+        // upload image on cloudinary if have any
+        if (image) {
+            image = (await uploadOnCloudinary(image))?.secure_url;
+            imageURL = image;
+        }
+
         const snack = await Snack.create({
             canteenId: contractor.canteenId,
             name,
@@ -472,7 +474,10 @@ const updateSnackDetails = tryCatch(
             }
 
             if (snack.name.toLowerCase() !== name.toLowerCase()) {
-                const alreadyExists = await Snack.findOne({ name });
+                const alreadyExists = await Snack.findOne({
+                    // case insensitive
+                    name: { $regex: new RegExp(`^${name}$`, 'i') },
+                });
                 if (alreadyExists) {
                     return next(
                         new ErrorHandler('snack already exists', BAD_REQUEST)
@@ -534,7 +539,8 @@ const addItem = tryCatch('add item', async (req, res, next) => {
 
     const alreadyExists = await PackagedFood.findOne({
         canteenId: new Types.ObjectId(contractor.canteenId),
-        category: category.toLowerCase(),
+        // case insensitive
+        category: { $regex: new RegExp(`^${category}$`, 'i') },
     });
     if (alreadyExists) {
         return next(new ErrorHandler('category already exists', BAD_REQUEST));
@@ -596,7 +602,8 @@ const updateItemDetails = tryCatch(
         if (item.category.toLowerCase() !== category.toLowerCase()) {
             const existingItem = await PackagedFood.findOne({
                 canteenId: new Types.ObjectId(contractor.canteenId),
-                category: category.toLowerCase(),
+                // case insensitive
+                category: { $regex: new RegExp(`^${category}$`, 'i') },
             });
 
             if (existingItem) {

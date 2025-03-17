@@ -15,14 +15,9 @@ export default function AddItemPopup() {
         password: '',
     });
     const [variants, setVariants] = useState(popupInfo.target.variants);
-    const [error, setError] = useState({
-        root: '',
-        category: '',
-        password: '',
-    });
+    const [error, setError] = useState({});
     const [variantErrors, setVariantErrors] = useState({});
     const [disabled, setDisabled] = useState(false);
-
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();

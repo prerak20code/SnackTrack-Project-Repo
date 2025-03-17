@@ -31,7 +31,7 @@ export default function InputField({
                     {field.label} :
                 </label>
             </div>
-            <div className="relative">
+            <div className="relative w-full">
                 <input
                     type={field.type}
                     name={field.name}

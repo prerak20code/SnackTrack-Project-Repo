@@ -13,6 +13,7 @@ import {
     generateTokens,
 } from '../Helpers/index.js';
 import { Admin, Contractor, Canteen } from '../Models/index.js';
+import { nanoid } from 'nanoid';
 
 // personal usage
 
@@ -209,16 +210,23 @@ const registerContractor = tryCatch(
                 fullName: req.body.fullName.trim(),
                 email: req.body.email.trim(),
                 phoneNumber: req.body.phoneNumber,
-                password: req.body.password,
             };
-
+            const admin = req.user,
+                password = req.body.password;
             const { canteenId } = req.params;
+
+            const isPassValid = bcrypt.compareSync(password, admin.password);
+            if (!isPassValid) {
+                return next(
+                    new ErrorHandler('invalid credentials', BAD_REQUEST)
+                );
+            }
 
             // input error handling
             if (
-                !fullName ||
-                !email ||
-                !phoneNumber ||
+                !data.fullName ||
+                !data.email ||
+                !data.phoneNumber ||
                 !password ||
                 !canteenId
             ) {
@@ -235,7 +243,16 @@ const registerContractor = tryCatch(
                 }
             }
 
-            const canteen = await Canteen.findById(canteenId);
+            const [canteen, alreadyExists] =
+                await Promise.all[
+                    (Canteen.findById(canteenId),
+                    Contractor.findOne({
+                        $or: [
+                            { email: data.email },
+                            { phoneNumber: data.phoneNumber },
+                        ],
+                    }))
+                ];
             if (!canteen) {
                 return next(new ErrorHandler('canteen not found', NOT_FOUND));
             }
@@ -248,14 +265,22 @@ const registerContractor = tryCatch(
                         BAD_REQUEST
                     )
                 );
+            } else if (alreadyExists) {
+                return next(
+                    new ErrorHandler('contractor already exists', BAD_REQUEST)
+                );
             }
 
+            // TODO: ⭐ EMAIL verification will be done here
+            const randomeCode = nanoid(6, '1234567890'),
+                randomPassword = nanoid(8);
             // hash the password (auto done by pre hook in model)
 
             const contractor = await Contractor.create({
                 ...data,
+                password: randomPassword,
                 avatar: USER_PLACEHOLDER_IMAGE_URL,
-                canteenId: canteen._id,
+                canteenId,
             });
             canteen.contractorId = contractor._id;
             await canteen.save();

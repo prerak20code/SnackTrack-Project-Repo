@@ -125,15 +125,17 @@ class ContractorService {
 
     // student management tasks
 
-    async registerStudent({ fullName, rollNo, password, phoneNumber }) {
+    async registerStudent({ fullName, rollNo, password, phoneNumber, email }) {
         try {
             const res = await fetch('/api/contractors/students', {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     fullName,
                     rollNo,
                     password,
+                    email,
                     phoneNumber,
                 }),
             });

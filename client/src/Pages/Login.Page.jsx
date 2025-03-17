@@ -159,7 +159,6 @@ export default function LoginPage() {
                     key={field.name}
                     field={field}
                     handleChange={handleChange}
-                    error={error}
                     inputs={inputs}
                     showPassword={showPassword}
                     setShowPassword={setShowPassword}
@@ -168,7 +167,7 @@ export default function LoginPage() {
     );
 
     return (
-        <div className="text-black flex flex-col items-center justify-center gap-5 fixed z-[100] bg-white inset-0">
+        <div className="text-black flex flex-col items-center justify-center gap-5 overflow-y-scroll fixed z-[100] bg-white inset-0">
             <Link
                 to={'/'}
                 className="w-fit flex items-center justify-center hover:brightness-95"
@@ -221,11 +220,13 @@ export default function LoginPage() {
                         </div>
                     )}
 
-                    {inputElements}
+                    <div className="w-full flex flex-col gap-2">
+                        {inputElements}
+                    </div>
 
                     <div>
                         <Button
-                            className="text-white rounded-md py-2 mt-4 h-[45px] text-lg w-full flex items-center justify-center bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className="text-white rounded-md py-2 mt-2 h-[40px] text-lg w-full flex items-center justify-center bg-[#4977ec] hover:bg-[#3b62c2]"
                             onMouseOver={onMouseOver}
                             type="submit"
                             btnText={

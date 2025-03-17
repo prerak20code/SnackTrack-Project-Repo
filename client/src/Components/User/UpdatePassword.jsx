@@ -122,7 +122,6 @@ export default function UpdatePassword() {
                 <InputField
                     field={field}
                     handleChange={handleChange}
-                    error={error}
                     inputs={inputs}
                     showPassword={showPassword}
                     setShowPassword={setShowPassword}
@@ -137,7 +136,6 @@ export default function UpdatePassword() {
                     field={field}
                     handleBlur={handleBlur}
                     handleChange={handleChange}
-                    error={error}
                     inputs={inputs}
                     showPassword={
                         field.name === 'newPassword'

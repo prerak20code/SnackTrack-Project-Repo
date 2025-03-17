@@ -121,7 +121,6 @@ export default function UpdateAccountDetails() {
                 field={field}
                 handleBlur={handleBlur}
                 handleChange={handleChange}
-                error={error}
                 inputs={inputs}
                 showPassword={showPassword}
                 setShowPassword={setShowPassword}
@@ -212,19 +211,25 @@ export default function UpdateAccountDetails() {
                                 <span className="font-semibold text-lg">
                                     Full Name:{' '}
                                 </span>
-                                {inputs.fullName}
+                                {user.fullName}
                             </div>
                             <div>
                                 <span className="font-semibold text-lg">
                                     Roll No:{' '}
                                 </span>
-                                {inputs.rollNo}
+                                {getRollNo(user.userName)}
+                            </div>
+                            <div>
+                                <span className="font-semibold text-lg">
+                                    Email:{' '}
+                                </span>
+                                {user.email}
                             </div>
                             <div>
                                 <span className="font-semibold text-lg">
                                     Phone Number:{' '}
                                 </span>
-                                {inputs.phoneNumber}
+                                {user.phoneNumber}
                             </div>
                         </div>
                     </div>

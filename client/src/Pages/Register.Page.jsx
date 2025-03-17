@@ -14,6 +14,7 @@ export default function RegisterPage() {
         fullName: '',
         password: '',
         phoneNumber: '',
+        email: '',
     };
     const { user } = useUserContext();
     user.role === 'contractor'
@@ -33,7 +34,8 @@ export default function RegisterPage() {
 
     const handleBlur = (e) => {
         let { name, value } = e.target;
-        if (value) verifyExpression(name, value, setError);
+        if (value && name !== 'password')
+            verifyExpression(name, value, setError);
     };
 
     function onMouseOver() {
@@ -79,7 +81,7 @@ export default function RegisterPage() {
             type: 'text',
             name: 'rollNo',
             label: 'Roll No',
-            placeholder: 'Enter your hostel roll number',
+            placeholder: 'Enter Hostel Eoll Number',
             required: true,
             show: user.role === 'contractor',
         },
@@ -87,31 +89,34 @@ export default function RegisterPage() {
             type: 'text',
             name: 'fullName',
             label: 'FullName',
-            placeholder: 'Enter your full name',
+            placeholder: 'Enter Full Name',
+            required: true,
+            show: true,
+        },
+        {
+            type: 'email',
+            name: 'email',
+            label: 'Email',
+            placeholder: 'Enter Email',
             required: true,
             show: true,
         },
         {
             type: 'text',
-            name: 'email',
-            label: 'Email',
-            placeholder: 'Enter your email',
-            required: false,
-            show: user.role !== 'contractor',
-        },
-        {
-            type: 'text',
             name: 'phoneNumber',
             label: 'Phone Number',
-            placeholder: 'Enter your Phone Number',
+            placeholder: 'Enter Phone Number',
             required: true,
             show: true,
         },
         {
             type: showPassword ? 'text' : 'password',
             name: 'password',
-            label: 'Password',
-            placeholder: 'Create new password',
+            label:
+                user.role === 'contractor'
+                    ? "Contractor's Password"
+                    : "Admin's password",
+            placeholder: 'Enter password to confirm',
             required: true,
             show: true,
         },
@@ -124,23 +129,11 @@ export default function RegisterPage() {
                 <div className="w-full" key={field.name}>
                     <InputField
                         field={field}
-                        handleBlur={handleBlur}
                         handleChange={handleChange}
-                        error={error}
                         inputs={inputs}
                         showPassword={showPassword}
                         setShowPassword={setShowPassword}
                     />
-                    {error[field.name] && (
-                        <div className="text-red-500 text-xs font-medium">
-                            {error[field.name]}
-                        </div>
-                    )}
-                    {field.name === 'password' && !error.password && (
-                        <div className="text-xs">
-                            password must be 8-12 characters.
-                        </div>
-                    )}
                 </div>
             ) : (
                 <div className="w-full" key={field.name}>
@@ -148,11 +141,7 @@ export default function RegisterPage() {
                         field={field}
                         handleBlur={handleBlur}
                         handleChange={handleChange}
-                        error={error}
                         inputs={inputs}
-                        showPassword={showPassword}
-                        setShowPassword={setShowPassword}
-                        showPrecautions={true}
                     />
                     {error[field.name] && (
                         <div className="text-red-500 text-xs font-medium">
@@ -164,7 +153,7 @@ export default function RegisterPage() {
     );
 
     return (
-        <div className="py-10 text-black flex flex-col items-center justify-start gap-4 overflow-y-scroll z-[100] bg-white fixed inset-0">
+        <div className="py-10 text-black flex flex-col items-center justify-center gap-4 overflow-y-scroll z-[100] bg-white fixed inset-0">
             <Link
                 to={'/'}
                 className="w-fit flex items-center justify-center hover:brightness-95"
@@ -191,7 +180,7 @@ export default function RegisterPage() {
                 />
             </div>
 
-            <div className="max-w-[400px] flex flex-col items-center justify-center gap-3">
+            <div className="max-w-[500px] min-w-[300px] flex flex-col items-center justify-center gap-3">
                 {error.root && (
                     <div className="text-red-500 w-full text-center">
                         {error.root}
@@ -200,14 +189,16 @@ export default function RegisterPage() {
 
                 <form
                     onSubmit={handleSubmit}
-                    className="flex flex-col items-start justify-center gap-3 w-full"
+                    className="flex flex-col items-start justify-center gap-4 w-full"
                 >
-                    {inputElements}
+                    <div className="w-full flex flex-col gap-1">
+                        {inputElements}
+                    </div>
 
                     <div className="w-full">
                         <Button
                             type="submit"
-                            className="text-white rounded-md py-2 mt-4 h-[45px] flex items-center justify-center text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className="text-white rounded-md py-2 mt-2 h-[40px] flex items-center justify-center text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
                             disabled={disabled}
                             onMouseOver={onMouseOver}
                             btnText={
@@ -216,7 +207,7 @@ export default function RegisterPage() {
                                         {icons.loading}
                                     </div>
                                 ) : (
-                                    'Sign Up'
+                                    'Register'
                                 )
                             }
                         />

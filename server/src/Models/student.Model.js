@@ -20,9 +20,17 @@ const studentSchema = new Schema(
             type: String,
             required: true,
         },
+        email: {
+            type: String,
+            required: true,
+            trim: true,
+            lowercase: true,
+            unique: true,
+        },
         phoneNumber: {
             type: String,
             required: true,
+            unique: true,
         },
         avatar: {
             type: String,

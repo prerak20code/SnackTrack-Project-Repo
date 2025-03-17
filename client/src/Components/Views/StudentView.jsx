@@ -9,7 +9,7 @@ import {
 import { getRollNo } from '../../Utils';
 
 export default function StudentView({ student, reference }) {
-    const { _id, avatar, fullName, userName, phoneNumber } = student;
+    const { _id, avatar, fullName, userName, email, phoneNumber } = student;
     const { setShowPopup, setPopupInfo } = usePopupContext();
     const { setTargetStudent } = useStudentContext();
     const navigate = useNavigate();
@@ -30,7 +30,7 @@ export default function StudentView({ student, reference }) {
     return (
         <div
             ref={reference}
-            className="min-w-[250px] flex flex-col items-start justify-center gap-4 relative w-full p-4 bg-white drop-shadow-md rounded-2xl overflow-hidden"
+            className="min-w-[250px] flex flex-col items-start justify-center gap-4 relative w-full p-3 bg-white drop-shadow-md rounded-2xl overflow-hidden"
         >
             <div className="w-full flex justify-between gap-4">
                 <div className="flex items-center justify-start gap-4">
@@ -47,18 +47,22 @@ export default function StudentView({ student, reference }) {
 
                     {/* info */}
                     <div className="">
-                        <div className="text-ellipsis line-clamp-1 text-[18px] hover:text-[#5c5c5c] font-medium text-black w-fit">
+                        <div className="text-ellipsis line-clamp-1 hover:text-[#5c5c5c] text-[16px] font-semibold text-black w-fit">
                             {fullName}
                         </div>
 
-                        <div className="text-black hover:text-[#5c5c5c] text-[15px] w-fit">
+                        <div className="text-black hover:text-[#5c5c5c] text-[12px] w-fit">
                             <span className="font-medium">Roll No: </span>
                             {getRollNo(userName)}
                         </div>
 
-                        <div className="text-black hover:text-[#5c5c5c] text-[15px] w-fit">
+                        <div className="text-black hover:text-[#5c5c5c] text-[12px] w-fit">
                             <span className="font-medium">Phone Number: </span>{' '}
                             {phoneNumber}
+                        </div>
+
+                        <div className="text-black hover:text-[#5c5c5c] text-[12px] w-fit">
+                            <span className="font-medium">Email: </span> {email}
                         </div>
                     </div>
                 </div>
@@ -71,7 +75,7 @@ export default function StudentView({ student, reference }) {
                                     {icons.edit}
                                 </div>
                             }
-                            className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                            className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
                             onClick={editStudent}
                         />
                         <div>
@@ -81,7 +85,7 @@ export default function StudentView({ student, reference }) {
                                         {icons.delete}
                                     </div>
                                 }
-                                className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                                className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
                                 onClick={removeStudent}
                             />
                         </div>
@@ -95,7 +99,7 @@ export default function StudentView({ student, reference }) {
                         onClick={() => navigate(`/orders/${_id}`)}
                         btnText="View Orders"
                         title="View Orders"
-                        className="text-white rounded-md py-[5px] w-fit px-3 h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                        className="text-white rounded-md text-[15px] w-fit px-3 h-[30px] bg-[#4977ec] hover:bg-[#3b62c2]"
                     />
                 </div>
             )}

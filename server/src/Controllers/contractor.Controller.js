@@ -13,6 +13,7 @@ import {
     deleteFromCloudinary,
     generateTokens,
 } from '../Helpers/index.js';
+import { nanoid } from 'nanoid';
 import {
     Canteen,
     Contractor,
@@ -22,6 +23,7 @@ import {
 } from '../Models/index.js';
 import { Types } from 'mongoose';
 import fs from 'fs';
+import { sendMail } from '../mailer.js';
 
 // personal usage
 
@@ -186,18 +188,32 @@ const registerNewStudent = tryCatch(
                 fullName: req.body.fullName.trim(),
                 rollNo: req.body.rollNo.trim(),
                 phoneNumber: req.body.phoneNumber,
-                password: req.body.password,
+                email: req.body.email.trim().toLowerCase(),
             };
+
+            const password = req.body.password;
+
+            const isPassValid = bcrypt.compareSync(
+                password,
+                contractor.password
+            );
+            if (!isPassValid) {
+                return next(
+                    new ErrorHandler('invalid credentials', BAD_REQUEST)
+                );
+            }
 
             // input error handling
             if (
                 !data.fullName ||
                 !data.rollNo ||
                 !data.phoneNumber ||
-                !data.password
+                !data.email ||
+                !password
             ) {
                 return next(new ErrorHandler('missing fields', BAD_REQUEST));
             }
+
             for (const [key, value] of Object.entries(data)) {
                 const isValid = verifyExpression(key, value);
                 if (!isValid) {
@@ -206,22 +222,37 @@ const registerNewStudent = tryCatch(
                     );
                 }
             }
-            const canteen = await Canteen.findById(contractor.canteenId);
-            data.userName =
-                canteen.hostelType + canteen.hostelNumber + '-' + data.rollNo;
 
             // check if user already exists with this roll no
-            const existingStudent = await Student.findOne({
-                $or: [
-                    { userName: data.userName },
-                    { phoneNumber: data.phoneNumber },
-                ],
-            });
+            const [canteen, existingStudent] = await Promise.all([
+                Canteen.findById(contractor.canteenId),
+                Student.findOne({
+                    $or: [
+                        { userName: data.userName },
+                        { phoneNumber: data.phoneNumber },
+                        { email: data.email },
+                    ],
+                }),
+            ]);
+
             if (existingStudent) {
                 return next(
                     new ErrorHandler('user already exists', BAD_REQUEST)
                 );
             }
+
+            const randomCode = nanoid(6, '0123456789'), // Generate a random 6-digit numeric code for email verification
+                randomPassword = nanoid(8); // unique temporary random password
+
+            // EMAIL verification code
+            // await sendMail({
+            //     to: data.email,
+            //     subject: 'Welcome to SnackTrack',
+            //     html: `Hello ${data.fullName}, <br> Your Email verification code is ${randomCode}.`,
+            // });
+
+            data.userName =
+                canteen.hostelType + canteen.hostelNumber + '-' + data.rollNo;
 
             // hash the password (auto done by pre hook in model)
 
@@ -230,8 +261,16 @@ const registerNewStudent = tryCatch(
                 canteenId: contractor.canteenId,
                 userName: data.userName,
                 phoneNumber: data.phoneNumber,
-                password: data.password,
+                email: data.email,
+                password: randomPassword,
                 avatar: USER_PLACEHOLDER_IMAGE_URL,
+            });
+
+            // send this password on student's email
+            await sendMail({
+                to: data.email,
+                subject: 'Welcome to SnackTrack',
+                html: `Hello ${data.fullName}, <br> Your temporary password is ${randomPassword}, You can update it anytime after logging in from settings.`,
             });
 
             return res.status(OK).json(student);
@@ -302,8 +341,14 @@ const updateStudentAccountDetails = tryCatch(
     async (req, res, next) => {
         const contractor = req.user;
         const { studentId } = req.params;
-        const { fullName, phoneNumber, rollNo, password, contractorPassword } =
-            req.body;
+        const {
+            fullName,
+            phoneNumber,
+            email,
+            rollNo,
+            password,
+            contractorPassword,
+        } = req.body;
 
         const [student] = await Student.aggregate([
             {
@@ -351,6 +396,10 @@ const updateStudentAccountDetails = tryCatch(
             alreadyExists = await Student.findOne({ userName: newUserName });
         } else if (student.phoneNumber !== phoneNumber) {
             alreadyExists = await Student.findOne({ phoneNumber });
+        } else if (student.email !== email.toLowerCase()) {
+            alreadyExists = await Student.findOne({
+                email: email.toLowerCase(),
+            });
         }
         if (alreadyExists) {
             return next(new ErrorHandler('user already exists', BAD_REQUEST));
@@ -367,6 +416,7 @@ const updateStudentAccountDetails = tryCatch(
                 }),
                 ...(phoneNumber && { phoneNumber }),
                 ...(fullName && { fullName }),
+                ...(email && { email }),
             },
         });
 

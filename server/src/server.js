@@ -9,4 +9,6 @@ await connectDB();
 
 // await seedDatabase();
 
-app.listen(PORT, () => console.log(`server is listening on port ${PORT}...`));
+app.listen(PORT, () =>
+    console.log(`✅ server is listening on port ${PORT}...`)
+);

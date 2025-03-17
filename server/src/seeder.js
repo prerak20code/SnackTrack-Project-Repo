@@ -56,6 +56,7 @@ export const seedDatabase = async () => {
                 fullName: 'Alice Smith',
                 phoneNumber: '9876543210',
                 password: password,
+                email: 'student1@email.com',
                 avatar: USER_PLACEHOLDER_IMAGE_URL,
             },
             {
@@ -64,6 +65,7 @@ export const seedDatabase = async () => {
                 fullName: 'Bob Johnson',
                 phoneNumber: '9876543211',
                 password: password,
+                email: 'student2@email.com',
                 avatar: USER_PLACEHOLDER_IMAGE_URL,
             },
             {
@@ -72,6 +74,7 @@ export const seedDatabase = async () => {
                 fullName: 'Charlie Brown',
                 phoneNumber: '9876543212',
                 password: password,
+                email: 'student3@email.com',
                 avatar: USER_PLACEHOLDER_IMAGE_URL,
             },
             {
@@ -80,6 +83,7 @@ export const seedDatabase = async () => {
                 fullName: 'Daisy Miller',
                 phoneNumber: '9876543213',
                 password: password,
+                email: 'student4@email.com',
                 avatar: USER_PLACEHOLDER_IMAGE_URL,
             },
         ]);

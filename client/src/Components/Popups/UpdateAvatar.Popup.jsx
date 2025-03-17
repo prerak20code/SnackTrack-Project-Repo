@@ -8,7 +8,10 @@ import {
     adminService,
 } from '../../Services';
 import { icons } from '../../Assets/icons';
-import { MAX_FILE_SIZE } from '../../Constants/constants';
+import {
+    MAX_FILE_SIZE,
+    USER_PLACEHOLDER_IMAGE,
+} from '../../Constants/constants';
 import { Button } from '..';
 import toast from 'react-hot-toast';
 
@@ -31,10 +34,14 @@ export default function UpdateAvatarPopup() {
             setAvatarPreview(URL.createObjectURL(file));
 
             if (!fileRestrictions(file)) {
+                setAvatarPreview(USER_PLACEHOLDER_IMAGE);
                 setError(
                     `only PNG, JPG/JPEG files are allowed and File size should not exceed ${MAX_FILE_SIZE} MB`
                 );
-            } else setError('');
+            } else {
+                setAvatarPreview(URL.createObjectURL(file));
+                setError('');
+            }
         }
     }
 
@@ -68,7 +75,7 @@ export default function UpdateAvatarPopup() {
     }
 
     return (
-        <div className="w-[300px] drop-shadow-md bg-white p-4 rounded-xl">
+        <div className="w-[300px] drop-shadow-md bg-white p-5 rounded-xl">
             <div className="w-full text-center text-2xl font-semibold mb-4 text-black">
                 Update Avatar
             </div>

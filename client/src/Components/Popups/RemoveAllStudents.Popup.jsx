@@ -45,7 +45,7 @@ export default function RemoveAllStudentsPopup() {
     }
 
     return (
-        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-6 flex flex-col items-center justify-center gap-4">
+        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-5 flex flex-col items-center justify-center gap-4">
             <Button
                 btnText={
                     <div className="size-[20px] stroke-black">

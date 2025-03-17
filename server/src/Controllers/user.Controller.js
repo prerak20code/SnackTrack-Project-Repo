@@ -20,24 +20,14 @@ const getCurrentUser = tryCatch('get current user', async (req, res, next) => {
 
 const logout = tryCatch('logout user', async (req, res, next) => {
     const { _id, role } = req.user;
+    const query = [{ $set: { refreshToken: '' } }, { new: true }];
+
     if (role === 'student') {
-        await Student.findByIdAndUpdate(
-            _id,
-            { $set: { refreshToken: '' } },
-            { new: true }
-        );
+        await Student.findByIdAndUpdate(_id, ...query);
     } else if (role === 'admin') {
-        await Admin.findByIdAndUpdate(
-            _id,
-            { $set: { refreshToken: '' } },
-            { new: true }
-        );
+        await Admin.findByIdAndUpdate(_id, ...query);
     } else {
-        await Contractor.findByIdAndUpdate(
-            _id,
-            { $set: { refreshToken: '' } },
-            { new: true }
-        );
+        await Contractor.findByIdAndUpdate(_id, ...query);
     }
     return res
         .status(OK)

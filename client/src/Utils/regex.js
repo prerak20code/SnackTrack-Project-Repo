@@ -21,7 +21,8 @@ export default function verifyExpression(name, value, setError) {
             }
 
             case 'fullName':
-            case 'name': {
+            case 'name':
+            case 'category': {
                 /^[a-zA-Z ]{1,20}$/.test(value)
                     ? setError((prevError) => ({ ...prevError, [name]: '' }))
                     : setError((prevError) => ({

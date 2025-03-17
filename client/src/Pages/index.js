@@ -19,6 +19,7 @@ import CanteensPage from './Canteens.Page';
 import ContractorsPage from './Contractors.Page';
 import CartPage from './Cart.Page';
 import BillsPage from './Bills.Page';
+import KitchenPage from './Kitchen.Page';
 
 export {
     BillsPage,
@@ -42,4 +43,5 @@ export {
     CanteensPage,
     ContractorsPage,
     CartPage,
+    KitchenPage,
 };

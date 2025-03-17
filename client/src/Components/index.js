@@ -60,5 +60,6 @@ export {
     RemoveSnackPopup,
     EditItemPopup,
     EditSnackPopup,
-    AddSnackPopup,AddItemPopup
+    AddSnackPopup,
+    AddItemPopup,
 };

@@ -165,7 +165,7 @@ export const seedDatabase = async () => {
             },
             {
                 category: 'Drinks',
-                canteenId: canteen2._id,
+                canteenId: canteen1._id,
                 variants: [
                     { price: 30, availableCount: 60 },
                     { price: 50, availableCount: 40 },
@@ -173,6 +173,46 @@ export const seedDatabase = async () => {
             },
             {
                 category: 'instant food',
+                canteenId: canteen1._id,
+                variants: [
+                    { price: 20, availableCount: 45 },
+                    { price: 40, availableCount: 30 },
+                ],
+            },
+            {
+                category: 'maggie',
+                canteenId: canteen1._id,
+                variants: [
+                    { price: 20, availableCount: 45 },
+                    { price: 40, availableCount: 30 },
+                ],
+            },
+            {
+                category: 'chocos',
+                canteenId: canteen1._id,
+                variants: [
+                    { price: 20, availableCount: 45 },
+                    { price: 40, availableCount: 30 },
+                ],
+            },
+            {
+                category: 'pasta',
+                canteenId: canteen1._id,
+                variants: [
+                    { price: 20, availableCount: 45 },
+                    { price: 40, availableCount: 30 },
+                ],
+            },
+            {
+                category: 'oats',
+                canteenId: canteen1._id,
+                variants: [
+                    { price: 20, availableCount: 45 },
+                    { price: 40, availableCount: 30 },
+                ],
+            },
+            {
+                category: 'candies',
                 canteenId: canteen1._id,
                 variants: [
                     { price: 20, availableCount: 45 },

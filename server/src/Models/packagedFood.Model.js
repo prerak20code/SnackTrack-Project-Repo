@@ -11,7 +11,6 @@ const packagedFoodSchema = new Schema(
         category: {
             type: String,
             required: true,
-            enum: ['Biscuits', 'Chips', 'Chocolates', 'Drinks', 'instant food'], // Example categories
         },
         variants: [
             {

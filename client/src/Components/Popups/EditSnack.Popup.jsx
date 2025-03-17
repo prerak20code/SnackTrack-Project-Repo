@@ -6,7 +6,7 @@ import { Button, InputField } from '..';
 import { verifyExpression, fileRestrictions } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
-import { MAX_FILE_SIZE } from '../../Constants/constants';
+import { MAX_FILE_SIZE , SNACK_PLACEHOLDER_IMAGE} from '../../Constants/constants';
 
 export default function EditSnackPopup() {
     const { setSnacks } = useSnackContext();
@@ -39,13 +39,16 @@ export default function EditSnackPopup() {
         }));
         if (type === 'file') {
             const file = files[0];
-            setImagePreview(URL.createObjectURL(file));
             if (!fileRestrictions(files[0])) {
                 setError((prev) => ({
                     ...prev,
                     image: `only PNG, JPG/JPEG files are allowed and File size should not exceed ${MAX_FILE_SIZE} MB`,
                 }));
-            } else setError((prev) => ({ ...prev, image: '' }));
+                setImagePreview(SNACK_PLACEHOLDER_IMAGE);
+            } else {
+                setImagePreview(URL.createObjectURL(file));
+                setError((prev) => ({ ...prev, image: '' }));
+            }
         }
     }
 
@@ -152,7 +155,7 @@ export default function EditSnackPopup() {
     );
 
     return (
-        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-6 flex flex-col items-center justify-center gap-3">
+        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-5 flex flex-col items-center justify-center gap-3">
             <Button
                 btnText={
                     <div className="size-[20px] stroke-black">

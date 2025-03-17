@@ -1,6 +1,8 @@
 const LIMIT = 20;
 import SANIAIMAGE from '../Assets/images/sania.jpg';
 import LOGO from '../Assets/images/logo.png';
+import SNACK_PLACEHOLDER_IMAGE from '../Assets/images/snack.png';
+import USER_PLACEHOLDER_IMAGE from '../Assets/images/user.png';
 const EMAIL = 'snacktrack@gmail.com';
 const CONTACTNUMBER = 'xxxxxxxxxx';
 const MAX_FILE_SIZE = 5;
@@ -53,6 +55,8 @@ const CONTRIBUTORS = [
 export {
     LIMIT,
     LOGO,
+    SNACK_PLACEHOLDER_IMAGE,
+    USER_PLACEHOLDER_IMAGE,
     MAX_FILE_SIZE,
     ALLOWED_EXT,
     CONTRIBUTORS,

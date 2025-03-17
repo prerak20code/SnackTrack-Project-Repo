@@ -24,11 +24,11 @@ export default function RemoveItemPopup() {
                 popupInfo.target._id,
                 password
             );
-            if (res && res.message === 'snack deleted successfully') {
+            if (res && res.message === 'item deleted successfully') {
                 setItems((prev) =>
-                    prev.filter((snack) => snack._id !== popupInfo.target._id)
+                    prev.filter((item) => item._id !== popupInfo.target._id)
                 );
-                toast.success('Snack Deleted Successfully 😕');
+                toast.success('Item Deleted Successfully 😕');
             } else toast.error(res?.message);
         } catch (err) {
             navigate('/server-error');
@@ -45,7 +45,7 @@ export default function RemoveItemPopup() {
     }
 
     return (
-        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-6 flex flex-col items-center justify-center gap-4">
+        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-5 flex flex-col items-center justify-center gap-4">
             <Button
                 btnText={
                     <div className="size-[20px] stroke-black">
@@ -58,10 +58,10 @@ export default function RemoveItemPopup() {
             />
 
             <div className="flex flex-col gap-3">
-                <p className="text-2xl font-bold text-center">Remove Snack</p>
+                <p className="text-2xl font-bold text-center">Remove Item</p>
                 <p className="text-[15px] text-center">
-                    <span className="font-medium">Name: </span>
-                    {popupInfo.target.name}
+                    <span className="font-medium">Category: </span>
+                    {popupInfo.target.category}
                 </p>
 
                 <div className="w-full flex flex-row-reverse gap-3 mt-2 items-start">
@@ -69,7 +69,7 @@ export default function RemoveItemPopup() {
                         htmlFor="delete item"
                         className="text-sm cursor-pointer text-gray-700 relative -top-2"
                     >
-                        are you sure you want to remove this item ? Remember: It
+                        are you sure you want to remove this item ? Note: It
                         will delete it along with its variants.
                     </label>
                     <input

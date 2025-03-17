@@ -250,9 +250,9 @@ class ContractorService {
         }
     }
 
-    async addSnack({ image, name, price }) {
+    async addSnack({ image, name, price, password }) {
         try {
-            const inputs = { image, name, price };
+            const inputs = { image, name, price, password };
             const formData = new FormData();
             Object.entries(inputs).forEach(([key, value]) => {
                 formData.append(key, value);
@@ -330,11 +330,13 @@ class ContractorService {
 
     // packaged food management tasks
 
-    async removeItem(itemId) {
+    async removeItem(itemId, password) {
         try {
             const res = await fetch(`/api/contractors/packaged/${itemId}`, {
                 method: 'DELETE',
                 credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password }),
             });
 
             const data = await res.json();
@@ -350,7 +352,7 @@ class ContractorService {
         }
     }
 
-    async addItem({ variants, category }) {
+    async addItem({ variants, category, password }) {
         try {
             const res = await fetch('/api/contractors/packaged', {
                 method: 'POST',
@@ -359,6 +361,7 @@ class ContractorService {
                 body: JSON.stringify({
                     variants,
                     category,
+                    password,
                 }),
             });
 
@@ -375,7 +378,7 @@ class ContractorService {
         }
     }
 
-    async updateItemDetails({ category, variants }, itemId) {
+    async updateItemDetails({ category, variants, password }, itemId) {
         try {
             const res = await fetch(`/api/contractors/packaged/${itemId}`, {
                 method: 'PATCH',
@@ -383,6 +386,7 @@ class ContractorService {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     variants,
+                    password,
                     category,
                 }),
             });
@@ -399,8 +403,6 @@ class ContractorService {
             throw err;
         }
     }
-
-    async toggleAvailableCount(snackId) {}
 }
 
 export const contractorService = new ContractorService();

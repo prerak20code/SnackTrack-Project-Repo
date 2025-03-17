@@ -18,7 +18,6 @@ import {
     addItem,
     deleteItem,
     updateItemDetails,
-    toggleAvaialbleCount,
 } from '../Controllers/contractor.Controller.js';
 
 contractorRouter.route('/login').post(login);
@@ -56,6 +55,3 @@ contractorRouter
     .route('/packaged/:itemId')
     .delete(deleteItem)
     .patch(updateItemDetails);
-contractorRouter
-    .route('/packaged/availability/:itemId')
-    .patch(toggleAvaialbleCount);

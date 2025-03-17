@@ -27,6 +27,7 @@ import {
     ContractorsPage,
     CartPage,
     BillsPage,
+    KitchenPage,
 } from './Pages';
 
 import { UpdateAccountDetails, UpdatePassword, Layout } from './Components';
@@ -103,6 +104,7 @@ export const router = createBrowserRouter(
                             path="today-orders"
                             element={<TodayOrdersPage />}
                         />
+                        <Route path="kitchen" element={<KitchenPage />} />
                     </Route>
                 </Route>
 

@@ -24,6 +24,7 @@ import { Types } from 'mongoose';
 import fs from 'fs';
 
 // personal usage
+
 const login = tryCatch('login as contractor', async (req, res, next) => {
     const { emailOrPhoneNo, password } = req.body;
 
@@ -50,9 +51,7 @@ const login = tryCatch('login as contractor', async (req, res, next) => {
     });
 
     const [loggedInContractor, canteen] = await Promise.all([
-        Contractor.findByIdAndUpdate(contractor._id, {
-            $set: { refreshToken },
-        })
+        Contractor.findByIdAndUpdate(contractor._id, { $set: { refreshToken } })
             .select('-password -refreshToken')
             .lean(),
         Canteen.findById(contractor.canteenId)
@@ -177,6 +176,7 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
 });
 
 // student management tasks
+
 const registerNewStudent = tryCatch(
     'register as student',
     async (req, res, next) => {
@@ -258,7 +258,9 @@ const removeAllStudents = tryCatch(
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
-        await Student.deleteMany({ canteenId: contractor.canteenId });
+        await Student.deleteMany({
+            canteenId: new Types.ObjectId(contractor.canteenId),
+        });
         return res
             .status(OK)
             .json({ message: 'all students removed successfully' });
@@ -279,8 +281,8 @@ const removeStudent = tryCatch(
 
         // a contractor can remove the student only if the student belongs to his canteen
         const student = await Student.findOneAndDelete({
-            _id: studentId,
-            canteenId: contractor.canteenId,
+            _id: new Types.ObjectId(studentId),
+            canteenId: new Types.ObjectId(contractor.canteenId),
         });
         if (!student) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
@@ -307,7 +309,7 @@ const updateStudentAccountDetails = tryCatch(
             {
                 $match: {
                     _id: new Types.ObjectId(studentId),
-                    canteenId: contractor.canteenId,
+                    canteenId: new Types.ObjectId(contractor.canteenId),
                 },
             },
             {
@@ -372,25 +374,38 @@ const updateStudentAccountDetails = tryCatch(
     }
 );
 
-// TODO: ⭐PENDING FOR CHECKING
 // snack management tasks
+
 const addSnack = tryCatch('add snack', async (req, res, next) => {
     let imageURL;
     try {
         const contractor = req.user;
-        const { name, price } = req.body;
+        const { name, price, password } = req.body;
         let image = req.file?.path;
 
         if (!name || !price) {
             if (image) fs.unlinkSync(image);
             return next(new ErrorHandler('missing fields', BAD_REQUEST));
         }
+        const isPassValid = bcrypt.compareSync(password, contractor.password);
+        if (!isPassValid) {
+            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+        }
+
         // upload image on cloudinary if have any
         if (image) {
             image = (await uploadOnCloudinary(image))?.secure_url;
             imageURL = image;
         }
 
+        const alreadyExists = await Snack.findOne({
+            name: name.toLowerCase(),
+            canteenId: new Types.ObjectId(contractor.canteenId),
+        });
+        if (alreadyExists) {
+            if (image) await deleteFromCloudinary(image);
+            return next(new ErrorHandler('snack already exists', BAD_REQUEST));
+        }
         const snack = await Snack.create({
             canteenId: contractor.canteenId,
             name,
@@ -414,8 +429,8 @@ const deleteSnack = tryCatch('delete post', async (req, res, next) => {
     }
     // to delete a snack that should belong to the contractor's canteen
     const snack = await Snack.findOneAndDelete({
-        _id: snackId,
-        canteenId: contractor.canteenId,
+        _id: new Types.ObjectId(snackId),
+        canteenId: new Types.ObjectId(contractor.canteenId),
     });
     if (!snack) return next(new ErrorHandler('snack not found', NOT_FOUND));
     if (snack.image !== SNACK_PLACEHOLDER_IMAGE_URL) {
@@ -448,8 +463,8 @@ const updateSnackDetails = tryCatch(
             }
 
             const snack = await Snack.findOne({
-                _id: snackId,
-                canteenId: contractor.canteenId,
+                _id: new Types.ObjectId(snackId),
+                canteenId: new Types.ObjectId(contractor.canteenId),
             });
             if (!snack) {
                 if (image) fs.unlinkSync(image);
@@ -489,8 +504,8 @@ const toggleSnackAvailability = tryCatch(
 
         // a contractor can update the snack details only if the snack belongs to his canteen
         const snack = await Snack.findOne({
-            _id: snackId,
-            canteenId: contractor.canteenId,
+            _id: new Types.ObjectId(snackId),
+            canteenId: new Types.ObjectId(contractor.canteenId),
         });
         if (!snack) return next(new ErrorHandler('snack not found', NOT_FOUND));
 
@@ -503,13 +518,26 @@ const toggleSnackAvailability = tryCatch(
 );
 
 // packaged food management tasks
+
 const addItem = tryCatch('add item', async (req, res, next) => {
     const contractor = req.user;
-    const { category, variants } = req.body;
+    const { category, variants, password } = req.body;
 
     // Validate required fields
     if (!category || !variants.length) {
         return next(new ErrorHandler('missing fields', BAD_REQUEST));
+    }
+    const isPassValid = bcrypt.compareSync(password, contractor.password);
+    if (!isPassValid) {
+        return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+    }
+
+    const alreadyExists = await PackagedFood.findOne({
+        canteenId: new Types.ObjectId(contractor.canteenId),
+        category: category.toLowerCase(),
+    });
+    if (alreadyExists) {
+        return next(new ErrorHandler('category already exists', BAD_REQUEST));
     }
 
     // Create new packaged food item
@@ -532,8 +560,8 @@ const deleteItem = tryCatch('delete item', async (req, res, next) => {
     }
     // Find the item and ensure it belongs to the contractor's canteen
     const item = await PackagedFood.findOneAndDelete({
-        _id: itemId,
-        canteenId: contractor.canteenId,
+        _id: new Types.ObjectId(itemId),
+        canteenId: new Types.ObjectId(contractor.canteenId),
     });
     if (!item) {
         return next(new ErrorHandler('item not found', NOT_FOUND));
@@ -560,16 +588,17 @@ const updateItemDetails = tryCatch(
         }
 
         const item = await PackagedFood.findOne({
-            _id: itemId,
-            canteenId: contractor.canteenId,
+            _id: new Types.ObjectId(itemId),
+            canteenId: new Types.ObjectId(contractor.canteenId),
         });
         if (!item) return next(new ErrorHandler('item not found', NOT_FOUND));
 
-        if (item.category !== category) {
+        if (item.category.toLowerCase() !== category.toLowerCase()) {
             const existingItem = await PackagedFood.findOne({
-                canteenId: contractor.canteenId,
-                category,
+                canteenId: new Types.ObjectId(contractor.canteenId),
+                category: category.toLowerCase(),
             });
+
             if (existingItem) {
                 return next(
                     new ErrorHandler('category already exists', BAD_REQUEST)
@@ -579,32 +608,6 @@ const updateItemDetails = tryCatch(
         item.category = category || item.category;
         item.variants = variants || item.variants;
         await item.save();
-        return res.status(OK).json(item);
-    }
-);
-
-const toggleAvaialbleCount = tryCatch(
-    'toggle available count',
-    async (req, res, next) => {
-        const { itemId } = req.params;
-        const contractor = req.user;
-
-        // Find the item and ensure it belongs to the contractor's canteen
-        const item = await PackagedFood.findOne({
-            _id: itemId,
-            canteenId: contractor.canteenId,
-        });
-        if (!item) {
-            return next(new ErrorHandler('item not found', NOT_FOUND));
-        }
-
-        // Toggle the available count
-        item.variants.forEach((variant) => {
-            variant.availableCount = variant.availableCount === 0 ? 1 : 0;
-        });
-
-        await item.save();
-
         return res.status(OK).json(item);
     }
 );
@@ -625,5 +628,4 @@ export {
     addItem,
     deleteItem,
     updateItemDetails,
-    toggleAvaialbleCount,
 };

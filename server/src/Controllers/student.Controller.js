@@ -101,9 +101,7 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
         // update user avatar
         const updatedStudent = await Student.findByIdAndUpdate(
             _id,
-            {
-                $set: { avatar: avatarURL },
-            },
+            { $set: { avatar: avatarURL } },
             { new: true }
         );
 

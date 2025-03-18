@@ -16,7 +16,7 @@ const orderSchema = new Schema(
         status: {
             type: String,
             required: true,
-            enum: ['Pending', 'Completed', 'Rejected'], // cancellation not allowed
+            enum: ['Pending', 'Prepared', 'Completed', 'Rejected'], // cancellation not allowed
             default: 'Pending',
         },
         amount: {
@@ -41,6 +41,7 @@ const orderSchema = new Schema(
                     default: 1,
                 },
                 price: {
+                    // usefull when we are adding specific variants for items (each variant will be considered as separate item)
                     type: Number,
                     required: true,
                 },

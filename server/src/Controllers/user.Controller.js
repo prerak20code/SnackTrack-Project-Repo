@@ -1,6 +1,14 @@
-import { OK, COOKIE_OPTIONS } from '../Constants/index.js';
-import { tryCatch } from '../Utils/tryCatch.js';
-import { Admin, Canteen, Student, Contractor } from '../Models/index.js';
+import { OK, COOKIE_OPTIONS, BAD_REQUEST } from '../Constants/index.js';
+import { tryCatch, ErrorHandler } from '../Utils/index.js';
+import {
+    Admin,
+    Canteen,
+    Student,
+    Contractor,
+    EmailVerification,
+} from '../Models/index.js';
+import { customAlphabet } from 'nanoid';
+import { sendMail } from '../mailer.js';
 
 const getCurrentUser = tryCatch('get current user', async (req, res, next) => {
     const { password, refreshToken, ...user } = req.user;
@@ -36,9 +44,53 @@ const logout = tryCatch('logout user', async (req, res, next) => {
         .json({ message: 'user loggedout successfully' });
 });
 
+// for hostel dropdown during student login
 const getCanteens = tryCatch('get canteens', async (req, res) => {
     const canteens = await Canteen.find();
     return res.status(200).json(canteens);
 });
 
-export { getCurrentUser, logout, getCanteens };
+const sendVerificationEmail = tryCatch(
+    'send verification email',
+    async (req, res, next) => {
+        const { email } = req.body;
+        const randomCode = customAlphabet('0123456789', 6)(); // Generate a random 6-digit numeric code for email verification
+
+        if (!email) {
+            return next(new ErrorHandler('missing fields', BAD_REQUEST));
+        }
+
+        // send mail
+        await sendMail({
+            to: email,
+            subject: 'Welcome to SnackTrack',
+            html: `Your Email verification code is ${randomCode}. This code will expire in 1 minute`,
+        });
+
+        // save record in db
+        await EmailVerification.create({ email, code: randomCode });
+
+        return res.status(OK).json({ message: 'email sent successfully' });
+    }
+);
+
+const verifyEmail = tryCatch('verify email', async (req, res, next) => {
+    const { email, code } = req.body;
+    const record = await EmailVerification.findOne({ email, code });
+    if (!record) {
+        return next(new ErrorHandler('invalid code', BAD_REQUEST));
+    }
+
+    // email verified, delete the record from the database
+    await EmailVerification.deleteMany({ email });
+
+    return res.status(OK).json({ message: 'email verified successfully' });
+});
+
+export {
+    getCurrentUser,
+    logout,
+    getCanteens,
+    sendVerificationEmail,
+    verifyEmail,
+};

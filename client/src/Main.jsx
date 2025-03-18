@@ -12,23 +12,26 @@ import {
     ContractorContextProvider,
     StudentContextProvider,
     SnackContextProvider,
+    EmailContextProvider,
 } from './Contexts';
 
 function Root() {
     return (
         <UserContextProvider>
             <SnackContextProvider>
-                <StudentContextProvider>
-                    <ContractorContextProvider>
-                        <PopupContextProvider>
-                            <SideBarContextProvider>
-                                <SearchContextProvider>
-                                    <RouterProvider router={router} />
-                                </SearchContextProvider>
-                            </SideBarContextProvider>
-                        </PopupContextProvider>
-                    </ContractorContextProvider>
-                </StudentContextProvider>
+                <EmailContextProvider>
+                    <StudentContextProvider>
+                        <ContractorContextProvider>
+                            <PopupContextProvider>
+                                <SideBarContextProvider>
+                                    <SearchContextProvider>
+                                        <RouterProvider router={router} />
+                                    </SearchContextProvider>
+                                </SideBarContextProvider>
+                            </PopupContextProvider>
+                        </ContractorContextProvider>
+                    </StudentContextProvider>
+                </EmailContextProvider>
             </SnackContextProvider>
         </UserContextProvider>
     );

@@ -2,12 +2,11 @@ import nodemailer from 'nodemailer';
 
 let transporter;
 
-// IIFE to initialize transporter
-
-(async function generateTransporter() {
+async function generateTransporter() {
     try {
         transporter = nodemailer.createTransport({
             service: 'gmail',
+            secure: true,
             auth: {
                 user: process.env.MAIL_SENDER_EMAIL,
                 pass: process.env.MAIL_SENDER_PASSWORD,
@@ -20,32 +19,27 @@ let transporter;
     } catch (err) {
         console.error(`❌ Error generating mail transporter: ${err.message}`);
     }
-})();
+}
 
-// Function to send mail
-export async function sendMail({
+async function sendMail({
     to = '',
-    subject = '',
+    subject = 'No particular subject', // to avoid spam mails
     text = '',
     html = '',
 }) {
-    if (!transporter) {
-        throw new Error('❌ Transporter not initialized.');
-    }
+    if (!transporter) throw new Error('❌ Transporter not initialized.');
 
     try {
-        const res = await transporter.sendMail({
-            from: process.env.MAIL_SENDER_EMAIL,
+        return await transporter.sendMail({
+            from: `Snack Track <${process.env.MAIL_SENDER_EMAIL}>`,
             to,
             subject,
             text,
             html,
         });
-
-        console.log(`📧 Mail sent to ${to}`);
-        return res;
     } catch (err) {
-        console.error(`❌ Error sending mail: ${err.message}`);
-        throw err;
+        throw new Error(`❌ Error sending mail: ${err.message}`);
     }
 }
+
+export { generateTransporter, sendMail };

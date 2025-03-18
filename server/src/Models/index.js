@@ -5,5 +5,15 @@ import { Order } from './order.Model.js';
 import { Student } from './student.Model.js';
 import { Admin } from './admin.Model.js';
 import { PackagedFood } from './packagedFood.Model.js';
+import { EmailVerification } from './emailVerification.Model.js';
 
-export { Student, Contractor, Canteen, Order, Snack, Admin, PackagedFood };
+export {
+    Student,
+    Contractor,
+    Canteen,
+    Order,
+    Snack,
+    Admin,
+    PackagedFood,
+    EmailVerification,
+};

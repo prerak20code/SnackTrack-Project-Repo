@@ -12,11 +12,12 @@ export default function TodayOrdersPage() {
 
     return (
         <div>
-            <div className="w-full flex justify-end">
+            <div className="w-full flex justify-between mb-6 items-center">
+                <p className="text-2xl font-semibold">Today's Orders</p>
                 <Filter
                     options={options}
                     defaultOption={filter}
-                    className="mb-6 w-48"
+                    className="w-48"
                 />
             </div>
 

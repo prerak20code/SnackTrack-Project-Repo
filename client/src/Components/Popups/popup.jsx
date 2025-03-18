@@ -10,6 +10,7 @@ import {
     EditSnackPopup,
     AddSnackPopup,
     AddItemPopup,
+    EmailVerificationPopup,
 } from '..';
 import { usePopupContext } from '../../Contexts';
 
@@ -86,6 +87,12 @@ export default function Popup() {
             return (
                 <Wrapper>
                     <AddItemPopup />
+                </Wrapper>
+            );
+        case 'verifyEmail':
+            return (
+                <Wrapper>
+                    <EmailVerificationPopup />
                 </Wrapper>
             );
         case 'notifications':

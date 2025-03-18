@@ -29,6 +29,7 @@ import PendingOrders from './Views/PendingOrders';
 import CompletedOrders from './Views/CompletedOrders';
 import AddSnackPopup from './Popups/AddSnack.Popup';
 import AddItemPopup from './Popups/AddItem.Popup';
+import EmailVerificationPopup from './Popups/EmailVerification.Popup';
 
 export {
     Header,
@@ -62,4 +63,5 @@ export {
     EditSnackPopup,
     AddSnackPopup,
     AddItemPopup,
+    EmailVerificationPopup,
 };

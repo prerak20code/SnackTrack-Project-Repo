@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { adminService, contractorService } from '../Services';
-import { useUserContext } from '../Contexts';
+import { adminService, contractorService, userService } from '../Services';
+import { useUserContext, useEmailContext, usePopupContext } from '../Contexts';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button, InputField } from '../Components';
 import { verifyExpression } from '../Utils';
@@ -17,6 +17,7 @@ export default function RegisterPage() {
         email: '',
     };
     const { user } = useUserContext();
+    const { verified, setSendingMail, setVerified } = useEmailContext();
     user.role === 'contractor'
         ? (initialInputs.rollNo = '')
         : (initialInputs.email = '');
@@ -26,16 +27,21 @@ export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const { setPopupInfo, setShowPopup } = usePopupContext();
 
     async function handleChange(e) {
         const { value, name } = e.target;
         setInputs((prev) => ({ ...prev, [name]: value }));
+        if (name === 'email') {
+            setVerified(false);
+        }
     }
 
     const handleBlur = (e) => {
         let { name, value } = e.target;
-        if (value && name !== 'password')
+        if (value && name !== 'password') {
             verifyExpression(name, value, setError);
+        }
     };
 
     function onMouseOver() {
@@ -51,6 +57,10 @@ export default function RegisterPage() {
 
     async function handleSubmit(e) {
         e.preventDefault();
+        if (!verified) {
+            toast.error('Please verify your email first');
+            return;
+        }
         setLoading(true);
         setDisabled(true);
         setError({});
@@ -73,6 +83,27 @@ export default function RegisterPage() {
             setDisabled(false);
             setLoading(false);
             setShowPassword(false);
+        }
+    }
+
+    async function sendMail() {
+        try {
+            if (error.email) {
+                toast.error('Please enter a valid email');
+                return;
+            }
+            setSendingMail(true);
+            setShowPopup(true);
+            setPopupInfo({
+                type: 'verifyEmail',
+                target: { email: inputs.email },
+            });
+            const res = await userService.sendEmailVerification(inputs.email);
+            if (res && res.message === 'email sent successfully') {
+                setSendingMail(false);
+            } else navigate('/server-error');
+        } catch (err) {
+            navigate('/server-error');
         }
     }
 
@@ -137,12 +168,29 @@ export default function RegisterPage() {
                 </div>
             ) : (
                 <div className="w-full" key={field.name}>
-                    <InputField
-                        field={field}
-                        handleBlur={handleBlur}
-                        handleChange={handleChange}
-                        inputs={inputs}
-                    />
+                    <div className="w-full relative">
+                        <InputField
+                            field={field}
+                            handleBlur={handleBlur}
+                            handleChange={handleChange}
+                            inputs={inputs}
+                        />
+                        {field.name === 'email' && inputs[field.name] && (
+                            <div
+                                draggable
+                                className="w-fit bg-transparent pl-2 flex absolute top-[50%] right-2 items-center justify-end"
+                            >
+                                <Button
+                                    disabled={verified}
+                                    className={`hover:brightness-90 ${verified ? 'bg-[#e2ffe2] text-green-600' : 'bg-[#ffe5e5] text-red-600'} font-medium w-fit text-sm rounded-full px-3 py-[2px]`}
+                                    btnText={
+                                        verified ? 'Verified' : 'Verify Email'
+                                    }
+                                    onClick={sendMail}
+                                />
+                            </div>
+                        )}
+                    </div>
                     {error[field.name] && (
                         <div className="text-red-500 text-xs font-medium">
                             {error[field.name]}

@@ -23,6 +23,18 @@ export default function Sidebar() {
             show: user.role === 'student',
         },
         {
+            path: `/kitchen`,
+            name: 'Kitchen',
+            icon: icons.store,
+            show: user.role === 'contractor',
+        },
+        {
+            path: `/statistics`,
+            name: 'Statistics',
+            icon: icons.growth,
+            show: user.role === 'contractor',
+        },
+        {
             path: `/students/${user.canteenId}`,
             name: 'Students',
             icon: icons.user,

@@ -28,6 +28,7 @@ import {
     CartPage,
     BillsPage,
     KitchenPage,
+    StatisticsPage,
 } from './Pages';
 
 import { UpdateAccountDetails, UpdatePassword, Layout } from './Components';
@@ -105,6 +106,7 @@ export const router = createBrowserRouter(
                             element={<TodayOrdersPage />}
                         />
                         <Route path="kitchen" element={<KitchenPage />} />
+                        <Route path="statistics" element={<StatisticsPage />} />
                     </Route>
                 </Route>
 

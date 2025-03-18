@@ -69,6 +69,50 @@ class UserService {
             }
         }
     }
+
+    async sendEmailVerification(email) {
+        try {
+            const res = await fetch('/api/users/mail', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in sendEmailVerification service', err);
+            throw err;
+        }
+    }
+
+    async verifyEmail(email, code) {
+        try {
+            const res = await fetch('/api/users/verify', {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, code }),
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in verifyEmail service', err);
+            throw err;
+        }
+    }
 }
 
 export const userService = new UserService();

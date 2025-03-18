@@ -3,12 +3,14 @@ import {
     useSnackContext,
     useSearchContext,
     usePopupContext,
+    useUserContext,
 } from '../../Contexts';
 import { icons } from '../../Assets/icons';
 
 export default function Snacks() {
     const { snacks, loading } = useSnackContext();
     const { search } = useSearchContext();
+    const { user } = useUserContext();
     const { setShowPopup, setPopupInfo } = usePopupContext();
 
     const snackElements = snacks
@@ -30,19 +32,21 @@ export default function Snacks() {
                 <div className="w-full text-center">loading...</div>
             ) : snackElements.length > 0 ? (
                 <div className="relative">
-                    <Button
-                        onClick={addSnack}
-                        btnText={
-                            <div className="flex items-center justify-center gap-2">
-                                <div className="size-[20px] fill-white">
-                                    {icons.plus}
+                    {user.role === 'contractor' && (
+                        <Button
+                            onClick={addSnack}
+                            btnText={
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="size-[20px] fill-white">
+                                        {icons.plus}
+                                    </div>
+                                    <span className="text-lg">Add Snack</span>
                                 </div>
-                                <span className="text-lg">Add Snack</span>
-                            </div>
-                        }
-                        title="Add Snack"
-                        className="absolute z-[10] -top-16 text-white rounded-md w-fit text-nowrap px-3 h-[40px] bg-[#4977ec] hover:bg-[#3b62c2]"
-                    />
+                            }
+                            title="Add Snack"
+                            className="absolute z-[10] -top-16 text-white rounded-md w-fit text-nowrap px-3 h-[40px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                        />
+                    )}
                     <div
                         className={`grid gap-5 ${snackElements.length <= 2 ? 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(250px,350px))]' : 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))]'}`}
                     >

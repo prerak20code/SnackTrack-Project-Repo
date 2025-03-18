@@ -20,31 +20,32 @@ export default function PackagedItemView({ item, reference }) {
     return (
         <div
             ref={reference}
-            onClick={() => {}}
             className="p-6 relative bg-white shadow-lg rounded-2xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl"
         >
-            <div className="absolute right-6 top-4 flex gap-3 justify-end">
-                <Button
-                    btnText={
-                        <div className="size-[18px] group-hover:fill-[#4977ec]">
-                            {icons.edit}
-                        </div>
-                    }
-                    className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-sm hover:bg-[#ebeaea]"
-                    onClick={editItem}
-                />
-                <div>
+            {user.role === 'contractor' && (
+                <div className="absolute right-6 top-4 flex gap-3 justify-end">
                     <Button
                         btnText={
-                            <div className="size-[18px] group-hover:fill-red-700">
-                                {icons.delete}
+                            <div className="size-[18px] group-hover:fill-[#4977ec]">
+                                {icons.edit}
                             </div>
                         }
-                        className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
-                        onClick={removeItem}
+                        className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-sm hover:bg-[#ebeaea]"
+                        onClick={editItem}
                     />
+                    <div>
+                        <Button
+                            btnText={
+                                <div className="size-[18px] group-hover:fill-red-700">
+                                    {icons.delete}
+                                </div>
+                            }
+                            className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                            onClick={removeItem}
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Category */}
             <p className="text-xl mb-4 flex items-center gap-2 font-bold text-gray-800 truncate">

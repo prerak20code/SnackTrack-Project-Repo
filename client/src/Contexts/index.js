@@ -8,6 +8,7 @@ import {
 } from './Contractor.Context';
 import { useStudentContext, StudentContextProvider } from './Student.Context';
 import { useSnackContext, SnackContextProvider } from './Snack.Context';
+import { useEmailContext, EmailContextProvider } from './Email.Context';
 
 export {
     useUserContext,
@@ -24,4 +25,6 @@ export {
     StudentContextProvider,
     useSnackContext,
     SnackContextProvider,
+    useEmailContext,
+    EmailContextProvider,
 };

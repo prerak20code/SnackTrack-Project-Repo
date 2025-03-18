@@ -19,7 +19,7 @@ export default function AddSnackPopup() {
     const [inputs, setInputs] = useState({
         name: '',
         password: '',
-        price: '',
+        price: 0,
         image: null,
     });
     const [error, setError] = useState({});

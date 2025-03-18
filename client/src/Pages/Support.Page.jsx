@@ -18,7 +18,7 @@ export default function SupportPage() {
                 className="text-center flex flex-col items-center gap-4 mb-6"
             >
                 <div className="bg-white rounded-full p-3 shadow-lg hover:scale-105 transition">
-                    <div className="size-[95px] fill-[#3a67d8]">
+                    <div className="size-[90px] fill-[#3a67d8]">
                         {icons.support}
                     </div>
                 </div>

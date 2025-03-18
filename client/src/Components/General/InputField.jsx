@@ -40,7 +40,7 @@ export default function InputField({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder={field.placeholder}
-                    className="shadow-sm py-2 rounded-md indent-3 w-full border-[0.01rem] border-gray-500 bg-transparent placeholder:text-[15px]"
+                    className="overflow-x-scroll shadow-sm py-2 rounded-md px-3 w-full border-[0.01rem] border-gray-500 bg-transparent placeholder:text-[15px]"
                 />
                 {passwordVariants.includes(field.name) && (
                     <div

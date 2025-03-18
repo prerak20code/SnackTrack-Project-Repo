@@ -20,6 +20,7 @@ import {
     Snack,
     Student,
     PackagedFood,
+    Order,
 } from '../Models/index.js';
 import { Types } from 'mongoose';
 import fs from 'fs';
@@ -241,20 +242,11 @@ const registerNewStudent = tryCatch(
                 );
             }
 
-            const randomCode = nanoid(6, '0123456789'), // Generate a random 6-digit numeric code for email verification
-                randomPassword = nanoid(8); // unique temporary random password
-
-            // EMAIL verification code
-            // await sendMail({
-            //     to: data.email,
-            //     subject: 'Welcome to SnackTrack',
-            //     html: `Hello ${data.fullName}, <br> Your Email verification code is ${randomCode}.`,
-            // });
-
             data.userName =
                 canteen.hostelType + canteen.hostelNumber + '-' + data.rollNo;
 
             // hash the password (auto done by pre hook in model)
+            const randomPassword = nanoid(8); // unique temporary random password
 
             const student = await Student.create({
                 fullName: data.fullName,
@@ -297,9 +289,14 @@ const removeAllStudents = tryCatch(
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
-        await Student.deleteMany({
-            canteenId: new Types.ObjectId(contractor.canteenId),
-        });
+        await Promise.all([
+            Student.deleteMany({
+                canteenId: new Types.ObjectId(contractor.canteenId),
+            }),
+            Order.deleteMany({
+                cateenId: new Types.ObjectId(contractor.canteenId),
+            }),
+        ]);
         return res
             .status(OK)
             .json({ message: 'all students removed successfully' });
@@ -319,10 +316,15 @@ const removeStudent = tryCatch(
         }
 
         // a contractor can remove the student only if the student belongs to his canteen
-        const student = await Student.findOneAndDelete({
-            _id: new Types.ObjectId(studentId),
-            canteenId: new Types.ObjectId(contractor.canteenId),
-        });
+        const student = await Promise.all([
+            Student.findOneAndDelete({
+                _id: new Types.ObjectId(studentId),
+                canteenId: new Types.ObjectId(contractor.canteenId),
+            }),
+            Order.deleteMany({
+                studentId: new Types.ObjectId(studentId),
+            }),
+        ]);
         if (!student) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
         }

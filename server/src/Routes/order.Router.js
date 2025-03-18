@@ -3,15 +3,19 @@ export const orderRouter = express.Router();
 import { upload, verifyJwt } from '../Middlewares/index.js';
 
 import {
-    getOrderHistory,
+    getOrders,
     placeOrder,
-    markOrderAsDelivered,
+    changeOrderStatus,
+    addToCart,
+    removeFromCart,
 } from '../Controllers/order.Controller.js';
 
 orderRouter.use(verifyJwt);
 
-orderRouter.route('/order').post(placeOrder);
+orderRouter.route('/cart').post(addToCart).delete(removeFromCart);
 
-orderRouter.route('/history').get(getOrderHistory);
+orderRouter.route('/place').post(placeOrder);
 
-orderRouter.route('/:orderId').patch(markOrderAsDelivered);
+orderRouter.route('/history').get(getOrders);
+
+orderRouter.route('/:orderId').patch(changeOrderStatus);

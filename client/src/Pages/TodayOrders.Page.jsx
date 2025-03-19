@@ -17,7 +17,7 @@ export default function TodayOrdersPage() {
                 <Filter
                     options={options}
                     defaultOption={filter}
-                    className="w-48"
+                    className="w-40 md:w-48"
                 />
             </div>
 

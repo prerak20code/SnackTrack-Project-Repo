@@ -8,6 +8,7 @@ import {
     RemoveSnackPopup,
     EditItemPopup,
     EditSnackPopup,
+    RemoveAllStudentsPopup,
     AddSnackPopup,
     AddItemPopup,
     EmailVerificationPopup,
@@ -35,6 +36,12 @@ export default function Popup() {
     if (!showPopup) return null;
 
     switch (popupInfo.type) {
+        case 'removeAllStudents':
+            return (
+                <Wrapper>
+                    <RemoveAllStudentsPopup />
+                </Wrapper>
+            );
         case 'removeStudent':
             return (
                 <Wrapper>

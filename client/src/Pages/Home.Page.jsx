@@ -1,15 +1,16 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Snacks, PackagedItems, Filter } from '../Components';
 import { icons } from '../Assets/icons';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSnackContext } from '../Contexts';
 import { snackService } from '../Services';
 
 export default function HomePage() {
     const [searchParams] = useSearchParams();
     const filter = searchParams.get('filter') || 'snacks'; // Default to 'snacks'
-    const { setSnacks, setItems, setLoading } = useSnackContext();
+    const { setSnacks, setItems } = useSnackContext();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
     const options = [
         { value: 'snacks', label: 'Snacks', icon: icons.snack },
@@ -37,7 +38,11 @@ export default function HomePage() {
             }
         })();
 
-        return () => controller.abort();
+        return () => {
+            controller.abort();
+            setSnacks([]);
+            setItems([]);
+        };
     }, []);
 
     return (
@@ -46,13 +51,19 @@ export default function HomePage() {
                 <Filter
                     options={options}
                     defaultOption={filter}
-                    className="mb-6 w-48"
+                    className="mb-6 w-40 md:w-48"
                 />
             </div>
 
             {/* Render Based on Filter */}
             <div className="sm:px-4 pb-8">
-                {filter === 'snacks' ? <Snacks /> : <PackagedItems />}
+                {loading ? (
+                    <div className="w-full text-center">loading...</div>
+                ) : filter === 'snacks' ? (
+                    <Snacks />
+                ) : (
+                    <PackagedItems />
+                )}
             </div>
         </div>
     );

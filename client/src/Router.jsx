@@ -85,18 +85,6 @@ export const router = createBrowserRouter(
                     </Route>
                 </Route>
 
-                {/* accessable to admin only */}
-
-                <Route element={<Redirect who={['admin']} />}>
-                    <Route element={<Layout />}>
-                        <Route path="canteens" element={<CanteensPage />} />
-                        <Route
-                            path="contractors"
-                            element={<ContractorsPage />}
-                        />
-                    </Route>
-                </Route>
-
                 {/* accessable to contractor only */}
 
                 <Route element={<Redirect who={['contractor']} />}>

@@ -30,6 +30,7 @@ import CompletedOrders from './Views/CompletedOrders';
 import AddSnackPopup from './Popups/AddSnack.Popup';
 import AddItemPopup from './Popups/AddItem.Popup';
 import EmailVerificationPopup from './Popups/EmailVerification.Popup';
+import EmptyCart from './Views/EmptyCart';
 
 export {
     Header,
@@ -64,4 +65,5 @@ export {
     AddSnackPopup,
     AddItemPopup,
     EmailVerificationPopup,
+    EmptyCart,
 };

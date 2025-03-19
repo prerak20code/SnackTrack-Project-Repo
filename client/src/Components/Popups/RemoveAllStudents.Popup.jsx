@@ -59,7 +59,7 @@ export default function RemoveAllStudentsPopup() {
 
             <div className="flex flex-col gap-3">
                 <p className="text-2xl font-bold text-center">
-                    Remove All Student Accounts
+                    Remove All Students
                 </p>
                 <p className="text-[15px] text-center font-medium">
                     {user.hostelType}

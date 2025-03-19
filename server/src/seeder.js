@@ -48,6 +48,15 @@ export const seedDatabase = async () => {
             avatar: USER_PLACEHOLDER_IMAGE_URL,
         });
 
+        await Contractor.create({
+            canteenId: canteen2._id,
+            fullName: 'sam',
+            email: 'sam@example.com',
+            password: password,
+            phoneNumber: '7777333333',
+            avatar: USER_PLACEHOLDER_IMAGE_URL,
+        });
+
         // Seed Students
         await Student.create([
             {

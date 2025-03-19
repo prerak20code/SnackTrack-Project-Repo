@@ -151,7 +151,7 @@ export default function Sidebar() {
                 <motion.div
                     ref={sideBarRef}
                     onClick={closeSideBar}
-                    className="fixed inset-0 z-[100] min-h-screen"
+                    className="fixed inset-0 z-[100] h-screen"
                     variants={backdropVariants}
                     initial="hidden"
                     animate="visible"

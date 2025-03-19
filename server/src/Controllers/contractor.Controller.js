@@ -281,11 +281,8 @@ const removeAllStudents = tryCatch(
             return next(new ErrorHandler('missing fields', BAD_REQUEST));
         }
 
-        const isPasswordValid = bcrypt.compareSync(
-            password,
-            contractor.password
-        );
-        if (!isPasswordValid) {
+        const isPassValid = bcrypt.compareSync(password, contractor.password);
+        if (!isPassValid) {
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 

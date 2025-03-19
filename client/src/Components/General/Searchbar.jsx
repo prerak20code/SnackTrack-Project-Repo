@@ -69,7 +69,7 @@ export default function Searchbar() {
             }
 
             // Schedule the next character typing/deletion
-            const delay = isDeleting ? 50 : 100; // Faster deletion for smoother effect
+            const delay = isDeleting ? 100 : 150; // Faster deletion for smoother effect
             typingIntervalRef.current = setTimeout(type, delay);
         })();
     };

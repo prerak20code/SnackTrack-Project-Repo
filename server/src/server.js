@@ -1,4 +1,4 @@
-import './Config/envLoader.js'; // will we available to all
+import './Config/envLoader.js';
 import { app } from './app.js';
 import { connectDB } from './DB/connectDB.js';
 import { generateTransporter } from './mailer.js';

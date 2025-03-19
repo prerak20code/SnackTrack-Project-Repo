@@ -45,6 +45,8 @@ export default function SnackView({ snack, reference }) {
         setPopupInfo({ type: 'removeSnack', target: snack });
     }
 
+    function addToCart() {}
+
     return (
         <div
             ref={reference}
@@ -134,7 +136,7 @@ export default function SnackView({ snack, reference }) {
                                     </div>
                                 </div>
                             }
-                            onClick={() => {}}
+                            onClick={addToCart}
                             className="rounded-md px-3 py-[5px] text-white bg-[#4977ec] hover:bg-[#3b62c2] shadow-md transition-colors duration-300"
                         />
                     ) : (

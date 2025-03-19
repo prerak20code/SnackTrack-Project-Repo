@@ -5,12 +5,9 @@ const SnackContext = createContext();
 const SnackContextProvider = ({ children }) => {
     const [snacks, setSnacks] = useState([]);
     const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(false);
 
     return (
-        <SnackContext.Provider
-            value={{ snacks, setSnacks, items, setItems, loading, setLoading }}
-        >
+        <SnackContext.Provider value={{ snacks, setSnacks, items, setItems }}>
             {children}
         </SnackContext.Provider>
     );

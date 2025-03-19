@@ -17,6 +17,8 @@ export default function PackagedItemView({ item, reference }) {
         setPopupInfo({ type: 'removeItem', target: item });
     }
 
+    function addToCart() {}
+
     return (
         <div
             ref={reference}
@@ -93,7 +95,7 @@ export default function PackagedItemView({ item, reference }) {
                                             </div>
                                         </div>
                                     }
-                                    onClick={() => {}}
+                                    onClick={addToCart}
                                     className="flex items-center justify-center bg-[#4977ec] hover:bg-[#3b62c2] shadow-md rounded-full transition-colors duration-300"
                                 />
                             )}

@@ -14,16 +14,14 @@ app.use(cors(CORS_OPTIONS));
 // Routes
 import {
     userRouter,
-    studentRouter,
     snackRouter,
-    adminRouter,
     contractorRouter,
     orderRouter,
+    adminRouter,
 } from './Routes/index.js';
 import { errorMiddleware } from './Middlewares/index.js';
 
-app.use('/api/users', userRouter); // for general user operations
-app.use('/api/students', studentRouter);
+app.use('/api/users', userRouter); // for general user operations (login, logout...)
 app.use('/api/snacks', snackRouter);
 app.use('/api/admins', adminRouter);
 app.use('/api/contractors', contractorRouter);

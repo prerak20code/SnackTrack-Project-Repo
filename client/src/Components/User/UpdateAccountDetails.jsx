@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../../Contexts';
 import { getRollNo, verifyExpression } from '../../Utils';
-import { adminService, contractorService } from '../../Services';
+import { contractorService } from '../../Services';
 import { Button, InputField } from '..';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
@@ -60,8 +60,6 @@ export default function UpdateAccountDetails() {
             let res = null;
             if (user.role === 'contractor') {
                 res = await contractorService.updateAccountDetails(inputs);
-            } else {
-                res = await adminService.updateAccountDetails(inputs);
             }
             if (res && res.message === 'account details updated successfully') {
                 setUser((prev) => ({

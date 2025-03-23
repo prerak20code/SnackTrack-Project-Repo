@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { adminService, contractorService, userService } from '../Services';
-import { useUserContext, useEmailContext, usePopupContext } from '../Contexts';
+import { contractorService } from '../Services';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button, InputField } from '../Components';
 import { verifyExpression } from '../Utils';
@@ -9,32 +8,24 @@ import { motion } from 'framer-motion';
 import { icons } from '../Assets/icons';
 import toast from 'react-hot-toast';
 
-export default function RegisterPage() {
+export default function RegisterStudentPage() {
     const initialInputs = {
         fullName: '',
-        password: '',
         phoneNumber: '',
         email: '',
+        rollNo: '',
+        password: '',
     };
-    const { user } = useUserContext();
-    const { verified, setSendingMail, setVerified } = useEmailContext();
-    user.role === 'contractor'
-        ? (initialInputs.rollNo = '')
-        : (initialInputs.email = '');
+    const [showPassword, setShowPassword] = useState(false);
     const [inputs, setInputs] = useState(initialInputs);
     const [error, setError] = useState({});
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
-    const { setPopupInfo, setShowPopup } = usePopupContext();
 
     async function handleChange(e) {
         const { value, name } = e.target;
         setInputs((prev) => ({ ...prev, [name]: value }));
-        if (name === 'email') {
-            setVerified(false);
-        }
     }
 
     const handleBlur = (e) => {
@@ -57,26 +48,15 @@ export default function RegisterPage() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        if (!verified) {
-            toast.error('Please verify your email first');
-            return;
-        }
         setLoading(true);
         setDisabled(true);
         setError({});
         try {
-            let res = null;
-            if (user.role === 'contractor') {
-                res = await contractorService.registerStudent(inputs);
-            } else if (user.role === 'admin') {
-                res = await adminService.registerContractor(inputs);
-            }
+            const res = await contractorService.registerStudent(inputs);
             if (res && !res.message) {
                 toast.success('Account created successfully');
                 setInputs(initialInputs);
-            } else {
-                setError((prev) => ({ ...prev, root: res.message }));
-            }
+            } else setError((prev) => ({ ...prev, root: res.message }));
         } catch (err) {
             navigate('/server-error');
         } finally {
@@ -86,35 +66,13 @@ export default function RegisterPage() {
         }
     }
 
-    async function sendMail() {
-        try {
-            if (error.email) {
-                toast.error('Please enter a valid email');
-                return;
-            }
-            setSendingMail(true);
-            setShowPopup(true);
-            setPopupInfo({
-                type: 'verifyEmail',
-                target: { email: inputs.email },
-            });
-            const res = await userService.sendEmailVerification(inputs.email);
-            if (res && res.message === 'email sent successfully') {
-                setSendingMail(false);
-            } else navigate('/server-error');
-        } catch (err) {
-            navigate('/server-error');
-        }
-    }
-
     const inputFields = [
         {
             type: 'text',
             name: 'rollNo',
             label: 'Roll No',
-            placeholder: 'Enter Hostel Eoll Number',
+            placeholder: 'Enter Hostel Roll Number',
             required: true,
-            show: user.role === 'contractor',
         },
         {
             type: 'text',
@@ -122,7 +80,6 @@ export default function RegisterPage() {
             label: 'FullName',
             placeholder: 'Enter Full Name',
             required: true,
-            show: true,
         },
         {
             type: 'email',
@@ -130,7 +87,6 @@ export default function RegisterPage() {
             label: 'Email',
             placeholder: 'Enter Email',
             required: true,
-            show: true,
         },
         {
             type: 'text',
@@ -138,70 +94,36 @@ export default function RegisterPage() {
             label: 'Phone Number',
             placeholder: 'Enter Phone Number',
             required: true,
-            show: true,
         },
         {
             type: showPassword ? 'text' : 'password',
             name: 'password',
-            label:
-                user.role === 'contractor'
-                    ? "Contractor's Password"
-                    : "Admin's password",
+            label: 'Password',
             placeholder: 'Enter password to confirm',
             required: true,
-            show: true,
         },
     ];
 
-    const inputElements = inputFields.map(
-        (field) =>
-            field.show &&
-            (field.name === 'password' ? (
-                <div className="w-full" key={field.name}>
-                    <InputField
-                        field={field}
-                        handleChange={handleChange}
-                        inputs={inputs}
-                        showPassword={showPassword}
-                        setShowPassword={setShowPassword}
-                    />
+    const inputElements = inputFields.map((field) => (
+        <div className="w-full" key={field.name}>
+            <InputField
+                field={field}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                inputs={inputs}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+            />
+            {field.name !== 'password' && error[field.name] && (
+                <div className="text-red-500 text-xs font-medium">
+                    {error[field.name]}
                 </div>
-            ) : (
-                <div className="w-full" key={field.name}>
-                    <div className="w-full relative">
-                        <InputField
-                            field={field}
-                            handleBlur={handleBlur}
-                            handleChange={handleChange}
-                            inputs={inputs}
-                        />
-                        {field.name === 'email' && inputs[field.name] && (
-                            <div
-                                draggable
-                                className="w-fit bg-transparent pl-2 flex absolute top-[50%] right-2 items-center justify-end"
-                            >
-                                <Button
-                                    disabled={verified}
-                                    className={`hover:brightness-90 ${verified ? 'bg-[#e2ffe2] text-green-600' : 'bg-[#ffe5e5] text-red-600'} font-medium w-fit text-sm rounded-full px-3 py-[2px]`}
-                                    btnText={
-                                        verified ? 'Verified' : 'Verify Email'
-                                    }
-                                    onClick={sendMail}
-                                />
-                            </div>
-                        )}
-                    </div>
-                    {error[field.name] && (
-                        <div className="text-red-500 text-xs font-medium">
-                            {error[field.name]}
-                        </div>
-                    )}
-                </div>
-            ))
-    );
+            )}
+        </div>
+    ));
 
     return (
-        <div className="py-10 text-black flex flex-col items-center justify-center gap-4 overflow-y-scroll z-[100] bg-white fixed inset-0">
+        <div className="py-10 text-black flex flex-col items-center justify-center gap-4 min-h-screen">
             <Link
                 to={'/'}
                 className="w-fit flex items-center justify-center hover:brightness-95"
@@ -216,9 +138,7 @@ export default function RegisterPage() {
             </Link>
             <div className="w-fit">
                 <p className="text-center px-2 text-[28px] font-medium">
-                    {user.role === 'contractor'
-                        ? 'Register a New Student'
-                        : 'Register a New Contractor'}
+                    Register a New Student
                 </p>
                 <motion.div
                     initial={{ width: 0 }}

@@ -25,12 +25,35 @@ export default function HomePage() {
 
         (async function getSnacks() {
             try {
-                const [snacks, items] = await Promise.all([
+                const [snacks, items, cartItems] = await Promise.all([
                     snackService.getSnacks(signal),
                     snackService.getPackagedFoodItems(signal),
+                    JSON.parse(localStorage.getItem('cartItems')) || [],
                 ]);
-                if (snacks && !snacks.message) setSnacks(snacks);
-                if (items && !items.message) setItems(items);
+                if (snacks && !snacks.message)
+                    setSnacks(
+                        snacks.map((snack) => ({
+                            ...snack,
+                            quantity:
+                                cartItems.find(({ _id }) => _id === snack._id)
+                                    ?.quantity || 0,
+                        }))
+                    );
+                if (items && !items.message)
+                    setItems(
+                        items.map((item) => ({
+                            ...item,
+                            variants: item.variants.map((v) => ({
+                                ...v,
+                                quantity:
+                                    cartItems.find(
+                                        ({ _id, price }) =>
+                                            _id === item._id &&
+                                            v.price === price
+                                    )?.quantity || 0,
+                            })),
+                        }))
+                    );
             } catch (err) {
                 navigate('/server-error');
             } finally {

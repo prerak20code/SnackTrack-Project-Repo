@@ -2,7 +2,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useUserContext } from '../Contexts';
 import { useEffect } from 'react';
 
-export default function Redirect({ who = ['admin', 'contractor', 'student'] }) {
+export default function Redirect({ who = '' }) {
     const { user } = useUserContext();
     const navigate = useNavigate();
     const { pathname } = useLocation();
@@ -12,12 +12,12 @@ export default function Redirect({ who = ['admin', 'contractor', 'student'] }) {
             navigate(pathname === '/' ? '/new-user' : '/login', {
                 replace: true,
             });
-        } else if (!who.includes(user.role)) {
+        } else if (who && who !== user.role) {
             navigate('/not-found', { replace: true });
         }
     }, [user, navigate]);
 
-    if (!user || !who.includes(user.role)) return null; // removes that fraction of seconds lag
+    if (!user || (who && who !== user.role)) return null; // removes that fraction of seconds lag
 
     return <Outlet />;
 }

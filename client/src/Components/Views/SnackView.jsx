@@ -7,9 +7,11 @@ import {
     useUserContext,
 } from '../../Contexts';
 import { contractorService } from '../../Services';
+import { useState } from 'react';
 
 export default function SnackView({ snack, reference }) {
-    const { _id, image, name, price, info, createdAt, isAvailable } = snack;
+    const { _id, image, name, price, info, isAvailable } = snack;
+    const [quantityInCart, setQuantityInCart] = useState(snack.quantity);
     const { user } = useUserContext();
     const { setSnacks } = useSnackContext();
     const navigate = useNavigate();
@@ -45,7 +47,61 @@ export default function SnackView({ snack, reference }) {
         setPopupInfo({ type: 'removeSnack', target: snack });
     }
 
-    function addToCart() {}
+    function addToCart() {
+        setQuantityInCart(1);
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        localStorage.setItem(
+            'cartItems',
+            JSON.stringify([
+                ...cartItems,
+                {
+                    _id,
+                    name,
+                    price,
+                    image,
+                    type: 'Snack',
+                    quantity: 1,
+                },
+            ])
+        );
+    }
+
+    function incrementQuantity() {
+        setQuantityInCart((prev) => prev + 1);
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        localStorage.setItem(
+            'cartItems',
+            JSON.stringify(
+                cartItems.map((item) =>
+                    item._id === _id
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item
+                )
+            )
+        );
+    }
+
+    function decrementQuantity() {
+        setQuantityInCart((prev) => prev - 1);
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        if (quantityInCart === 1) {
+            localStorage.setItem(
+                'cartItems',
+                JSON.stringify(cartItems.filter((item) => item._id !== _id))
+            );
+        } else {
+            localStorage.setItem(
+                'cartItems',
+                JSON.stringify(
+                    cartItems.map((item) =>
+                        item._id === _id
+                            ? { ...item, quantity: item.quantity - 1 }
+                            : item
+                    )
+                )
+            );
+        }
+    }
 
     return (
         <div
@@ -94,7 +150,7 @@ export default function SnackView({ snack, reference }) {
                     <div className="flex items-center gap-2 bg-gray-100 shadow-sm rounded-full px-3 py-1">
                         <div
                             className={`size-2 rounded-full ${isAvailable ? 'bg-green-600' : 'bg-red-500'}`}
-                        ></div>
+                        />
                         <span
                             className={`text-sm font-semibold ${isAvailable ? 'text-green-600' : 'text-red-600'}`}
                         >
@@ -127,18 +183,38 @@ export default function SnackView({ snack, reference }) {
                 {/* Add to Cart Button or Toggle Switch */}
                 <div className="w-full flex items-center justify-end mt-2">
                     {user.role !== 'contractor' ? (
-                        <Button
-                            btnText={
-                                <div className="flex items-center justify-center gap-2">
-                                    <span>Add to Cart</span>
-                                    <div className="size-4 fill-white">
-                                        {icons.plus}
+                        quantityInCart > 0 ? (
+                            <div className="flex items-center border border-gray-300 rounded-lg">
+                                <button
+                                    className="px-3 py-1 text-gray-500 hover:bg-gray-100"
+                                    onClick={decrementQuantity}
+                                >
+                                    -
+                                </button>
+                                <span className="px-3 py-1 text-gray-900">
+                                    {quantityInCart}
+                                </span>
+                                <button
+                                    className="px-3 py-1 text-gray-500 hover:bg-gray-100"
+                                    onClick={incrementQuantity}
+                                >
+                                    +
+                                </button>
+                            </div>
+                        ) : (
+                            <Button
+                                btnText={
+                                    <div className="flex items-center justify-center gap-2">
+                                        <span>Add to Cart</span>
+                                        <div className="size-4 fill-white">
+                                            {icons.plus}
+                                        </div>
                                     </div>
-                                </div>
-                            }
-                            onClick={addToCart}
-                            className="rounded-md px-3 py-[5px] text-white bg-[#4977ec] hover:bg-[#3b62c2] shadow-md transition-colors duration-300"
-                        />
+                                }
+                                onClick={addToCart}
+                                className="rounded-md px-3 py-[5px] text-white bg-[#4977ec] hover:bg-[#3b62c2] shadow-md transition-colors duration-300"
+                            />
+                        )
                     ) : (
                         <div className="flex items-center justify-center">
                             <label

@@ -2,17 +2,19 @@ import {
     OK,
     BAD_REQUEST,
     NOT_FOUND,
-    COOKIE_OPTIONS,
+    CREATED,
     USER_PLACEHOLDER_IMAGE_URL,
     SNACK_PLACEHOLDER_IMAGE_URL,
 } from '../Constants/index.js';
 import bcrypt from 'bcrypt';
-import { verifyExpression, tryCatch, ErrorHandler } from '../Utils/index.js';
 import {
-    uploadOnCloudinary,
-    deleteFromCloudinary,
-    generateTokens,
-} from '../Helpers/index.js';
+    verifyExpression,
+    tryCatch,
+    ErrorHandler,
+    sendVerificationEmail,
+    verifyEmail,
+} from '../Utils/index.js';
+import { uploadOnCloudinary, deleteFromCloudinary } from '../Helpers/index.js';
 import { nanoid } from 'nanoid';
 import {
     Canteen,
@@ -28,52 +30,133 @@ import { sendMail } from '../mailer.js';
 
 // personal usage
 
-const login = tryCatch('login as contractor', async (req, res, next) => {
-    const { emailOrPhoneNo, password } = req.body;
+const register = tryCatch('register as contractor', async (req, res, next) => {
+    const {
+        fullName,
+        email,
+        phoneNumber,
+        password,
+        hostelNumber,
+        hostelType,
+        hostelName,
+    } = req.body;
 
-    if (!emailOrPhoneNo || !password) {
-        return next(new ErrorHandler('missing fields', BAD_REQUEST));
+    if (
+        !fullName ||
+        !email ||
+        !phoneNumber ||
+        !password ||
+        !hostelNumber ||
+        !hostelType ||
+        !hostelName
+    ) {
+        return next(new ErrorHandler('Missing fields', BAD_REQUEST));
     }
 
-    const contractor = await Contractor.findOne({
-        $or: [{ email: emailOrPhoneNo }, { phoneNumber: emailOrPhoneNo }],
-    });
-    if (!contractor) {
-        return next(new ErrorHandler('contractor not found', NOT_FOUND));
+    const isValid = [
+        'fullName',
+        'email',
+        'phoneNumber',
+        'password',
+        'hostelNumber',
+        'hostelType',
+    ].every((key) => verifyExpression(key, req.body[key]?.trim()));
+
+    if (!isValid) {
+        return next(new ErrorHandler('Invalid input data', BAD_REQUEST));
     }
 
-    const isPassValid = bcrypt.compareSync(password, contractor.password);
-    if (!isPassValid) {
-        return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
-    }
-
-    // generate tokens
-    const { accessToken, refreshToken } = await generateTokens({
-        _id: contractor._id,
-        role: 'contractor',
-    });
-
-    const [loggedInContractor, canteen] = await Promise.all([
-        Contractor.findByIdAndUpdate(contractor._id, { $set: { refreshToken } })
-            .select('-password -refreshToken')
-            .lean(),
-        Canteen.findById(contractor.canteenId)
-            .select('hostelType hostelNumber hostelName')
-            .lean(),
+    // single canteen -> single contractor & single contractor -> single canteen
+    const [existingCanteen, existingContractor] = await Promise.all([
+        Canteen.findOne({
+            $or: [
+                { hostelName: hostelName.trim() },
+                {
+                    $and: [
+                        { hostelNumber: hostelNumber.trim() },
+                        { hostelType: hostelType.trim() },
+                    ],
+                },
+            ],
+        }),
+        Contractor.findOne({
+            $or: [{ email: email.trim() }, { phoneNumber: phoneNumber.trim() }],
+        }),
     ]);
 
-    return res
-        .status(OK)
-        .cookie('snackTrack_accessToken', accessToken, {
-            ...COOKIE_OPTIONS,
-            maxAge: parseInt(process.env.ACCESS_TOKEN_MAXAGE),
-        })
-        .cookie('snackTrack_refreshToken', refreshToken, {
-            ...COOKIE_OPTIONS,
-            maxAge: parseInt(process.env.REFRESH_TOKEN_MAXAGE),
-        })
-        .json({ ...loggedInContractor, role: 'contractor', ...canteen });
+    if (existingCanteen) {
+        return next(new ErrorHandler('canteen already exists', NOT_FOUND));
+    }
+
+    if (existingContractor) {
+        return next(new ErrorHandler('contractor already exists', BAD_REQUEST));
+    }
+
+    // Send email verification
+    await sendVerificationEmail(email.trim());
+
+    return res.status(OK).json({ message: 'Verification code sent' });
 });
+
+const completeRegistration = tryCatch(
+    'complete contractor registration',
+    async (req, res, next) => {
+        const {
+            email,
+            code,
+            fullName,
+            phoneNumber,
+            password,
+            hostelNumber,
+            hostelType,
+            hostelName,
+        } = req.body;
+
+        if (
+            !email ||
+            !code ||
+            !fullName ||
+            !phoneNumber ||
+            !password ||
+            !hostelNumber ||
+            !hostelType ||
+            !hostelName
+        ) {
+            return next(new ErrorHandler('Missing fields', BAD_REQUEST));
+        }
+
+        // Verify code
+        const isValid = await verifyEmail(email, code);
+        if (!isValid) {
+            return next(
+                new ErrorHandler('Invalid verification code', BAD_REQUEST)
+            );
+        }
+
+        // Now register the contractor & canteen
+        const canteen = await Canteen.create({
+            hostelName: hostelName.trim(),
+            hostelNumber: hostelNumber.trim(),
+            hostelType: hostelType.trim(),
+        });
+
+        // password hashing auto done by pre hook in the model
+        const contractor = await Contractor.create({
+            fullName,
+            email,
+            phoneNumber,
+            password,
+            avatar: USER_PLACEHOLDER_IMAGE_URL,
+            canteenId: canteen._id,
+        });
+
+        // Link contractor to canteen
+        canteen.contractorId = contractor._id;
+        await canteen.save();
+
+        return res.status(CREATED).json(contractor);
+    }
+);
 
 const updateAccountDetails = tryCatch(
     'update account details',
@@ -125,150 +208,104 @@ const updateAccountDetails = tryCatch(
     }
 );
 
-const updatePassword = tryCatch('update password', async (req, res, next) => {
-    const { oldPassword, newPassword } = req.body;
-    const contractor = req.user;
-
-    const isPassValid = bcrypt.compareSync(oldPassword, contractor.password);
-    if (!isPassValid) {
-        return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
-    }
-
-    const isValid = verifyExpression('password', newPassword);
-    if (!isValid) {
-        return next(new ErrorHandler('invalid password', BAD_REQUEST));
-    }
-
-    // hash new password
-    const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
-
-    await Contractor.findByIdAndUpdate(contractor._id, {
-        $set: { password: hashedNewPassword },
-    });
-
-    return res.status(OK).json({ message: 'password updated successfully' });
-});
-
-const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
-    let avatarURL;
-    try {
-        const { _id, avatar } = req.user;
-        if (!req.file) {
-            return next(new ErrorHandler('missing avatar', BAD_REQUEST));
-        }
-
-        // upload new avatar on cloudinary
-        avatarURL = (await uploadOnCloudinary(req.file.path))?.secure_url;
-
-        // update user avatar
-        const updatedContractor = await Contractor.findByIdAndUpdate(
-            _id,
-            {
-                $set: { avatar: avatarURL },
-            },
-            { new: true }
-        );
-
-        // delete old avatar
-        if (updatedContractor && avatar) await deleteFromCloudinary(avatar);
-        return res.status(OK).json({ newAvatar: updatedContractor.avatar });
-    } catch (err) {
-        if (avatarURL) await deleteFromCloudinary(avatarURL);
-        throw err;
-    }
-});
-
 // student management tasks
 
-const registerNewStudent = tryCatch(
+const getStudents = tryCatch('get students', async (req, res) => {
+    const { limit = 10, page = 1 } = req.query; // for pagination
+    const result = await Student.aggregatePaginate(
+        [
+            { $match: { canteenId: new Types.ObjectId(req.user.canteenId) } },
+            { $project: { password: 0, refreshToken: 0 } },
+        ],
+        {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { createdAt: -1 },
+        }
+    );
+
+    if (result.docs.length) {
+        const data = {
+            students: result.docs,
+            studentsInfo: {
+                hasNextPage: result.hasNextPage,
+                hasPrevPage: result.hasPrevPage,
+                totalStudents: result.totalDocs,
+            },
+        };
+        return res.status(OK).json(data);
+    } else {
+        return res.status(OK).json({ message: 'no students found' });
+    }
+});
+
+const registerStudent = tryCatch(
     'register as student',
     async (req, res, next) => {
-        try {
-            const contractor = req.user; // only contractor can register a student
-            const data = {
-                fullName: req.body.fullName.trim(),
-                rollNo: req.body.rollNo.trim(),
-                phoneNumber: req.body.phoneNumber,
-                email: req.body.email.trim().toLowerCase(),
-            };
+        const contractor = req.user; // only contractor can register a student
+        const { fullName, rollNo, phoneNumber, email, password } = req.body;
 
-            const password = req.body.password;
-
-            const isPassValid = bcrypt.compareSync(
-                password,
-                contractor.password
-            );
-            if (!isPassValid) {
-                return next(
-                    new ErrorHandler('invalid credentials', BAD_REQUEST)
-                );
-            }
-
-            // input error handling
-            if (
-                !data.fullName ||
-                !data.rollNo ||
-                !data.phoneNumber ||
-                !data.email ||
-                !password
-            ) {
-                return next(new ErrorHandler('missing fields', BAD_REQUEST));
-            }
-
-            for (const [key, value] of Object.entries(data)) {
-                const isValid = verifyExpression(key, value);
-                if (!isValid) {
-                    return next(
-                        new ErrorHandler(`${key} is invalid.`, BAD_REQUEST)
-                    );
-                }
-            }
-
-            // check if user already exists with this roll no
-            const [canteen, existingStudent] = await Promise.all([
-                Canteen.findById(contractor.canteenId),
-                Student.findOne({
-                    $or: [
-                        { userName: data.userName },
-                        { phoneNumber: data.phoneNumber },
-                        { email: data.email },
-                    ],
-                }),
-            ]);
-
-            if (existingStudent) {
-                return next(
-                    new ErrorHandler('user already exists', BAD_REQUEST)
-                );
-            }
-
-            data.userName =
-                canteen.hostelType + canteen.hostelNumber + '-' + data.rollNo;
-
-            // hash the password (auto done by pre hook in model)
-            const randomPassword = nanoid(8); // unique temporary random password
-
-            const student = await Student.create({
-                fullName: data.fullName,
-                canteenId: contractor.canteenId,
-                userName: data.userName,
-                phoneNumber: data.phoneNumber,
-                email: data.email,
-                password: randomPassword,
-                avatar: USER_PLACEHOLDER_IMAGE_URL,
-            });
-
-            // send this password on student's email
-            await sendMail({
-                to: data.email,
-                subject: 'Welcome to SnackTrack',
-                html: `Hello ${data.fullName}, <br> Your temporary password is ${randomPassword}, You can update it anytime after logging in from settings.`,
-            });
-
-            return res.status(OK).json(student);
-        } catch (err) {
-            throw err;
+        if (!fullName || !email || !phoneNumber || !password || !rollNo) {
+            return next(new ErrorHandler('Missing fields', BAD_REQUEST));
         }
+
+        const isValid = ['fullName', 'email', 'phoneNumber', 'rollNo'].every(
+            (key) => verifyExpression(key, req.body[key]?.trim())
+        );
+
+        if (!isValid) {
+            return next(new ErrorHandler('Invalid input data', BAD_REQUEST));
+        }
+
+        const isPassValid = bcrypt.compareSync(password, contractor.password);
+        if (!isPassValid) {
+            return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+        }
+
+        // check if student already exists with this userName
+        const [canteen, existingStudent] = await Promise.all([
+            Canteen.findById(contractor.canteenId),
+            Student.findOne({
+                $or: [
+                    { userName: userName.trim() },
+                    { phoneNumber: phoneNumber.trim() },
+                    { email: email.trim() },
+                ],
+            }),
+        ]);
+
+        if (existingStudent) {
+            return next(new ErrorHandler('user already exists', BAD_REQUEST));
+        }
+
+        userName = (
+            canteen.hostelType +
+            canteen.hostelNumber +
+            '-' +
+            rollNo
+        ).trim();
+
+        // password hashing auto done by pre hook in the model
+        const randomPassword = nanoid(8); // unique temporary random password
+
+        const student = await Student.create({
+            fullName,
+            canteenId: contractor.canteenId,
+            userName,
+            phoneNumber,
+            email,
+            password: randomPassword,
+            avatar: USER_PLACEHOLDER_IMAGE_URL,
+        });
+
+        // send this password on student's email
+        await sendMail({
+            to: data.email,
+            subject: 'Welcome to SnackTrack',
+            html: `Hello ${data.fullName}, <br> Your temporary password is ${randomPassword}, You can update it anytime after logging in from settings.`,
+        });
+
+        return res.status(CREATED).json(student);
     }
 );
 
@@ -463,7 +500,7 @@ const addSnack = tryCatch('add snack', async (req, res, next) => {
             price,
             image: image || SNACK_PLACEHOLDER_IMAGE_URL,
         });
-        return res.status(OK).json(snack);
+        return res.status(CREATED).json(snack);
     } catch (err) {
         if (imageURL) await deleteFromCloudinary(imageURL);
         throw err;
@@ -602,7 +639,7 @@ const addItem = tryCatch('add item', async (req, res, next) => {
         variants,
     });
 
-    return res.status(OK).json(item);
+    return res.status(CREATED).json(item);
 });
 
 const deleteItem = tryCatch('delete item', async (req, res, next) => {
@@ -669,11 +706,11 @@ const updateItemDetails = tryCatch(
 );
 
 export {
-    login,
+    register,
+    completeRegistration,
     updateAccountDetails,
-    updatePassword,
-    updateAvatar,
-    registerNewStudent,
+    getStudents,
+    registerStudent,
     removeAllStudents,
     removeStudent,
     updateStudentAccountDetails,

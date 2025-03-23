@@ -11,7 +11,6 @@ export default function Searchbar() {
     const location = useLocation();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // List of random snack names for the typing effect
     const snackNames = [
         'Search "Chips"',
         'Search "Chocolate"',
@@ -37,7 +36,7 @@ export default function Searchbar() {
             params.delete('search'); // Remove search query from URL
         }
         setSearchParams(params);
-    }, [search]); // Trigger when search state changes
+    }, [search]);
 
     // Function to simulate typing effect with smooth transitions
     const startTypingEffect = () => {

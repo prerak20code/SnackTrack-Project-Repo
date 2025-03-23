@@ -3,7 +3,6 @@ import {
     Contractor,
     Student,
     Snack,
-    Admin,
     PackagedFood,
 } from './Models/index.js';
 import {
@@ -18,7 +17,6 @@ export const seedDatabase = async () => {
         await Contractor.deleteMany();
         await Student.deleteMany();
         await Snack.deleteMany();
-        await Admin.deleteMany();
         await PackagedFood.deleteMany(); // Clear packaged food items
 
         console.log('Existing data cleared');
@@ -39,7 +37,7 @@ export const seedDatabase = async () => {
         // Seed Contractors
         const password = 'password'; // Will be hashed using pre-save hook
 
-        await Contractor.create({
+        const contr1 = await Contractor.create({
             canteenId: canteen1._id,
             fullName: 'John Doe',
             email: 'john@example.com',
@@ -48,7 +46,7 @@ export const seedDatabase = async () => {
             avatar: USER_PLACEHOLDER_IMAGE_URL,
         });
 
-        await Contractor.create({
+        const contr2 = await Contractor.create({
             canteenId: canteen2._id,
             fullName: 'sam',
             email: 'sam@example.com',
@@ -56,6 +54,11 @@ export const seedDatabase = async () => {
             phoneNumber: '7777333333',
             avatar: USER_PLACEHOLDER_IMAGE_URL,
         });
+
+        canteen1.contractorId = contr1._id;
+        canteen2.contractorId = contr2._id;
+        await canteen1.save();
+        await canteen2.save();
 
         // Seed Students
         await Student.create([
@@ -233,15 +236,6 @@ export const seedDatabase = async () => {
                 ],
             },
         ]);
-
-        // Seed Admin
-        await Admin.create({
-            fullName: 'Admin User',
-            phoneNumber: '9999999999',
-            email: 'admin@example.com',
-            password: password,
-            avatar: USER_PLACEHOLDER_IMAGE_URL,
-        });
 
         console.log('Seeding completed successfully');
     } catch (error) {

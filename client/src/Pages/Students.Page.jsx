@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { studentService } from '../Services';
+import { contractorService } from '../Services';
 import { paginate } from '../Utils';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
     useStudentContext,
     usePopupContext,
     useSearchContext,
-    useUserContext,
 } from '../Contexts';
 import { LIMIT } from '../Constants/constants';
 import { Button, StudentView } from '../Components';
@@ -18,10 +17,8 @@ export default function StudentsPage() {
     const [studentsInfo, setStudentsInfo] = useState({});
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
-    const { user } = useUserContext();
     const { search } = useSearchContext();
     const navigate = useNavigate();
-    const { canteenId } = useParams();
 
     // pagination
     const paginateRef = paginate(studentsInfo?.hasNextPage, loading, setPage);
@@ -33,8 +30,7 @@ export default function StudentsPage() {
         (async function getStudents() {
             try {
                 setLoading(true);
-                const res = await studentService.getStudents(
-                    canteenId,
+                const res = await contractorService.getStudents(
                     signal,
                     page,
                     LIMIT
@@ -85,23 +81,22 @@ export default function StudentsPage() {
         <div className="sm:p-8 pt-4 sm:pt-4">
             {studentElements.length > 0 && (
                 <div className="w-full">
-                    {user.role === 'contractor' && (
-                        <div className=" w-full flex justify-center mb-8">
-                            <Button
-                                title="Remove all Students"
-                                onClick={removeAllStudents}
-                                btnText={
-                                    <div className="flex gap-2 items-center justify-center px-1">
-                                        <div className="size-[16px] fill-white group-hover:fill-red-700">
-                                            {icons.delete}
-                                        </div>
-                                        <p>Remove All Students</p>
+                    <div className=" w-full flex justify-center mb-8">
+                        <Button
+                            title="Remove all Students"
+                            onClick={removeAllStudents}
+                            btnText={
+                                <div className="flex gap-2 items-center justify-center px-1">
+                                    <div className="size-[16px] fill-white group-hover:fill-red-700">
+                                        {icons.delete}
                                     </div>
-                                }
-                                className="bg-red-700 text-white p-2 rounded-lg"
-                            />
-                        </div>
-                    )}
+                                    <p>Remove All Students</p>
+                                </div>
+                            }
+                            className="bg-red-700 text-white p-2 rounded-lg"
+                        />
+                    </div>
+
                     <div
                         className={`grid gap-6 ${studentElements.length <= 1 ? 'grid-cols-[repeat(auto-fit,minmax(350px,550px))]' : 'grid-cols-[repeat(auto-fit,minmax(350px,1fr))]'}`}
                     >

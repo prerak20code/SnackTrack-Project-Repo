@@ -58,12 +58,10 @@ export default function SettingsPage() {
                     {/* info*/}
                     <div className="space-y-1">
                         <p className="text-2xl font-bold">{user.fullName}</p>
-                        {user.role !== 'admin' && (
-                            <p className="">
-                                @{user.hostelType}
-                                {user.hostelNumber} - {user.hostelName}
-                            </p>
-                        )}
+                        <p className="">
+                            @{user.hostelType}
+                            {user.hostelNumber} - {user.hostelName}
+                        </p>
                     </div>
                 </div>
             </div>

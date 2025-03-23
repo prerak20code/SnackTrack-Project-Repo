@@ -3,11 +3,11 @@ export const contractorRouter = express.Router();
 import { upload, verifyJwt } from '../Middlewares/index.js';
 
 import {
-    login,
+    getStudents,
+    register,
+    completeRegistration,
     updateAccountDetails,
-    updatePassword,
-    updateAvatar,
-    registerNewStudent,
+    registerStudent,
     removeAllStudents,
     removeStudent,
     updateStudentAccountDetails,
@@ -20,19 +20,20 @@ import {
     updateItemDetails,
 } from '../Controllers/contractor.Controller.js';
 
-contractorRouter.route('/login').post(login);
+contractorRouter.route('/register').post(register);
+
+contractorRouter.route('/complete-registeration').post(completeRegistration);
 
 contractorRouter.use(verifyJwt);
 
 // personal usage
 contractorRouter.route('/account').patch(updateAccountDetails);
-contractorRouter.route('/password').patch(updatePassword);
-contractorRouter.route('/avatar').patch(upload.single('avatar'), updateAvatar);
 
 // student management tasks
 contractorRouter
     .route('/students')
-    .post(registerNewStudent)
+    .get(getStudents)
+    .post(registerStudent)
     .delete(removeAllStudents);
 contractorRouter
     .route('/students/:studentId')

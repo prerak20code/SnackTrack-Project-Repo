@@ -1,6 +1,76 @@
 import { SERVER_ERROR } from '../Constants/constants';
 
 class UserService {
+    async login({ loginInput, password, role }) {
+        try {
+            const res = await fetch('/api/users/login', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ loginInput, password, role }),
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in user login service', err);
+            throw err;
+        }
+    }
+
+    async updatePassword({ oldPassword, newPassword }) {
+        try {
+            const res = await fetch('/api/users/password', {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    newPassword,
+                    oldPassword,
+                }),
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in user updatePassword service', err);
+            throw err;
+        }
+    }
+
+    async updateAvatar(avatar) {
+        try {
+            const formData = new FormData();
+            formData.append('avatar', avatar);
+
+            const res = await fetch('/api/users/avatar', {
+                method: 'PATCH',
+                credentials: 'include',
+                body: formData,
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in user updateAvatar service', err);
+            throw err;
+        }
+    }
+
     async getCurrentUser(signal) {
         try {
             const res = await fetch('/api/users/current', {
@@ -70,9 +140,9 @@ class UserService {
         }
     }
 
-    async sendEmailVerification(email) {
+    async resendEmailVerification(email) {
         try {
-            const res = await fetch('/api/users/mail', {
+            const res = await fetch('/api/users/resend-mail', {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
@@ -87,29 +157,7 @@ class UserService {
             }
             return data;
         } catch (err) {
-            console.error('error in sendEmailVerification service', err);
-            throw err;
-        }
-    }
-
-    async verifyEmail(email, code) {
-        try {
-            const res = await fetch('/api/users/verify', {
-                method: 'DELETE',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, code }),
-            });
-
-            const data = await res.json();
-            console.log(data);
-
-            if (res.status === SERVER_ERROR) {
-                throw new Error(data.message);
-            }
-            return data;
-        } catch (err) {
-            console.error('error in verifyEmail service', err);
+            console.error('error in resendVerificationEmail service', err);
             throw err;
         }
     }

@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { verifyExpression } from '../../Utils';
 import { useNavigate } from 'react-router-dom';
-import {
-    adminService,
-    contractorService,
-    studentService,
-} from '../../Services';
+import { userService } from '../../Services';
 import { Button, InputField } from '..';
 import toast from 'react-hot-toast';
 import { useUserContext } from '../../Contexts';
@@ -65,15 +61,11 @@ export default function UpdatePassword() {
                     newPassword: 'new password should not match old password',
                 }));
             } else {
-                let res = null,
-                    payload = [inputs.oldPassword, inputs.newPassword];
-                if (user.role === 'student') {
-                    res = await studentService.updatePassword(...payload);
-                } else if (user.role === 'admin') {
-                    res = await adminService.updatePassword(...payload);
-                } else {
-                    res = await contractorService.updatePassword(...payload);
-                }
+                const res = await userService.updatePassword({
+                    oldPassword: inputs.oldPassword,
+                    newPassword: inputs.newPassword,
+                });
+
                 if (res && res.message === 'password updated successfully') {
                     setInputs(initialInputs);
                     toast.success('Password updated successfully');

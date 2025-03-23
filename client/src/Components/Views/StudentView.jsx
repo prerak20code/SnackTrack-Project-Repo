@@ -1,11 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
-import {
-    usePopupContext,
-    useStudentContext,
-    useUserContext,
-} from '../../Contexts';
+import { usePopupContext, useStudentContext } from '../../Contexts';
 import { getRollNo } from '../../Utils';
 
 export default function StudentView({ student, reference }) {
@@ -13,7 +9,6 @@ export default function StudentView({ student, reference }) {
     const { setShowPopup, setPopupInfo } = usePopupContext();
     const { setTargetStudent } = useStudentContext();
     const navigate = useNavigate();
-    const { user } = useUserContext();
 
     async function removeStudent() {
         setTargetStudent(student);
@@ -67,42 +62,38 @@ export default function StudentView({ student, reference }) {
                     </div>
                 </div>
 
-                {user.role === 'contractor' && (
-                    <div className="w-fit flex flex-col gap-3 items-end justify-center">
+                <div className="w-fit flex flex-col gap-3 items-end justify-center">
+                    <Button
+                        btnText={
+                            <div className="size-[15px] group-hover:fill-[#4977ec]">
+                                {icons.edit}
+                            </div>
+                        }
+                        className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                        onClick={editStudent}
+                    />
+                    <div>
                         <Button
                             btnText={
-                                <div className="size-[15px] group-hover:fill-[#4977ec]">
-                                    {icons.edit}
+                                <div className="size-[15px] group-hover:fill-red-700">
+                                    {icons.delete}
                                 </div>
                             }
                             className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
-                            onClick={editStudent}
+                            onClick={removeStudent}
                         />
-                        <div>
-                            <Button
-                                btnText={
-                                    <div className="size-[15px] group-hover:fill-red-700">
-                                        {icons.delete}
-                                    </div>
-                                }
-                                className="bg-[#f0efef] p-2 group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
-                                onClick={removeStudent}
-                            />
-                        </div>
                     </div>
-                )}
+                </div>
             </div>
 
-            {user.role === 'contractor' && (
-                <div className="flex justify-end w-full">
-                    <Button
-                        onClick={() => navigate(`/orders/${_id}`)}
-                        btnText="View Orders"
-                        title="View Orders"
-                        className="text-white rounded-md text-[15px] w-fit px-3 h-[30px] bg-[#4977ec] hover:bg-[#3b62c2]"
-                    />
-                </div>
-            )}
+            <div className="flex justify-end w-full">
+                <Button
+                    onClick={() => navigate(`/orders/${_id}`)}
+                    btnText="View Orders"
+                    title="View Orders"
+                    className="text-white rounded-md text-[15px] w-fit px-3 h-[30px] bg-[#4977ec] hover:bg-[#3b62c2]"
+                />
+            </div>
         </div>
     );
 }

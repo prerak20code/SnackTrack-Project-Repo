@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { BAD_REQUEST, FORBIDDEN, COOKIE_OPTIONS } from '../Constants/index.js';
 import { extractTokens, generateAccessToken } from '../Helpers/index.js';
-import { Student, Contractor, Admin } from '../Models/index.js';
+import { Student, Contractor } from '../Models/index.js';
 
 /**
  * @param {String} token - token to verify
@@ -22,11 +22,7 @@ const validateToken = async (token, type) => {
     let currentUser = null;
     if (decodedToken.role === 'student') {
         currentUser = await Student.findById(decodedToken._id).lean();
-    } else if (decodedToken.role === 'contractor') {
-        currentUser = await Contractor.findById(decodedToken._id).lean();
-    } else if (decodedToken.role === 'admin') {
-        currentUser = await Admin.findById(decodedToken._id).lean();
-    }
+    } else currentUser = await Contractor.findById(decodedToken._id).lean();
 
     if (
         !currentUser ||

@@ -1,42 +1,29 @@
 import { LOGO } from '../Constants/constants';
 import { motion } from 'framer-motion';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useUserContext } from '../Contexts';
-import {
-    studentService,
-    contractorService,
-    adminService,
-    userService,
-} from '../Services';
-import { Button, Filter, InputField } from '../Components';
+import { userService } from '../Services';
+import { Button, Dropdown, InputField } from '../Components';
 import { icons } from '../Assets/icons';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
-    const [searchParams, setSearchParams] = useSearchParams();
     const [inputs, setInputs] = useState({ loginInput: '', password: '' });
-    const role = searchParams.get('role') || '';
-    const hostel = searchParams.get('hostel') || '';
+    const [role, setRole] = useState('');
+    const [hostel, setHostel] = useState('');
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const { setUser } = useUserContext();
     const navigate = useNavigate();
-    const [hostels, setHostels] = useState([
-        { value: '', label: 'Select Hostel' },
-    ]);
-
-    // Clear query parameters on initial load
-    useEffect(() => {
-        const params = new URLSearchParams(searchParams);
-        if (params.has('role') || params.has('hostel')) {
-            params.delete('role');
-            params.delete('hostel');
-            setSearchParams(params);
-        }
-    }, []); // Empty dependency array ensures this runs only once on mount
+    const [hostels, setHostels] = useState([]);
+    const roles = [
+        { value: '', label: 'Select Role' },
+        { value: 'student', label: 'Student' },
+        { value: 'contractor', label: 'Contractor' },
+    ];
 
     function handleChange(e) {
         const { value, name } = e.target;
@@ -47,8 +34,8 @@ export default function LoginPage() {
         if (
             !inputs.loginInput ||
             !inputs.password ||
-            (role === 'student' && !hostel) ||
-            !role
+            !role ||
+            (role === 'student' && !hostel)
         ) {
             setDisabled(true);
         } else setDisabled(false);
@@ -62,8 +49,8 @@ export default function LoginPage() {
             try {
                 const res = await userService.getCanteens(signal);
                 if (res && !res.message) {
-                    setHostels((prev) => [
-                        ...prev,
+                    setHostels([
+                        { value: '', label: 'Select Hostel' },
                         ...res.map(
                             ({ hostelType, hostelNumber, hostelName }) => ({
                                 value: hostelType + hostelNumber,
@@ -90,23 +77,15 @@ export default function LoginPage() {
         setDisabled(true);
         setError('');
         try {
-            let res;
-            if (role === 'contractor') {
-                res = await contractorService.login({
-                    emailOrPhoneNo: inputs.loginInput,
-                    password: inputs.password,
-                });
-            } else if (role === 'admin') {
-                res = await adminService.login({
-                    emailOrPhoneNo: inputs.loginInput,
-                    password: inputs.password,
-                });
-            } else {
-                res = await studentService.login({
-                    userName: `${hostel}-${inputs.loginInput}`,
-                    password: inputs.password,
-                });
-            }
+            const res = await userService.login({
+                loginInput:
+                    role === 'contractor'
+                        ? inputs.loginInput
+                        : `${hostel}-${inputs.loginInput}`,
+                password: inputs.password,
+                role,
+            });
+
             if (res && !res.message) {
                 setUser(res);
                 toast.success('Logged in Successfully 😉');
@@ -122,13 +101,6 @@ export default function LoginPage() {
             setLoading(false);
         }
     }
-
-    const roles = [
-        { value: '', label: 'Select Role' },
-        { value: 'student', label: 'Student' },
-        { value: 'contractor', label: 'Contractor' },
-        { value: 'admin', label: 'Admin' },
-    ];
 
     const inputFields = [
         {
@@ -167,7 +139,7 @@ export default function LoginPage() {
     );
 
     return (
-        <div className="text-black flex flex-col items-center justify-center gap-5 overflow-y-scroll fixed z-[100] bg-white inset-0">
+        <div className="text-black flex flex-col items-center justify-center gap-5 min-h-screen">
             <Link
                 to={'/'}
                 className="w-fit flex items-center justify-center hover:brightness-95"
@@ -198,11 +170,10 @@ export default function LoginPage() {
                     </div>
                 )}
 
-                <Filter
+                <Dropdown
                     options={roles}
-                    defaultOption=""
                     className="mb-6 w-full"
-                    queryParamName="role"
+                    setValue={setRole}
                 />
 
                 <form
@@ -211,11 +182,10 @@ export default function LoginPage() {
                 >
                     {role === 'student' && (
                         <div className="w-full flex justify-center">
-                            <Filter
+                            <Dropdown
                                 options={hostels}
-                                defaultOption=""
                                 className="mb-0 w-full"
-                                queryParamName="hostel"
+                                setValue={setHostel}
                             />
                         </div>
                     )}

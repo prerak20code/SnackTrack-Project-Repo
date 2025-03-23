@@ -21,8 +21,13 @@ export default function verifyRegex(name, value) {
                 );
             }
 
+            case 'hostelNumber':
             case 'rollNo': {
-                return /^[0-9]{1,3}$/.test(value);
+                return /^\d+$/.test(value);
+            }
+
+            case 'hostelType': {
+                return value === 'GH' || value === 'BH' || value === 'IH';
             }
 
             case 'password': {

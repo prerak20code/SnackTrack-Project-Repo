@@ -2,13 +2,8 @@ import { useUserContext, UserContextProvider } from './User.Context';
 import { useSideBarContext, SideBarContextProvider } from './Sidebar.Context';
 import { PopupContextProvider, usePopupContext } from './Popup.Context';
 import { SearchContextProvider, useSearchContext } from './Search.Context';
-import {
-    useContractorContext,
-    ContractorContextProvider,
-} from './Contractor.Context';
 import { useStudentContext, StudentContextProvider } from './Student.Context';
 import { useSnackContext, SnackContextProvider } from './Snack.Context';
-import { useEmailContext, EmailContextProvider } from './Email.Context';
 
 export {
     useUserContext,
@@ -19,12 +14,8 @@ export {
     usePopupContext,
     SearchContextProvider,
     useSearchContext,
-    useContractorContext,
-    ContractorContextProvider,
     useStudentContext,
     StudentContextProvider,
     useSnackContext,
     SnackContextProvider,
-    useEmailContext,
-    EmailContextProvider,
 };

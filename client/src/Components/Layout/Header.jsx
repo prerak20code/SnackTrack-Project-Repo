@@ -90,24 +90,16 @@ export default function Header() {
                 ) : (
                     <div className="flex items-center justify-center gap-4">
                         <Button
-                            onClick={() => navigate('/register')}
+                            onClick={() => navigate('/register-student')}
                             btnText={
                                 <div className="flex items-center justify-center gap-2">
                                     <div className="size-[20px] fill-white">
                                         {icons.plus}
                                     </div>
-                                    <span>
-                                        {user.role === 'contractor'
-                                            ? 'Add Student'
-                                            : 'Add Contractor'}
-                                    </span>
+                                    <span>Add Student</span>
                                 </div>
                             }
-                            title={
-                                user.role === 'contractor'
-                                    ? 'Add Student'
-                                    : 'Add Contractor'
-                            }
+                            title="Add Student"
                             className="text-white rounded-md w-fit text-nowrap px-3 h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
                         />
                     </div>

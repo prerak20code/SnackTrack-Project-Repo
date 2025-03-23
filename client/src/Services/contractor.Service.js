@@ -3,12 +3,29 @@ import { SERVER_ERROR } from '../Constants/constants';
 class ContractorService {
     // personal usage
 
-    async login({ emailOrPhoneNo, password }) {
+    async register({
+        fullName,
+        password,
+        phoneNumber,
+        email,
+        hostelType,
+        hostelNumber,
+        hostelName,
+    }) {
         try {
-            const res = await fetch('/api/contractors/login', {
+            const res = await fetch(`/api/contractors/register`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ emailOrPhoneNo, password }),
+                body: JSON.stringify({
+                    fullName,
+                    password,
+                    email,
+                    phoneNumber,
+                    hostelType,
+                    hostelNumber,
+                    hostelName,
+                }),
             });
 
             const data = await res.json();
@@ -19,16 +36,36 @@ class ContractorService {
             }
             return data;
         } catch (err) {
-            console.error('error in contractor login service', err);
+            console.error('error in register service', err);
             throw err;
         }
     }
 
-    async logout() {
+    async completeRegistration({
+        fullName,
+        password,
+        phoneNumber,
+        email,
+        code,
+        hostelType,
+        hostelNumber,
+        hostelName,
+    }) {
         try {
-            const res = await fetch('/api/contractors/logout', {
-                method: 'PATCH',
+            const res = await fetch(`/api/contractors/complete-registeration`, {
+                method: 'POST',
                 credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fullName,
+                    password,
+                    email,
+                    phoneNumber,
+                    code,
+                    hostelType,
+                    hostelNumber,
+                    hostelName,
+                }),
             });
 
             const data = await res.json();
@@ -39,7 +76,7 @@ class ContractorService {
             }
             return data;
         } catch (err) {
-            console.error('error in contractor logout service', err);
+            console.error('error in completeRegistration service', err);
             throw err;
         }
     }
@@ -74,56 +111,31 @@ class ContractorService {
         }
     }
 
-    async updatePassword(oldPassword, newPassword) {
-        try {
-            const res = await fetch('/api/contractors/password', {
-                method: 'PATCH',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    newPassword,
-                    oldPassword,
-                }),
-            });
-
-            const data = await res.json();
-            console.log(data);
-
-            if (res.status === SERVER_ERROR) {
-                throw new Error(data.message);
-            }
-            return data;
-        } catch (err) {
-            console.error('error in contractor updatePassword service', err);
-            throw err;
-        }
-    }
-
-    async updateAvatar(avatar) {
-        try {
-            const formData = new FormData();
-            formData.append('avatar', avatar);
-
-            const res = await fetch('/api/contractors/avatar', {
-                method: 'PATCH',
-                credentials: 'include',
-                body: formData,
-            });
-
-            const data = await res.json();
-            console.log(data);
-
-            if (res.status === SERVER_ERROR) {
-                throw new Error(data.message);
-            }
-            return data;
-        } catch (err) {
-            console.error('error in contractor updateAvatar service', err);
-            throw err;
-        }
-    }
-
     // student management tasks
+
+    async getStudents(signal, page = 1, limit = 10) {
+        try {
+            const res = await fetch(
+                `/api/contractors/?page=${page}&limit=${limit}`,
+                { method: 'GET', signal, credentials: 'include' }
+            );
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            if (err.name === 'AbortError') {
+                console.log('getStudents request aborted.');
+            } else {
+                console.error('error in getStudents service', err);
+                throw err;
+            }
+        }
+    }
 
     async registerStudent({ fullName, rollNo, password, phoneNumber, email }) {
         try {

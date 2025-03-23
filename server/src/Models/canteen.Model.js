@@ -17,11 +17,12 @@ const canteenSchema = new Schema(
         hostelName: {
             type: String,
             required: true,
+            unique: true,
+            trim: true,
         },
         hostelNumber: {
             type: Number,
             required: true,
-            unique: true,
         },
         snacks: [
             {

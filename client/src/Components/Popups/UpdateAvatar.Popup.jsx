@@ -2,11 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePopupContext, useUserContext } from '../../Contexts';
 import { fileRestrictions } from '../../Utils';
-import {
-    studentService,
-    contractorService,
-    adminService,
-} from '../../Services';
+import { userService } from '../../Services';
 import { icons } from '../../Assets/icons';
 import {
     MAX_FILE_SIZE,
@@ -55,12 +51,7 @@ export default function UpdateAvatarPopup() {
         setLoading(true);
         setDisabled(true);
         try {
-            let res = null;
-            if (user.role === 'student')
-                res = await studentService.updateAvatar(avatar);
-            else if (user.role === 'contractor')
-                res = await contractorService.updateAvatar(avatar);
-            else res = await adminService.updateAvatar(avatar);
+            const res = await userService.updateAvatar(avatar);
             if (res && !res.message) {
                 setUser({ ...user, avatar: res.newAvatar });
                 toast.success('Avatar updated successfully');

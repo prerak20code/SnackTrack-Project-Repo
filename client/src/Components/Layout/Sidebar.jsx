@@ -11,52 +11,40 @@ export default function Sidebar() {
     const items = [
         { path: '/', name: 'Home', icon: icons.home, show: true },
         {
-            path: '/today-orders',
-            name: 'Orders',
-            icon: icons.clock,
-            show: user.role === 'contractor',
-        },
-        {
-            path: `/orders/${user._id}`,
-            name: 'Orders',
+            path: '/my-orders',
+            name: 'My Orders',
             icon: icons.clock,
             show: user.role === 'student',
         },
         {
-            path: `/kitchen`,
+            path: '/my-bills',
+            name: 'My Bills',
+            icon: icons.rupee,
+            show: user.role === 'student',
+        },
+        {
+            path: '/kitchen',
             name: 'Kitchen',
             icon: icons.store,
             show: user.role === 'contractor',
         },
         {
-            path: `/statistics`,
+            path: '/today-orders',
+            name: "Today's Orders",
+            icon: icons.clock,
+            show: user.role === 'contractor',
+        },
+        {
+            path: '/statistics',
             name: 'Statistics',
             icon: icons.growth,
             show: user.role === 'contractor',
         },
         {
-            path: `/students/${user.canteenId}`,
+            path: '/students',
             name: 'Students',
             icon: icons.user,
             show: user.role === 'contractor',
-        },
-        {
-            path: '/bills',
-            name: 'Bills',
-            icon: icons.rupee,
-            show: user.role === 'student',
-        },
-        {
-            path: '/canteens',
-            name: 'Canteens',
-            icon: icons.store,
-            show: user.role === 'admin',
-        },
-        {
-            path: '/contractors',
-            name: 'Contractors',
-            icon: icons.user,
-            show: user.role === 'admin',
         },
     ];
 

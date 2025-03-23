@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
-import { usePopupContext } from '../../Contexts';
+import { usePopupContext, useUserContext } from '../../Contexts';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../Services';
 import toast from 'react-hot-toast';
@@ -11,6 +11,7 @@ export default function AdminKeyVerificationPopup() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [key, setKey] = useState('');
+    const { setAdminVerified } = useUserContext();
 
     const verifyKey = async () => {
         setLoading(true);
@@ -18,6 +19,7 @@ export default function AdminKeyVerificationPopup() {
             const res = await adminService.verifyAdminKey(key);
             if (res && res.message === 'Correct key') {
                 navigate('/admin');
+                setAdminVerified(true);
             } else toast.error(res?.message);
         } catch (err) {
             navigate('/server-error');

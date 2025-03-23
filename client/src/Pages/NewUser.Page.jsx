@@ -1,9 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../Components';
-import { usePopupContext } from '../Contexts';
+import { usePopupContext, useUserContext } from '../Contexts';
 
 export default function NewUserPage() {
     const { setShowPopup, setPopupInfo } = usePopupContext();
+    const { adminVerified } = useUserContext();
+    const navigate = useNavigate();
 
     return (
         <div className="text-center min-h-screen bg-gradient-to-r from-sky-500 to-blue-600 flex items-center justify-center p-6">
@@ -49,8 +51,11 @@ export default function NewUserPage() {
                     </p>
                     <Button
                         onClick={() => {
-                            setShowPopup(true);
-                            setPopupInfo({ type: 'verifyAdminKey' });
+                            if (adminVerified) navigate('/admin');
+                            else {
+                                setShowPopup(true);
+                                setPopupInfo({ type: 'verifyAdminKey' });
+                            }
                         }}
                         btnText="Admin Controls"
                         className="inline-block bg-[#3a67d8] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#2c4fa8] transition-colors duration-300"

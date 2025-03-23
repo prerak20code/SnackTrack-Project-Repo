@@ -30,6 +30,7 @@ import {
     StatisticsPage,
     AdminPage,
     RegisterCanteenPage,
+    AdminAccess,
 } from './Pages';
 
 import { UpdateAccountDetails, UpdatePassword, Layout } from './Components';
@@ -88,9 +89,14 @@ export const router = createBrowserRouter(
 
             {/* accessable after admin key verificaiton */}
 
-            <Route path="admin" element={<Layout renderTemplate={false} />}>
-                <Route path="" element={<AdminPage />} />
-                <Route path="new-canteen" element={<RegisterCanteenPage />} />
+            <Route path="admin" element={<AdminAccess />}>
+                <Route element={<Layout renderTemplate={false} />}>
+                    <Route path="" element={<AdminPage />} />
+                    <Route
+                        path="new-canteen"
+                        element={<RegisterCanteenPage />}
+                    />
+                </Route>
             </Route>
 
             {/* public routes */}

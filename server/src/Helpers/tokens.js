@@ -42,19 +42,36 @@ const generateRefreshToken = async (data) => {
 };
 
 /**
+ * Util to generate admin key Token
+ * @param {Object} key - The admin key
+ * @returns JWT Token
+ */
+
+const generateAdminKeyToken = async (key) => {
+    return jwt.sign({ key }, process.env.ADMIN_KEY_TOKEN_SECRET, {
+        expiresIn: process.env.ADMIN_KEY_TOKEN_EXPIRY,
+    });
+};
+
+/**
  * @param {object} req - The http req object to extract the token from.
  * @param {object} tokenName - Name of the token (snackTrack_accessToken or snackTrack_RefreshToken).
  * @returns Token
  */
 
 const extractTokens = (req) => {
-    const accessToken =
-        req.cookies?.snackTrack_accessToken ||
-        req.headers['authorization']?.split(' ')[1]; // BEAREER TOKEN
-    const refreshToken =
-        req.cookies?.snackTrack_refreshToken ||
-        req.headers['authorization']?.split(' ')[1]; // BEAREER TOKEN
-    return { accessToken, refreshToken };
+    return {
+        accessToken:
+            req.cookies?.snackTrack_accessToken ||
+            req.headers['authorization']?.split(' ')[1],
+
+        refreshToken:
+            req.cookies?.snackTrack_refreshToken ||
+            req.headers['x-refresh-token'],
+
+        adminKeyToken:
+            req.cookies?.snackTrack_adminKeyToken || req.headers['x-admin-key'],
+    };
 };
 
 export {
@@ -62,4 +79,5 @@ export {
     generateTokens,
     generateAccessToken,
     generateRefreshToken,
+    generateAdminKeyToken,
 };

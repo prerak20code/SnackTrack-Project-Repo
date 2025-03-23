@@ -1,6 +1,7 @@
-import { OK, BAD_REQUEST } from '../Constants/index.js';
+import { OK, BAD_REQUEST, COOKIE_OPTIONS } from '../Constants/index.js';
 import { tryCatch } from '../Utils/index.js';
 import { Canteen } from '../Models/index.js';
+import { generateAdminKeyToken } from '../Helpers/index.js';
 
 const getCanteens = tryCatch('get canteens', async (req, res) => {
     const canteens = await Canteen.aggregate([
@@ -29,11 +30,20 @@ const getCanteens = tryCatch('get canteens', async (req, res) => {
     return res.status(OK).json(canteens);
 });
 
-const verifyAdminKey = tryCatch('verify admin key', async (req, res) => {
+const verifyKey = tryCatch('verify admin key', async (req, res) => {
     const { key } = req.body;
     if (key !== process.env.ADMIN_KEY) {
         return res.status(BAD_REQUEST).json({ message: 'Invalid key' });
-    } else return res.status(OK).json({ message: 'Correct key' });
+    } else {
+        const adminKeyToken = await generateAdminKeyToken(key);
+        return res
+            .status(OK)
+            .cookie('snackTrack_adminKeyToken', adminKeyToken, {
+                ...COOKIE_OPTIONS,
+                maxAge: parseInt(process.env.ADMIN_KEY_TOKEN_MAXAGE),
+            })
+            .json({ message: 'Correct key' });
+    }
 });
 
 const changeContractor = tryCatch(
@@ -46,4 +56,4 @@ const removeContractor = tryCatch(
     async (req, res, next) => {}
 );
 
-export { getCanteens, verifyAdminKey, changeContractor, removeContractor };
+export { getCanteens, verifyKey, changeContractor, removeContractor };

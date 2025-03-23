@@ -15,7 +15,6 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState('');
     const { setUser } = useUserContext();
     const navigate = useNavigate();
     const [hostels, setHostels] = useState([]);
@@ -75,7 +74,6 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true);
         setDisabled(true);
-        setError('');
         try {
             const res = await userService.login({
                 loginInput:
@@ -90,10 +88,7 @@ export default function LoginPage() {
                 setUser(res);
                 toast.success('Logged in Successfully 😉');
                 navigate('/');
-            } else {
-                setUser(null);
-                setError(res.message);
-            }
+            } else toast.error(res.message);
         } catch (err) {
             navigate('/server-error');
         } finally {
@@ -164,12 +159,6 @@ export default function LoginPage() {
                 />
             </div>
             <div className="text-black max-w-[500px] min-w-[300px] mt-4 flex flex-col items-center">
-                {error && (
-                    <div className="text-red-500 relative -top-2 w-full text-center mb-6">
-                        {error}
-                    </div>
-                )}
-
                 <Dropdown
                     options={roles}
                     className="mb-6 w-full"

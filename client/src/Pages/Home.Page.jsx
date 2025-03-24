@@ -35,7 +35,7 @@ export default function HomePage() {
                         snacks.map((snack) => ({
                             ...snack,
                             quantity:
-                                cartItems.find(({ _id }) => _id === snack._id)
+                                cartItems.find((i) => i._id === snack._id)
                                     ?.quantity || 0,
                         }))
                     );

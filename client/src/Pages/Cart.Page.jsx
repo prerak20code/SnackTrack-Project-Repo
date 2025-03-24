@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button, EmptyCart } from '../Components';
 import { useNavigate } from 'react-router-dom';
 import { icons } from '../Assets/icons';
 import { SNACK_PLACEHOLDER_IMAGE } from '../Constants/constants';
+import { orderService } from '../Services';
+import { usePopupContext } from '../Contexts';
 
 export default function CartPage() {
     const [ordering, setOrdering] = useState(false);
     const navigate = useNavigate();
+    const { setShowPopup, setPopupInfo } = usePopupContext();
     const [cartItems, setCartItems] = useState(
         JSON.parse(localStorage.getItem('cartItems')) || []
     );
@@ -20,57 +23,56 @@ export default function CartPage() {
 
     function updateQuantity(itemId, price, newQuantity) {
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-        localStorage.setItem(
-            'cartItems',
-            JSON.stringify(
-                cartItems.map((item) =>
-                    item._id === itemId && item.price === price
-                        ? { ...item, quantity: newQuantity }
-                        : item
-                )
-            )
+        const updatedCartItems = cartItems.map((item) =>
+            item._id === itemId && item.price === price
+                ? { ...item, quantity: newQuantity }
+                : item
         );
-        setCartItems((prev) =>
-            prev.map((item) =>
-                item._id === itemId && item.price === price
-                    ? { ...item, quantity: newQuantity }
-                    : item
-            )
-        );
+        localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+        setCartItems(updatedCartItems);
     }
 
-    // TODO: MISTAKE
     function removeFromCart(itemId, price, type) {
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-        localStorage.setItem(
-            'cartItems',
-            JSON.stringify(
-                cartItems.filter(
-                    (item) =>
-                        (type === 'Snack' && item._id !== itemId) ||
-                        (type === 'Packaged' &&
-                            item._id !== itemId &&
-                            item.price !== price)
-                )
-            )
-        );
-        setCartItems((prev) =>
-            prev.filter(
-                (item) =>
-                    (type === 'Snack' && item._id !== itemId) ||
-                    (type === 'Packaged' &&
-                        item._id !== itemId &&
-                        item.price !== price)
-            )
-        );
+
+        const updatedCartItems = cartItems.filter((item) => {
+            if (type === 'Snack') {
+                return item._id !== itemId;
+            } else {
+                return !(item._id === itemId && item.price === price);
+            }
+        });
+
+        localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+        setCartItems(updatedCartItems);
     }
 
-    function placeOrder() {}
+    async function placeOrder() {
+        try {
+            setOrdering(true);
+            const cartItems =
+                JSON.parse(localStorage.getItem('cartItems')) || [];
+            const res = await orderService.placeOrder(cartItems, total);
+            if (res && !res.message) {
+                setShowPopup(true);
+                setPopupInfo({
+                    type: 'orderPlaced',
+                    data: { itemsCount: cartItems.length },
+                });
+                localStorage.removeItem('cartItems');
+                setCartItems([]);
+            }
+        } catch (err) {
+            navigate('/server-error');
+        } finally {
+            setOrdering(false);
+        }
+    }
 
     const cartItemElements = cartItems.map(
         ({ price, _id, name, category, type, image, quantity }) => (
             <div
-                key={_id}
+                key={`${_id}-${price}`}
                 className="w-full flex flex-col sm:flex-row items-end sm:items-center justify-between border-b border-gray-200 py-4"
             >
                 <div className="w-full flex items-center space-x-4">
@@ -96,27 +98,26 @@ export default function CartPage() {
 
                 {/* price & quantity */}
                 <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-                    <div className="flex items-center border border-gray-300 rounded-lg">
-                        <button
+                    <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                        <Button
                             className="px-3 py-1 text-gray-500 hover:bg-gray-100"
                             onClick={() =>
-                                updateQuantity(_id, price, quantity - 1)
+                                quantity === 1
+                                    ? removeFromCart(_id, price, type)
+                                    : updateQuantity(_id, price, quantity - 1)
                             }
-                            disabled={quantity === 1}
-                        >
-                            -
-                        </button>
+                            btnText="-"
+                        />
                         <span className="px-3 py-1 text-gray-900">
                             {quantity}
                         </span>
-                        <button
+                        <Button
                             className="px-3 py-1 text-gray-500 hover:bg-gray-100"
                             onClick={() =>
                                 updateQuantity(_id, price, quantity + 1)
                             }
-                        >
-                            +
-                        </button>
+                            btnText="+"
+                        />
                     </div>
                     <p className="text-lg font-semibold text-gray-900">
                         ₹{(price * quantity).toFixed(2)}
@@ -128,7 +129,7 @@ export default function CartPage() {
                             </div>
                         }
                         className="hover:bg-gray-100 p-2 rounded-full"
-                        onClick={() => removeFromCart(_id, price)}
+                        onClick={() => removeFromCart(_id, price, type)}
                     />
                 </div>
             </div>
@@ -136,7 +137,7 @@ export default function CartPage() {
     );
 
     return cartItems.length > 0 ? (
-        <div className="bg-gray-100 max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        <div className="bg-gray-100 rounded-xl drop-shadow-sm w-full py-10 px-4 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-8">Your Cart</h1>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Product List */}

@@ -20,86 +20,49 @@ export default function PackagedItemView({ item, reference }) {
     }
 
     function addToCart(price) {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
         setVariants((prev) =>
             prev.map((v) => (v.price === price ? { ...v, quantity: 1 } : v))
         );
-        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const newCartItem = {
+            _id,
+            category,
+            type: 'PackagedFood',
+            price,
+            quantity: 1,
+        };
         localStorage.setItem(
             'cartItems',
-            JSON.stringify([
-                ...cartItems,
-                {
-                    _id,
-                    category,
-                    type: 'Packaged',
-                    price,
-                    quantity: 1,
-                },
-            ])
+            JSON.stringify(cartItems.concat(newCartItem))
         );
     }
 
-    function incrementQuantity(price) {
+    function updateQuantity(price, newQuantity) {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const updatedCartItems = cartItems.map((i) =>
+            i._id === _id && i.price === price
+                ? { ...i, quantity: newQuantity }
+                : i
+        );
+        localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
         setVariants((prev) =>
             prev.map((v) =>
-                v.price === price ? { ...v, quantity: v.quantity + 1 } : v
-            )
-        );
-        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-        localStorage.setItem(
-            'cartItems',
-            JSON.stringify(
-                cartItems.map((cartItem) => {
-                    if (cartItem._id === _id && cartItem.price === price) {
-                        return {
-                            ...cartItem,
-                            quantity: cartItem.quantity + 1,
-                        };
-                    }
-                    return cartItem;
-                })
+                v.price === price ? { ...v, quantity: newQuantity } : v
             )
         );
     }
 
-    function decrementQuantity(price) {
-        setVariants((prev) =>
-            prev.map((v) =>
-                v.price === price ? { ...v, quantity: v.quantity - 1 } : v
-            )
-        );
-
+    function removeFromCart(price) {
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-        const quantityInCart = cartItems.find(
-            (cartItem) => cartItem._id === _id && cartItem.price === price
-        ).quantity;
 
-        if (quantityInCart === 1) {
-            localStorage.setItem(
-                'cartItems',
-                JSON.stringify(
-                    cartItems.filter(
-                        (cartItem) =>
-                            cartItem._id !== _id && cartItem.price !== price
-                    )
-                )
-            );
-        } else {
-            localStorage.setItem(
-                'cartItems',
-                JSON.stringify(
-                    cartItems.map((cartItem) => {
-                        if (cartItem._id === _id && cartItem.price === price) {
-                            return {
-                                ...cartItem,
-                                quantity: cartItem.quantity - 1,
-                            };
-                        }
-                        return cartItem;
-                    })
-                )
-            );
-        }
+        const updatedCartItems = cartItems.filter((item) => {
+            item._id !== _id && item.price !== price;
+        });
+
+        localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+        setVariants((prev) =>
+            prev.map((v) => (v.price === price ? { ...v, quantity: 0 } : v))
+        );
     }
 
     return (
@@ -169,7 +132,12 @@ export default function PackagedItemView({ item, reference }) {
                                             <button
                                                 className="px-3 py-1 text-gray-500 hover:bg-gray-100"
                                                 onClick={() =>
-                                                    decrementQuantity(price)
+                                                    quantity === 1
+                                                        ? removeFromCart(price)
+                                                        : updateQuantity(
+                                                              price,
+                                                              quantity - 1
+                                                          )
                                                 }
                                             >
                                                 -
@@ -180,7 +148,10 @@ export default function PackagedItemView({ item, reference }) {
                                             <button
                                                 className="px-3 py-1 text-gray-500 hover:bg-gray-100"
                                                 onClick={() =>
-                                                    incrementQuantity(price)
+                                                    updateQuantity(
+                                                        price,
+                                                        quantity + 1
+                                                    )
                                                 }
                                             >
                                                 +

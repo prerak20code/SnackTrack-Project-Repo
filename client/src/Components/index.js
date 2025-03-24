@@ -32,6 +32,7 @@ import AddSnackPopup from './Popups/AddSnack.Popup';
 import AddItemPopup from './Popups/AddItem.Popup';
 import EmailVerificationPopup from './Popups/EmailVerification.Popup';
 import AdminKeyVerificationPopup from './Popups/AdminKeyVerification.Popup';
+import OrderPlacedPopup from './Popups/OrderPlaced.Popup';
 import EmptyCart from './Views/EmptyCart';
 
 export {
@@ -70,4 +71,5 @@ export {
     EmailVerificationPopup,
     EmptyCart,
     AdminKeyVerificationPopup,
+    OrderPlacedPopup,
 };

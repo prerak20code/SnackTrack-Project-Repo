@@ -26,7 +26,7 @@ export default function NewUserPage() {
                 </p>
 
                 {/* Animated Icon */}
-                <div className="mb-6 flex justify-center animate-bounce animate-infinite animate-duration-2000">
+                <div className="mb-4 flex justify-center animate-bounce animate-infinite animate-duration-2000">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         style={{ color: '#3a67d8' }}
@@ -58,7 +58,7 @@ export default function NewUserPage() {
                             }
                         }}
                         btnText="Admin Controls"
-                        className="inline-block bg-[#3a67d8] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#2c4fa8] transition-colors duration-300"
+                        className="bg-[#3a67d8] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#2c4fa8]"
                     />
                 </div>
             </div>

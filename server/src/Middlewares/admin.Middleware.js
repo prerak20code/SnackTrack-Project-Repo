@@ -5,7 +5,7 @@ import { extractTokens } from '../Helpers/index.js';
 export const verifyAdminKeyJwt = async (req, res, next) => {
     try {
         const { adminKeyToken } = extractTokens(req);
-        
+
         if (adminKeyToken) {
             // verify
             const decodedToken = jwt.verify(

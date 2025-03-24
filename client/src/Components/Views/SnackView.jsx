@@ -50,57 +50,34 @@ export default function SnackView({ snack, reference }) {
     function addToCart() {
         setQuantityInCart(1);
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const newCartItem = {
+            _id,
+            name,
+            price,
+            image,
+            type: 'Snack',
+            quantity: 1,
+        };
         localStorage.setItem(
             'cartItems',
-            JSON.stringify([
-                ...cartItems,
-                {
-                    _id,
-                    name,
-                    price,
-                    image,
-                    type: 'Snack',
-                    quantity: 1,
-                },
-            ])
+            JSON.stringify(cartItems.concat(newCartItem))
         );
     }
 
-    function incrementQuantity() {
-        setQuantityInCart((prev) => prev + 1);
+    function updateQuantity(newQuantity) {
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-        localStorage.setItem(
-            'cartItems',
-            JSON.stringify(
-                cartItems.map((item) =>
-                    item._id === _id
-                        ? { ...item, quantity: item.quantity + 1 }
-                        : item
-                )
-            )
+        const updatedCartItems = cartItems.map((i) =>
+            i._id === _id ? { ...i, quantity: newQuantity } : i
         );
+        localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+        setQuantityInCart(newQuantity);
     }
 
-    function decrementQuantity() {
-        setQuantityInCart((prev) => prev - 1);
+    function removeFromCart() {
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-        if (quantityInCart === 1) {
-            localStorage.setItem(
-                'cartItems',
-                JSON.stringify(cartItems.filter((item) => item._id !== _id))
-            );
-        } else {
-            localStorage.setItem(
-                'cartItems',
-                JSON.stringify(
-                    cartItems.map((item) =>
-                        item._id === _id
-                            ? { ...item, quantity: item.quantity - 1 }
-                            : item
-                    )
-                )
-            );
-        }
+        const updatedCartItems = cartItems.filter((i) => i._id !== _id);
+        localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+        setQuantityInCart(0);
     }
 
     return (
@@ -187,7 +164,11 @@ export default function SnackView({ snack, reference }) {
                             <div className="flex items-center border border-gray-300 rounded-lg">
                                 <button
                                     className="px-3 py-1 text-gray-500 hover:bg-gray-100"
-                                    onClick={decrementQuantity}
+                                    onClick={() =>
+                                        quantityInCart === 1
+                                            ? removeFromCart()
+                                            : updateQuantity(quantityInCart - 1)
+                                    }
                                 >
                                     -
                                 </button>
@@ -196,7 +177,9 @@ export default function SnackView({ snack, reference }) {
                                 </span>
                                 <button
                                     className="px-3 py-1 text-gray-500 hover:bg-gray-100"
-                                    onClick={incrementQuantity}
+                                    onClick={() =>
+                                        updateQuantity(quantityInCart + 1)
+                                    }
                                 >
                                     +
                                 </button>

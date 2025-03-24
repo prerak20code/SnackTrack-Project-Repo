@@ -3,15 +3,23 @@ import { tryCatch } from '../Utils/index.js';
 import { Order } from '../Models/index.js';
 import { Types } from 'mongoose';
 
-// student can do
+// only student can do
 
-const addToCart = tryCatch('add to cart', async (req, res, next) => {});
+const placeOrder = tryCatch('place order', async (req, res) => {
+    const { cartItems, total } = req.body;
+    const student = req.user;
 
-const removeFromCart = tryCatch('add to cart', async (req, res, next) => {});
+    const order = await Order.create({
+        studentId: student._id,
+        canteenId: student.canteenId,
+        amount: total,
+        items: cartItems,
+    });
 
-const placeOrder = tryCatch('place order', async (req, res, next) => {});
+    return res.status(OK).json(order);
+});
 
-// contractor can do
+// only contractor can do
 
 const changeOrderStatus = tryCatch(
     'change order status',
@@ -83,4 +91,4 @@ const getOrders = tryCatch('get orders', async (req, res) => {
     }
 });
 
-export { getOrders, placeOrder, changeOrderStatus, addToCart, removeFromCart };
+export { getOrders, placeOrder, changeOrderStatus };

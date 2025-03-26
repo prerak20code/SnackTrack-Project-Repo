@@ -1,10 +1,9 @@
 import nodemailer from 'nodemailer';
-
-let transporter;
+import { transporter } from './server.js';
 
 async function generateTransporter() {
     try {
-        transporter = nodemailer.createTransport({
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             secure: true,
             auth: {
@@ -16,6 +15,7 @@ async function generateTransporter() {
         // Test transporter
         await transporter.verify();
         console.log('✅ Mail transporter ready.');
+        return transporter;
     } catch (err) {
         console.error(`❌ Error generating mail transporter: ${err.message}`);
     }

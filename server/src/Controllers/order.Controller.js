@@ -5,81 +5,24 @@ import { Types } from 'mongoose';
 
 // only student can do
 
-const placeOrder = async (req, res) => {
-    try {
-        const { studentId, canteenId } = req.body;
+const placeOrder = tryCatch('place order', async (req, res) => {
+    const { cartItems, total } = req.body;
+    const student = req.user;
 
-        if (!studentId || !canteenId) {
-            return res.status(400).json({
-                success: false,
-                message: 'Student ID and Canteen ID are required!',
-            });
-        }
+    const order = await Order.create({
+        studentId: student._id,
+        canteenId: student.canteenId,
+        amount: total,
+        items: cartItems,
+    });
 
-        // Get cart from cookies
-        let cart = req.cookies.cart ? JSON.parse(req.cookies.cart) : [];
+    return res.status(OK).json(order);
+});
 
-        console.log('Raw cart data:', cart);
-
-        if (!Array.isArray(cart) || cart.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Cart is empty!',
-            });
-        }
-
-        // Map cart data to match Order schema
-        const orderItems = cart.map((item) => {
-            if (!item.productId || !item.productType) {
-                console.error('Invalid cart item:', item);
-                throw new Error(
-                    'Cart item is missing productId or productType!'
-                );
-            }
-            return {
-                itemId: item.productId,
-                itemType: item.productType,
-                quantity: item.quantity,
-                price: item.price,
-            };
-        });
-
-        // Calculate total amount
-        const totalAmount = orderItems.reduce(
-            (sum, item) => sum + item.price * item.quantity,0);
-
-        // Create order object
-        const order = new Order({
-            studentId,
-            canteenId,
-            status: 'Pending',
-            amount: totalAmount,
-            items: orderItems,
-        });
-
-        await order.save();
-        res.clearCookie('cart');
-
-        res.status(201).json({
-            success: true,
-            message: 'Order placed successfully!',
-            order,
-        });
-    } catch (error) {
-        console.error('Error placing order:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error placing order',
-            error: error.message,
-        });
-    }
-};
-
-// need to implement something to flush all order when a month passes(bill paid) to save space
+//need something to flush all the orders when a month passes(bill paid) to save space
 const getStudentOrders = tryCatch('get student orders', async (req, res) => {
     const { limit = 10, page = 1 } = req.query;
     const { studentId } = req.params;
-
     const result = await Order.aggregatePaginate(
         [{ $match: { studentId: new Types.ObjectId(studentId) } }],
         {

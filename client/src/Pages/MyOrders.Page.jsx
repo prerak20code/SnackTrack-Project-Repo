@@ -34,7 +34,7 @@ export default function MyOrdersPage() {
     }, []);
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
                 {orders.length > 0 && (
@@ -48,7 +48,7 @@ export default function MyOrdersPage() {
                             </div>
                         }
                         onClick={() => navigate('/')}
-                        className="flex items-center gap-2 group text-sm font-medium text-[#4977ec] hover:text-[#3b62c2]"
+                        className="flex items-center gap-2 group font-medium text-[#4977ec] hover:text-[#3b62c2]"
                     />
                 )}
             </div>
@@ -63,10 +63,17 @@ export default function MyOrdersPage() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="space-y-6"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
                     {orders.map((order) => (
-                        <OrderCard key={order._id} order={order} />
+                        <motion.div
+                            key={order._id}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <OrderCard order={order} />
+                        </motion.div>
                     ))}
                 </motion.div>
             ) : (

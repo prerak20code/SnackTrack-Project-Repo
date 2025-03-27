@@ -19,6 +19,34 @@ const placeOrder = tryCatch('place order', async (req, res) => {
     return res.status(OK).json(order);
 });
 
+// need to implement something to flush all order when a month passes(bill paid) to save space
+const getStudentOrders = tryCatch('get student orders', async (req, res) => {
+    const { limit = 10, page = 1 } = req.query;
+    const { studentId } = req.params;
+
+    const result = await Order.aggregatePaginate(
+        [{ $match: { studentId: new Types.ObjectId(studentId) } }],
+        {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: { createdAt: -1 },
+        }
+    );
+
+    return res.status(OK).json(
+        result.docs.length
+            ? {
+                  orders: result.docs,
+                  ordersInfo: {
+                      hasNextPage: result.hasNextPage,
+                      hasPrevPage: result.hasPrevPage,
+                      totalOrders: result.totalDocs,
+                  },
+              }
+            : { message: 'No orders found' }
+    );
+});
+
 // only contractor can do
 
 const changeOrderStatus = tryCatch(
@@ -46,27 +74,21 @@ const changeOrderStatus = tryCatch(
     }
 );
 
-// both contractor & student can do
+const getCanteenOrders = tryCatch('get canteen orders', async (req, res) => {
+    const { limit = 10, page = 1 } = req.query;
+    const canteenId = req.user.canteenId; // contractor
 
-const getOrders = tryCatch('get orders', async (req, res) => {
-    const {
-        limit = 10,
-        page = 1,
-        month = new Date().getMonth() + 1, // JavaScript months are 0-indexed
-    } = req.query;
-    const { studentId } = req.params;
+    const now = new Date();
+    const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(now.setHours(23, 59, 59, 999));
 
-    const year = new Date().getFullYear();
-
+    // fetch today's orders from this canteen
     const result = await Order.aggregatePaginate(
         [
             {
                 $match: {
-                    studentId,
-                    createdAt: {
-                        $gte: new Date(`${year}-${parseInt(month)}-01`),
-                        $lt: new Date(`${year}-${parseInt(month) + 1}-01`),
-                    },
+                    canteenId: new Types.ObjectId(canteenId),
+                    createdAt: { $gte: startOfDay, $lt: endOfDay },
                 },
             },
         ],
@@ -77,18 +99,18 @@ const getOrders = tryCatch('get orders', async (req, res) => {
         }
     );
 
-    if (result.docs.length) {
-        return res.status(OK).json({
-            orders: result.docs,
-            ordersInfo: {
-                hasNextPage: result.hasNextPage,
-                hasPrevPage: result.hasPrevPage,
-                totalOrders: result.totalDocs,
-            },
-        });
-    } else {
-        return res.status(OK).json({ message: 'No orders found' });
-    }
+    return res.status(OK).json(
+        result.docs.length
+            ? {
+                  orders: result.docs,
+                  ordersInfo: {
+                      hasNextPage: result.hasNextPage,
+                      hasPrevPage: result.hasPrevPage,
+                      totalOrders: result.totalDocs,
+                  },
+              }
+            : { message: 'No orders found' }
+    );
 });
 
-export { getOrders, placeOrder, changeOrderStatus };
+export { getStudentOrders, getCanteenOrders, placeOrder, changeOrderStatus };

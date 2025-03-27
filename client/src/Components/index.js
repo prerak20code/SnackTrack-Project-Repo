@@ -28,6 +28,7 @@ import Snacks from './Views/Snacks';
 import PackagedItems from './Views/PackagedItems';
 import PendingOrders from './Views/PendingOrders';
 import CompletedOrders from './Views/CompletedOrders';
+import OrderCard from './Views/OrderCard';
 import AddSnackPopup from './Popups/AddSnack.Popup';
 import AddItemPopup from './Popups/AddItem.Popup';
 import EmailVerificationPopup from './Popups/EmailVerification.Popup';
@@ -52,6 +53,7 @@ export {
     Popup,
     RemoveStudentPopup,
     RemoveAllStudentsPopup,
+    OrderCard,
     NotificationsPopup,
     EditStudentPopup,
     UpdateAvatarPopup,

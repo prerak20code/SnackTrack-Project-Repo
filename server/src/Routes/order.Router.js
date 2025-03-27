@@ -3,7 +3,8 @@ export const orderRouter = express.Router();
 import { verifyJwt } from '../Middlewares/index.js';
 
 import {
-    getOrders,
+    getStudentOrders,
+    getCanteenOrders,
     placeOrder,
     changeOrderStatus,
 } from '../Controllers/order.Controller.js';
@@ -12,4 +13,6 @@ orderRouter.use(verifyJwt);
 
 orderRouter.route('/:orderId').patch(changeOrderStatus);
 
-orderRouter.route('/').get(getOrders).post(placeOrder);
+orderRouter.route('/:studentId').get(getStudentOrders);
+
+orderRouter.route('/').get(getCanteenOrders).post(placeOrder);

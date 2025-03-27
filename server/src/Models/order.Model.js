@@ -23,6 +23,10 @@ const orderSchema = new Schema(
             type: Number,
             required: true,
         },
+        packingCharges: {
+            type: Number,
+            default: 0,
+        },
         items: [
             {
                 itemType: {

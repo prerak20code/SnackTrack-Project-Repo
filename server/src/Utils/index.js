@@ -2,6 +2,7 @@ import verifyExpression from './regex.js';
 import { ErrorHandler } from './errorHandler.js';
 import { tryCatch } from './tryCatch.js';
 import { verifyEmail, sendVerificationEmail } from './verificationMail.js';
+import { setSocketId, getSocketId, deleteSocketId } from './redis.js';
 
 export {
     verifyExpression,
@@ -9,4 +10,7 @@ export {
     tryCatch,
     verifyEmail,
     sendVerificationEmail,
+    setSocketId,
+    getSocketId,
+    deleteSocketId,
 };

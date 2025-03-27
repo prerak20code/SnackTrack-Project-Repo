@@ -41,6 +41,8 @@ const login = tryCatch('login as contractor', async (req, res, next) => {
         role,
     });
 
+    console.log('Generated Tokens:', { accessToken, refreshToken }); // Debugging line
+
     const Model = role === 'contractor' ? Contractor : Student;
 
     const [loggedInUser, canteen] = await Promise.all([

@@ -18,6 +18,7 @@ import {
     contractorRouter,
     orderRouter,
     adminRouter,
+    cartRouter,
 } from './Routes/index.js';
 import { errorMiddleware } from './Middlewares/index.js';
 
@@ -26,5 +27,6 @@ app.use('/api/snacks', snackRouter);
 app.use('/api/admins', adminRouter);
 app.use('/api/contractors', contractorRouter);
 app.use('/api/orders', orderRouter);
+app.use('/api/cart', cartRouter);
 
 app.use(errorMiddleware);

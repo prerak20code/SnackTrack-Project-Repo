@@ -5,7 +5,6 @@ import { Order } from './order.Model.js';
 import { Student } from './student.Model.js';
 import { PackagedFood } from './packagedFood.Model.js';
 import { EmailVerification } from './emailVerification.Model.js';
-import { Cart } from './cart.Model.js';
 
 export {
     Student,
@@ -15,5 +14,4 @@ export {
     Snack,
     PackagedFood,
     EmailVerification,
-    Cart,
 };

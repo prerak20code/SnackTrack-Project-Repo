@@ -28,7 +28,7 @@ const orderSchema = new Schema(
                 itemType: {
                     type: String,
                     required: true,
-                    enum: ['PackagedFood', 'Snack'],
+                    enum: ['PackagedFood', 'snack'],
                 },
                 itemId: {
                     type: Types.ObjectId,

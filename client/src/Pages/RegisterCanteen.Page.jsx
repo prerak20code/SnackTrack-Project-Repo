@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { contractorService } from '../Services';
+import { useEffect, useState } from 'react';
+import { contractorService, userService } from '../Services';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button, Dropdown, InputField } from '../Components';
 import { verifyExpression } from '../Utils';
@@ -11,8 +11,6 @@ import toast from 'react-hot-toast';
 
 export default function RegisterCanteenPage() {
     const initialInputs = {
-        hostelNumber: '',
-        hostelName: '',
         fullName: '',
         password: '',
         phoneNumber: '',
@@ -25,13 +23,8 @@ export default function RegisterCanteenPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const [hostelType, setHostelType] = useState('');
-    const hostelTypes = [
-        { value: '', label: 'Select hostel type' },
-        { value: 'GH', label: 'Girls Only' },
-        { value: 'BH', label: 'Co-educational' },
-        { value: 'IH', label: 'Boys Only' },
-    ];
+    const [hostel, setHostel] = useState({});
+    const [hostels, setHostels] = useState([]);
 
     async function handleChange(e) {
         const { value, name } = e.target;
@@ -43,10 +36,28 @@ export default function RegisterCanteenPage() {
         if (value) verifyExpression(name, value, setError);
     };
 
+    useEffect(() => {
+        (async function getHostels() {
+            try {
+                const res = await userService.getCanteens();
+                if (res)
+                    setHostels([
+                        { label: 'Select Hostel', value: '' },
+                        ...res.map((h) => ({
+                            label: `${h.hostelType}${h.hostelNumber}-${h.hostelName}`,
+                            value: h,
+                        })),
+                    ]);
+            } catch (err) {
+                navigate('/server-error');
+            }
+        })();
+    }, []);
+
     function onMouseOver() {
         if (
             Object.values(inputs).some((value) => !value) ||
-            !hostelType ||
+            !hostel ||
             Object.entries(error).some(
                 ([key, value]) => value && key !== 'root'
             )
@@ -62,15 +73,17 @@ export default function RegisterCanteenPage() {
         setError({});
         try {
             const data = { ...inputs, hostelType };
-            console.log('data', data);
-            const res = await contractorService.register(data);
+
+            const res = await contractorService.register({ hostel, ...data });
             if (res && res.message === 'Verification code sent') {
                 toast.success('Verification code sent to your email');
                 setShowPopup(true);
-                setPopupInfo({ type: 'verifyEmail', target: { data } });
+                setPopupInfo({
+                    type: 'verifyEmail',
+                    target: { hostel, ...data },
+                });
             } else setError((prev) => ({ ...prev, root: res.message }));
         } catch (err) {
-            console.log(err);
             navigate('/server-error');
         } finally {
             setDisabled(false);
@@ -79,20 +92,6 @@ export default function RegisterCanteenPage() {
     }
 
     const inputFields = [
-        {
-            type: 'Number',
-            name: 'hostelNumber',
-            label: 'Hostel Number',
-            placeholder: 'Enter Hostel Number',
-            required: true,
-        },
-        {
-            type: 'text',
-            name: 'hostelName',
-            label: 'Hostel Name',
-            placeholder: 'Enter Hostel Name',
-            required: true,
-        },
         {
             type: 'text',
             name: 'fullName',
@@ -177,9 +176,9 @@ export default function RegisterCanteenPage() {
                 >
                     <div className="w-full flex justify-center mt-4">
                         <Dropdown
-                            options={hostelTypes}
+                            options={hostels}
                             className="mb-0 w-full"
-                            setValue={setHostelType}
+                            setValue={setHostel}
                         />
                     </div>
 

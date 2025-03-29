@@ -13,6 +13,7 @@ import {
     SERVER_ERROR,
     FORBIDDEN,
 } from './errorCodes.js';
+import { HOSTELS } from './hostels.js';
 
 export {
     MAX_FILE_SIZE,
@@ -28,4 +29,5 @@ export {
     CREATED,
     SERVER_ERROR,
     FORBIDDEN,
+    HOSTELS,
 };

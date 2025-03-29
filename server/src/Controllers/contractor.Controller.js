@@ -31,36 +31,15 @@ import { sendMail } from '../mailer.js';
 // personal usage
 
 const register = tryCatch('register as contractor', async (req, res, next) => {
-    const {
-        fullName,
-        email,
-        phoneNumber,
-        password,
-        hostelNumber,
-        hostelType,
-        hostelName,
-    } = req.body;
+    const { fullName, email, phoneNumber, password, hostel } = req.body;
 
-    if (
-        !fullName ||
-        !email ||
-        !phoneNumber ||
-        !password ||
-        !hostelNumber ||
-        !hostelType ||
-        !hostelName
-    ) {
+    if (!fullName || !email || !phoneNumber || !password || !hostel) {
         return next(new ErrorHandler('Missing fields', BAD_REQUEST));
     }
 
-    const isValid = [
-        'fullName',
-        'email',
-        'phoneNumber',
-        'password',
-        'hostelNumber',
-        'hostelType',
-    ].every((key) => verifyExpression(key, req.body[key]?.trim()));
+    const isValid = ['fullName', 'email', 'phoneNumber', 'password'].every(
+        (key) => verifyExpression(key, req.body[key]?.trim())
+    );
 
     if (!isValid) {
         return next(new ErrorHandler('Invalid input data', BAD_REQUEST));
@@ -70,11 +49,11 @@ const register = tryCatch('register as contractor', async (req, res, next) => {
     const [existingCanteen, existingContractor] = await Promise.all([
         Canteen.findOne({
             $or: [
-                { hostelName: hostelName.trim() },
+                { hostelName: hostel.hostelName.trim() },
                 {
                     $and: [
-                        { hostelNumber: hostelNumber.trim() },
-                        { hostelType: hostelType.trim() },
+                        { hostelNumber: hostel.hostelNumber.trim() },
+                        { hostelType: hostel.hostelType.trim() },
                     ],
                 },
             ],
@@ -101,16 +80,8 @@ const register = tryCatch('register as contractor', async (req, res, next) => {
 const completeRegistration = tryCatch(
     'complete contractor registration',
     async (req, res, next) => {
-        const {
-            email,
-            code,
-            fullName,
-            phoneNumber,
-            password,
-            hostelNumber,
-            hostelType,
-            hostelName,
-        } = req.body;
+        const { email, code, fullName, phoneNumber, password, hostel } =
+            req.body;
 
         if (
             !email ||
@@ -118,9 +89,7 @@ const completeRegistration = tryCatch(
             !fullName ||
             !phoneNumber ||
             !password ||
-            !hostelNumber ||
-            !hostelType ||
-            !hostelName
+            !hostel
         ) {
             return next(new ErrorHandler('Missing fields', BAD_REQUEST));
         }
@@ -135,9 +104,9 @@ const completeRegistration = tryCatch(
 
         // Now register the contractor & canteen
         const canteen = await Canteen.create({
-            hostelName: hostelName.trim(),
-            hostelNumber: hostelNumber.trim(),
-            hostelType: hostelType.trim(),
+            hostelName: hostel.hostelName.trim(),
+            hostelNumber: hostel.hostelNumber.trim(),
+            hostelType: hostel.hostelType.trim(),
         });
 
         // password hashing auto done by pre hook in the model

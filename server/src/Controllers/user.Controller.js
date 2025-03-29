@@ -4,6 +4,7 @@ import {
     NOT_FOUND,
     BAD_REQUEST,
     USER_PLACEHOLDER_IMAGE_URL,
+    HOSTELS,
 } from '../Constants/index.js';
 import { tryCatch, verifyExpression, ErrorHandler } from '../Utils/index.js';
 import {
@@ -157,8 +158,7 @@ const updateAvatar = tryCatch('update avatar', async (req, res, next) => {
 
 // for hostel dropdown during student login
 const getCanteens = tryCatch('get canteens', async (req, res) => {
-    const canteens = await Canteen.find().select('-snacks -packagedItems');
-    return res.status(200).json(canteens);
+    return res.status(200).json(HOSTELS);
 });
 
 export {

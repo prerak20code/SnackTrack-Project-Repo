@@ -160,29 +160,28 @@ export default function SnackView({ snack, reference }) {
                 {/* Add to Cart Button or Toggle Switch */}
                 <div className="w-full flex items-center justify-end mt-2">
                     {user.role !== 'contractor' ? (
-                        quantityInCart > 0 ? (
-                            <div className="flex items-center border border-gray-300 rounded-lg">
-                                <button
+                        isAvailable &&
+                        (quantityInCart > 0 ? (
+                            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                <Button
                                     className="px-3 py-1 text-gray-500 hover:bg-gray-100"
                                     onClick={() =>
                                         quantityInCart === 1
                                             ? removeFromCart()
                                             : updateQuantity(quantityInCart - 1)
                                     }
-                                >
-                                    -
-                                </button>
+                                    btnText="-"
+                                />
                                 <span className="px-3 py-1 text-gray-900">
                                     {quantityInCart}
                                 </span>
-                                <button
+                                <Button
                                     className="px-3 py-1 text-gray-500 hover:bg-gray-100"
                                     onClick={() =>
                                         updateQuantity(quantityInCart + 1)
                                     }
-                                >
-                                    +
-                                </button>
+                                    btnText="+"
+                                />
                             </div>
                         ) : (
                             <Button
@@ -197,7 +196,7 @@ export default function SnackView({ snack, reference }) {
                                 onClick={addToCart}
                                 className="rounded-md px-3 py-[5px] text-white bg-[#4977ec] hover:bg-[#3b62c2] shadow-md transition-colors duration-300"
                             />
-                        )
+                        ))
                     ) : (
                         <div className="flex items-center justify-center">
                             <label

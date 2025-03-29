@@ -98,7 +98,7 @@ export default function RegisterStudentPage() {
         {
             type: showPassword ? 'text' : 'password',
             name: 'password',
-            label: 'Password',
+            label: "Contractor's Password",
             placeholder: 'Enter password to confirm',
             required: true,
         },

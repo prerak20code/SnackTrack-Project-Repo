@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
 import { usePopupContext, useUserContext } from '../../Contexts';
@@ -37,7 +38,11 @@ export default function PackagedItemView({ item, reference }) {
         );
     }
 
-    function updateQuantity(price, newQuantity) {
+    function updateQuantity(price, newQuantity, availableCount) {
+        if (newQuantity > availableCount) {
+            toast.error('max quantity reached');
+            return;
+        }
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
         const updatedCartItems = cartItems.map((i) =>
             i._id === _id && i.price === price
@@ -127,35 +132,36 @@ export default function PackagedItemView({ item, reference }) {
                                 </div>
 
                                 {user.role === 'student' &&
+                                    availableCount > 0 &&
                                     (quantity > 0 ? (
-                                        <div className="flex items-center border border-gray-300 rounded-lg">
-                                            <button
+                                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                            <Button
                                                 className="px-3 py-1 text-gray-500 hover:bg-gray-100"
                                                 onClick={() =>
                                                     quantity === 1
                                                         ? removeFromCart(price)
                                                         : updateQuantity(
                                                               price,
-                                                              quantity - 1
+                                                              quantity - 1,
+                                                              availableCount
                                                           )
                                                 }
-                                            >
-                                                -
-                                            </button>
+                                                btnText="-"
+                                            />
                                             <span className="px-3 py-1 text-gray-900">
                                                 {quantity}
                                             </span>
-                                            <button
+                                            <Button
                                                 className="px-3 py-1 text-gray-500 hover:bg-gray-100"
                                                 onClick={() =>
                                                     updateQuantity(
                                                         price,
-                                                        quantity + 1
+                                                        quantity + 1,
+                                                        availableCount
                                                     )
                                                 }
-                                            >
-                                                +
-                                            </button>
+                                                btnText="+"
+                                            />
                                         </div>
                                     ) : (
                                         <Button

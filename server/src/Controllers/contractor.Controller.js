@@ -239,6 +239,78 @@ const getStudents = tryCatch('get students', async (req, res) => {
     }
 });
 
+// const registerStudent = tryCatch(
+//     'register as student',
+//     async (req, res, next) => {
+//         const contractor = req.user; // only contractor can register a student
+//         const { fullName, rollNo, phoneNumber, email, password } = req.body;
+
+//         if (!fullName || !email || !phoneNumber || !password || !rollNo) {
+//             return next(new ErrorHandler('Missing fields', BAD_REQUEST));
+//         }
+
+//         const isValid = ['fullName', 'email', 'phoneNumber', 'rollNo'].every(
+//             (key) => verifyExpression(key, req.body[key]?.trim())
+//         );
+
+//         if (!isValid) {
+//             return next(new ErrorHandler('Invalid input data', BAD_REQUEST));
+//         }
+
+//         const isPassValid = bcrypt.compareSync(password, contractor.password);
+//         if (!isPassValid) {
+//             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
+//         }
+
+//         userName = (
+//             canteen.hostelType +
+//             canteen.hostelNumber +
+//             '-' +
+//             rollNo
+//         ).trim();
+
+        
+
+//         // check if student already exists with this userName
+//         const [canteen, existingStudent] = await Promise.all([
+//             Canteen.findById(contractor.canteenId),
+//             Student.findOne({
+//                 $or: [
+//                     { userName: userName.trim() },
+//                     { phoneNumber: phoneNumber.trim() },
+//                     { email: email.trim() },
+//                 ],
+//             }),
+//         ]);
+
+//         if (existingStudent) {
+//             return next(new ErrorHandler('user already exists', BAD_REQUEST));
+//         }
+
+//         // password hashing auto done by pre hook in the model
+//         const randomPassword = nanoid(8); // unique temporary random password
+
+//         const student = await Student.create({
+//             fullName,
+//             canteenId: contractor.canteenId,
+//             userName,
+//             phoneNumber,
+//             email,
+//             password: randomPassword,
+//             avatar: USER_PLACEHOLDER_IMAGE_URL,
+//         });
+
+//         // send this password on student's email
+//         await sendMail({
+//             to: data.email,
+//             subject: 'Welcome to SnackTrack',
+//             html: `Hello ${data.fullName}, <br> Your temporary password is ${randomPassword}, You can update it anytime after logging in from settings.`,
+//         });
+
+//         return res.status(CREATED).json(student);
+//     }
+// );
+
 const registerStudent = tryCatch(
     'register as student',
     async (req, res, next) => {
@@ -262,30 +334,33 @@ const registerStudent = tryCatch(
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
-        // check if student already exists with this userName
-        const [canteen, existingStudent] = await Promise.all([
-            Canteen.findById(contractor.canteenId),
-            Student.findOne({
-                $or: [
-                    { userName: userName.trim() },
-                    { phoneNumber: phoneNumber.trim() },
-                    { email: email.trim() },
-                ],
-            }),
-        ]);
-
-        if (existingStudent) {
-            return next(new ErrorHandler('user already exists', BAD_REQUEST));
+        // ✅ Fetch canteen first to avoid ReferenceError
+        const canteen = await Canteen.findById(contractor.canteenId);
+        if (!canteen) {
+            return next(new ErrorHandler('Canteen not found', NOT_FOUND));
         }
 
-        userName = (
+        const userName = (
             canteen.hostelType +
             canteen.hostelNumber +
             '-' +
             rollNo
         ).trim();
 
-        // password hashing auto done by pre hook in the model
+        // Check if student already exists with this userName
+        const existingStudent = await Student.findOne({
+            $or: [
+                { userName: userName.trim() },
+                { phoneNumber: phoneNumber.trim() },
+                { email: email.trim() },
+            ],
+        });
+
+        if (existingStudent) {
+            return next(new ErrorHandler('user already exists', BAD_REQUEST));
+        }
+
+        // ✅ Password hashing auto done by pre-hook in the model
         const randomPassword = nanoid(8); // unique temporary random password
 
         const student = await Student.create({
@@ -298,11 +373,11 @@ const registerStudent = tryCatch(
             avatar: USER_PLACEHOLDER_IMAGE_URL,
         });
 
-        // send this password on student's email
+        // ✅ Send this password to student's email
         await sendMail({
-            to: data.email,
+            to: email,
             subject: 'Welcome to SnackTrack',
-            html: `Hello ${data.fullName}, <br> Your temporary password is ${randomPassword}, You can update it anytime after logging in from settings.`,
+            html: `Hello ${fullName}, <br> Your temporary password is <strong>${randomPassword}</strong>. You can update it anytime after logging in from settings.`,
         });
 
         return res.status(CREATED).json(student);

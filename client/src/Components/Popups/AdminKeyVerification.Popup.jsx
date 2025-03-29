@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 export default function AdminKeyVerificationPopup() {
     const { setShowPopup } = usePopupContext();
     const [loading, setLoading] = useState(false);
+    const [showKey, setShowKey] = useState(false);
     const navigate = useNavigate();
     const [key, setKey] = useState('');
     const { setAdminVerified } = useUserContext();
@@ -50,14 +51,20 @@ export default function AdminKeyVerificationPopup() {
                     Enter the Admin Secret key to navigate to control panel
                 </p>
 
-                <div className="flex items-center justify-center mb-6">
+                <div className="relative flex items-center justify-center mb-6">
                     <input
-                        type="password"
+                        type={showKey ? 'text' : 'password'}
                         value={key}
                         autoFocus
                         onChange={(e) => setKey(e.target.value)}
-                        className="w-full text-xl  text-center border-b-2 border-gray-800 focus:border-[#4977ec] mx-10 focus:outline-none"
+                        className="w-full text-xl text-center border-b-2 border-gray-800 focus:border-[#4977ec] mx-10 focus:outline-none"
                     />
+                    <div
+                        onClick={() => setShowKey((prev) => !prev)}
+                        className="size-[16px] absolute -right-1 top-[50%] transform translate-y-[-50%] mr-4 cursor-pointer fill-[#474747]"
+                    >
+                        {showKey ? icons.eyeOff : icons.eye}
+                    </div>
                 </div>
 
                 <Button

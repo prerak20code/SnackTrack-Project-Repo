@@ -19,10 +19,11 @@ const placeOrder = tryCatch('place order', async (req, res) => {
     return res.status(OK).json(order);
 });
 
-//need something to flush all the orders when a month passes(bill paid) to save space
+// implement something to flush all the orders after 6 months to save space
 const getStudentOrders = tryCatch('get student orders', async (req, res) => {
     const { limit = 10, page = 1 } = req.query;
     const { studentId } = req.params;
+
     const result = await Order.aggregatePaginate(
         [{ $match: { studentId: new Types.ObjectId(studentId) } }],
         {
@@ -73,6 +74,7 @@ const changeOrderStatus = tryCatch(
     }
 );
 
+// today's only
 const getCanteenOrders = tryCatch('get canteen orders', async (req, res) => {
     const { limit = 10, page = 1 } = req.query;
     const canteenId = req.user.canteenId; // contractor

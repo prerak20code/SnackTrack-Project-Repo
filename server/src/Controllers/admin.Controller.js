@@ -46,14 +46,4 @@ const verifyKey = tryCatch('verify admin key', async (req, res) => {
     }
 });
 
-const changeContractor = tryCatch(
-    'change contractor',
-    async (req, res, next) => {}
-);
-
-const removeContractor = tryCatch(
-    'remove contractor',
-    async (req, res, next) => {}
-);
-
-export { getCanteens, verifyKey, changeContractor, removeContractor };
+export { getCanteens, verifyKey };

@@ -2,12 +2,7 @@ import express from 'express';
 export const adminRouter = express.Router();
 import { verifyAdminKeyJwt } from '../Middlewares/index.js';
 import { OK } from '../Constants/index.js';
-import {
-    getCanteens,
-    verifyKey,
-    changeContractor,
-    removeContractor,
-} from '../Controllers/admin.Controller.js';
+import { getCanteens, verifyKey } from '../Controllers/admin.Controller.js';
 
 adminRouter.route('/verify-key').post(verifyKey);
 
@@ -18,10 +13,5 @@ adminRouter.route('/verify').get((req, res) =>
         message: req.adminVerified ? 'verified' : 'unverified',
     })
 );
-
-adminRouter
-    .route('/contractors/:canteenId')
-    .delete(removeContractor)
-    .patch(changeContractor);
 
 adminRouter.route('/').get(getCanteens);

@@ -262,6 +262,12 @@ const registerStudent = tryCatch(
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
+        userName = (
+            canteen.hostelType +
+            canteen.hostelNumber +
+            '-' +
+            rollNo
+        ).trim();
         // check if student already exists with this userName
         const [canteen, existingStudent] = await Promise.all([
             Canteen.findById(contractor.canteenId),
@@ -278,12 +284,6 @@ const registerStudent = tryCatch(
             return next(new ErrorHandler('user already exists', BAD_REQUEST));
         }
 
-        userName = (
-            canteen.hostelType +
-            canteen.hostelNumber +
-            '-' +
-            rollNo
-        ).trim();
 
         // password hashing auto done by pre hook in the model
         const randomPassword = nanoid(8); // unique temporary random password

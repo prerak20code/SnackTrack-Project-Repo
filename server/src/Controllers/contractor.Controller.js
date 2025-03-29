@@ -262,28 +262,30 @@ const registerStudent = tryCatch(
             return next(new ErrorHandler('invalid credentials', BAD_REQUEST));
         }
 
-        // check if student already exists with this userName
-        const [canteen, existingStudent] = await Promise.all([
-            Canteen.findById(contractor.canteenId),
-            Student.findOne({
-                $or: [
-                    { userName: userName.trim() },
-                    { phoneNumber: phoneNumber.trim() },
-                    { email: email.trim() },
-                ],
-            }),
-        ]);
-
-        if (existingStudent) {
-            return next(new ErrorHandler('user already exists', BAD_REQUEST));
+        const canteen = await Canteen.findById(contractor.canteenId);
+        if (!canteen) {
+            return next(new ErrorHandler('Canteen not found', NOT_FOUND));
         }
 
-        userName = (
+        const userName = (
             canteen.hostelType +
             canteen.hostelNumber +
             '-' +
             rollNo
         ).trim();
+
+        // Check if student already exists with this userName
+        const existingStudent = await Student.findOne({
+            $or: [
+                { userName: userName.trim() },
+                { phoneNumber: phoneNumber.trim() },
+                { email: email.trim() },
+            ],
+        });
+
+        if (existingStudent) {
+            return next(new ErrorHandler('user already exists', BAD_REQUEST));
+        }
 
         // password hashing auto done by pre hook in the model
         const randomPassword = nanoid(8); // unique temporary random password

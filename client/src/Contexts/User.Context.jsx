@@ -4,12 +4,9 @@ const UserContext = createContext();
 
 const UserContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [adminVerified, setAdminVerified] = useState(false);
 
     return (
-        <UserContext.Provider
-            value={{ user, setUser, setAdminVerified, adminVerified }}
-        >
+        <UserContext.Provider value={{ user, setUser }}>
             {children}
         </UserContext.Provider>
     );

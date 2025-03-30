@@ -24,6 +24,10 @@ const canteenSchema = new Schema(
             type: Number,
             required: true,
         },
+        kitchenKey: {
+            type: String,
+            required: true,
+        },
         snacks: [
             {
                 type: Types.ObjectId,

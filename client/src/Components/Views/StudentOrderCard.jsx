@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { icons } from '../../Assets/icons';
 
-export default function OrderCard({ order }) {
+export default function StudentOrderCard({ order, reference }) {
     const [expanded, setExpanded] = useState(false);
+    const { amount, _id, createdAt, status, items } = order;
 
     return (
         <motion.div
+            ref={reference}
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all hover:shadow-md"
@@ -18,45 +20,42 @@ export default function OrderCard({ order }) {
                 <div className="flex flex-row justify-between items-center w-full">
                     <div className="flex flex-col items-center gap-1">
                         <h2 className="text-sm font-medium text-gray-800 mb-1">
-                            ORDER #{order._id.slice(-8).toUpperCase()}
+                            ORDER #{_id.slice(-8).toUpperCase()}
                         </h2>
                         <p className="text-xs text-gray-500">
-                            {new Date(order.createdAt).toLocaleDateString(
-                                'en-US',
-                                {
-                                    weekday: 'short',
-                                    month: 'short',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                }
-                            )}
+                            {new Date(createdAt).toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            })}
                         </p>
                     </div>
-                    <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center gap-[5px]">
                         <div className="flex items-center gap-4">
                             <span
-                                className={`px-3 py-[3px] text-xs font-bold rounded-full ${
-                                    order.status === 'Pending'
+                                className={`px-2 pt-[2px] pb-[3px] text-xs font-bold rounded-full ${
+                                    status === 'Pending'
                                         ? 'bg-yellow-50 text-yellow-700'
-                                        : order.status === 'Cancelled'
+                                        : status === 'Rejected'
                                           ? 'bg-red-50 text-red-700'
                                           : 'bg-green-50 text-green-700'
                                 }`}
                             >
-                                {order.status}
+                                {status}
                             </span>
                             <div
                                 className={`transition-transform ${expanded ? 'rotate-180' : ''}`}
                             >
-                                <div className="size-3 text-gray-400">
+                                <div className="size-[11px] fill-gray-500">
                                     {icons.arrowDown}
                                 </div>
                             </div>
                         </div>
 
-                        <span className="text-lg font-semibold text-gray-900">
-                            ₹{order.amount.toFixed(2)}
+                        <span className="text-[18px] font-semibold text-gray-900">
+                            ₹{amount.toFixed(2)}
                         </span>
                     </div>
                 </div>
@@ -69,7 +68,7 @@ export default function OrderCard({ order }) {
                     className="px-5 pb-5 border-t border-gray-100"
                 >
                     <div className="space-y-4 mt-4">
-                        {order.items.map((item) => (
+                        {items.map((item) => (
                             <div
                                 key={item._id}
                                 className="flex justify-between items-center"
@@ -84,7 +83,7 @@ export default function OrderCard({ order }) {
                                     </div>
                                     <div className="space-y-1">
                                         <h3 className="text-sm font-medium text-gray-800 capitalize">
-                                            {item.name || item.itemType}
+                                            {item.name || item.category}
                                         </h3>
                                         <p className="text-xs text-gray-500">
                                             Qty: {item.quantity} • ₹
@@ -102,7 +101,7 @@ export default function OrderCard({ order }) {
                     <div className="mt-6 pt-4 border-t border-gray-100">
                         <div className="flex justify-between text-sm text-gray-600">
                             <span>Subtotal</span>
-                            <span>₹{order.amount.toFixed(2)}</span>
+                            <span>₹{amount.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between text-sm text-gray-600 mt-1">
                             <span>Packing</span>
@@ -111,7 +110,7 @@ export default function OrderCard({ order }) {
                         </div>
                         <div className="flex justify-between font-medium text-gray-900 mt-2">
                             <span>Total</span>
-                            <span>₹{order.amount.toFixed(2)}</span>
+                            <span>₹{amount.toFixed(2)}</span>
                         </div>
                     </div>
                 </motion.div>

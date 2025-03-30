@@ -17,7 +17,9 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const { setUser } = useUserContext();
     const navigate = useNavigate();
-    const [hostels, setHostels] = useState([]);
+    const [hostels, setHostels] = useState([
+        { value: '', label: 'Select Hostel' },
+    ]);
     const roles = [
         { value: '', label: 'Select Role' },
         { value: 'student', label: 'Student' },
@@ -48,8 +50,8 @@ export default function LoginPage() {
             try {
                 const res = await userService.getCanteens(signal);
                 if (res && !res.message) {
-                    setHostels([
-                        { value: '', label: 'Select Hostel' },
+                    setHostels((prev) => [
+                        ...prev,
                         ...res.map(
                             ({ hostelType, hostelNumber, hostelName }) => ({
                                 value: hostelType + hostelNumber,
@@ -158,24 +160,16 @@ export default function LoginPage() {
                     className="h-[0.05rem] relative -top-1 bg-[#333333]"
                 />
             </div>
-            <div className="text-black max-w-[500px] min-w-[300px] mt-4 flex flex-col items-center">
-                <Dropdown
-                    options={roles}
-                    className="mb-6 w-full"
-                    setValue={setRole}
-                />
+            <div className="text-black max-w-[500px] min-w-[300px] mt-4 flex flex-col items-center gap-4">
+                <Dropdown options={roles} setValue={setRole} />
 
                 <form
                     onSubmit={handleSubmit}
                     className="w-full flex flex-col gap-4"
                 >
                     {role === 'student' && (
-                        <div className="w-full flex justify-center">
-                            <Dropdown
-                                options={hostels}
-                                className="mb-0 w-full"
-                                setValue={setHostel}
-                            />
+                        <div className="w-full flex justify-center mt-4">
+                            <Dropdown options={hostels} setValue={setHostel} />
                         </div>
                     )}
 

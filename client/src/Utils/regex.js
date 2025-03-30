@@ -64,6 +64,16 @@ export default function verifyExpression(name, value, setError) {
                 break;
             }
 
+            case 'kitchenKey': {
+                // hostelType + hostelNumber + kitchenPassword
+                /^[A-Z]{2}\d{2}[a-zA-Z0-9]{4,12}$/.test(value)
+                    ? setError((prevError) => ({ ...prevError, [name]: '' }))
+                    : setError((prevError) => ({
+                          ...prevError,
+                          [name]: `key must be 4-12 characters.`,
+                      }));
+            }
+
             default: {
                 console.log("Doesn't have a defined regex.");
                 return;

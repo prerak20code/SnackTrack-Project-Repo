@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useSideBarContext, useUserContext, usePopupContext } from './Contexts';
-import { adminService, userService } from './Services';
+import { userService } from './Services';
 import { icons } from './Assets/icons';
 
 export default function App() {
     const [loading, setLoading] = useState(true);
-    const { setUser, setAdminVerified } = useUserContext();
+    const { setUser } = useUserContext();
     const { setShowSideBar } = useSideBarContext();
     const { setShowPopup } = usePopupContext();
     const navigate = useNavigate();
@@ -20,12 +20,8 @@ export default function App() {
         (async function currentUser() {
             try {
                 setLoading(true);
-                const [user, isAdmin] = await Promise.all([
-                    userService.getCurrentUser(signal),
-                    adminService.verifyAdmin(signal),
-                ]);
+                const user = await userService.getCurrentUser(signal);
                 setUser(user && !user.message ? user : null);
-                setAdminVerified(isAdmin && isAdmin.message === 'verified');
             } catch (err) {
                 navigate('/server-error');
             } finally {

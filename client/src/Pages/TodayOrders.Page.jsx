@@ -1,29 +1,43 @@
 import { useSearchParams } from 'react-router-dom';
-import { CompletedOrders, PendingOrders, Filter } from '../Components';
+import {
+    CompletedOrders,
+    PendingOrders,
+    Filter,
+    RejectedOrders,
+    PreparedOrders,
+} from '../Components';
 
 export default function TodayOrdersPage() {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const filter = searchParams.get('filter') || 'pending'; // Default to 'pending'
+    const [searchParams] = useSearchParams();
+    const filter = searchParams.get('filter') || 'Pending'; // Default to 'Pending'
 
     const options = [
-        { value: 'pending', label: 'Pending' },
-        { value: 'completed', label: 'Completed' },
+        { value: 'Pending', label: 'Pending' },
+        { value: 'PickedUp', label: 'Completed' },
+        { value: 'Rejected', label: 'Rejected' },
+        { value: 'Prepared', label: 'Prepared' },
     ];
 
     return (
-        <div>
-            <div className="w-full flex justify-between mb-6 items-center">
-                <p className="text-2xl font-semibold">Today's Orders</p>
-                <Filter
-                    options={options}
-                    defaultOption={filter}
-                    className="w-40 md:w-48"
-                />
+        <div className="max-w-6xl mx-auto px-2 sm:px-6 py-4">
+            <div className="flex items-center justify-between mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">
+                    Today's Orders
+                </h1>
+                <Filter options={options} defaultOption={filter} />
             </div>
 
             {/* Render Based on Filter */}
-            <div className="px-8 pb-8">
-                {filter === 'pending' ? <PendingOrders /> : <CompletedOrders />}
+            <div className="">
+                {filter === 'Pending' ? (
+                    <PendingOrders />
+                ) : filter === 'Rejected' ? (
+                    <RejectedOrders />
+                ) : filter === 'Prepared' ? (
+                    <PreparedOrders />
+                ) : (
+                    <CompletedOrders />
+                )}
             </div>
         </div>
     );

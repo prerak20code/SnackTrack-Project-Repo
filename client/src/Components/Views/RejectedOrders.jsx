@@ -6,7 +6,7 @@ import { orderService } from '../../Services';
 import { motion } from 'framer-motion';
 import { ContractorOrderCard } from '..';
 
-export default function CompletedOrders() {
+export default function RejectedOrders() {
     const [orders, setOrders] = useState([]);
     const [ordersInfo, setOrdersInfo] = useState({});
     const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ export default function CompletedOrders() {
             try {
                 setLoading(true);
                 const res = await orderService.getCanteenOrders(
-                    'PickedUp',
+                    'Rejected',
                     page,
                     LIMIT,
                     signal

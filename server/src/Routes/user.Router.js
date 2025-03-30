@@ -1,6 +1,11 @@
 import express from 'express';
 export const userRouter = express.Router();
-import { verifyJwt, upload } from '../Middlewares/index.js';
+import {
+    verifyJwt,
+    upload,
+    verifyAdminKeyJwt,
+    verifyStaffKeyJwt,
+} from '../Middlewares/index.js';
 import {
     updateAvatar,
     updatePassword,
@@ -8,11 +13,17 @@ import {
     logout,
     getCanteens,
     login,
+    getContractors,
+    getOrders,
 } from '../Controllers/user.Controller.js';
 
 userRouter.route('/canteens').get(getCanteens);
 
 userRouter.route('/login').patch(login);
+
+userRouter.route('/contractors').post(verifyAdminKeyJwt, getContractors);
+
+userRouter.route('/orders').post(verifyStaffKeyJwt, getOrders);
 
 userRouter.use(verifyJwt);
 

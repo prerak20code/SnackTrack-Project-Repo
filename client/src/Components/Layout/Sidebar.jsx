@@ -23,12 +23,6 @@ export default function Sidebar() {
             show: user.role === 'student',
         },
         {
-            path: '/kitchen',
-            name: 'Kitchen',
-            icon: icons.store,
-            show: user.role === 'contractor',
-        },
-        {
             path: '/today-orders',
             name: "Today's Orders",
             icon: icons.clock,
@@ -106,14 +100,14 @@ export default function Sidebar() {
             x: 0,
             transition: {
                 type: 'tween',
-                duration: 0.2,
+                duration: 0.4,
             },
         },
         exit: {
             x: '-100vw',
             transition: {
                 type: 'tween',
-                duration: 0.2,
+                duration: 0.8,
             },
         },
     };

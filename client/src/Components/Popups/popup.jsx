@@ -12,7 +12,6 @@ import {
     AddSnackPopup,
     AddItemPopup,
     EmailVerificationPopup,
-    AdminKeyVerificationPopup,
     OrderPlacedPopup,
 } from '..';
 import { usePopupContext } from '../../Contexts';
@@ -108,12 +107,6 @@ export default function Popup() {
             return (
                 <Wrapper>
                     <EmailVerificationPopup />
-                </Wrapper>
-            );
-        case 'verifyAdminKey':
-            return (
-                <Wrapper>
-                    <AdminKeyVerificationPopup />
                 </Wrapper>
             );
         case 'notifications':

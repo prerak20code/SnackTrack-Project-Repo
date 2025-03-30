@@ -33,11 +33,9 @@ class OrderService {
 
     async updateOrderStatus(orderId, status) {
         try {
-            const res = await fetch(`/api/orders/${orderId}`, {
+            const res = await fetch(`/api/orders/${orderId}?status=${status}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ status }),
             });
 
             const data = await res.json();
@@ -53,13 +51,16 @@ class OrderService {
         }
     }
 
-    async getStudentOrders(studentId, signal) {
+    async getStudentOrders(studentId, signal, page, limit) {
         try {
-            const res = await fetch(`/api/orders/${studentId}`, {
-                method: 'GET',
-                signal,
-                credentials: 'include',
-            });
+            const res = await fetch(
+                `/api/orders/${studentId}?page=${page}&limit=${limit}`,
+                {
+                    method: 'GET',
+                    signal,
+                    credentials: 'include',
+                }
+            );
 
             const data = await res.json();
             console.log(data);
@@ -78,13 +79,16 @@ class OrderService {
         }
     }
 
-    async getCanteenOrders(signal) {
+    async getCanteenOrders(status, page, limit, signal) {
         try {
-            const res = await fetch(`/api/orders`, {
-                method: 'GET',
-                signal,
-                credentials: 'include',
-            });
+            const res = await fetch(
+                `/api/orders?limit=${limit}&page=${page}&status=${status}`,
+                {
+                    method: 'GET',
+                    signal,
+                    credentials: 'include',
+                }
+            );
 
             const data = await res.json();
             console.log(data);

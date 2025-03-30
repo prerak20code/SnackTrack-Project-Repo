@@ -6,7 +6,6 @@ import SupportPage from './Support.Page';
 import NotFoundPage from './NotFound.Page';
 import ServerErrorPage from './ServerError.Page';
 import Redirect from './Redirect';
-import AdminAccess from './AdminAccess';
 import AboutUsPage from './AboutUs.Page';
 import ContactUsPage from './ContactUs.Page';
 import FAQpage from './FAQ.page';
@@ -34,7 +33,6 @@ export {
     NotFoundPage,
     ServerErrorPage,
     Redirect,
-    AdminAccess,
     ContactUsPage,
     FAQpage,
     NewUserPage,

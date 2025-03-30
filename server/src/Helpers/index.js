@@ -5,6 +5,7 @@ import {
     generateTokens,
     extractTokens,
     generateAdminKeyToken,
+    generateStaffKeyToken,
 } from './tokens.js';
 
 export {
@@ -15,4 +16,5 @@ export {
     generateTokens,
     generateAdminKeyToken,
     extractTokens,
+    generateStaffKeyToken,
 };

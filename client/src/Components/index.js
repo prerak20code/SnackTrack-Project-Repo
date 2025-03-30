@@ -28,13 +28,16 @@ import Snacks from './Views/Snacks';
 import PackagedItems from './Views/PackagedItems';
 import PendingOrders from './Views/PendingOrders';
 import CompletedOrders from './Views/CompletedOrders';
-import OrderCard from './Views/OrderCard';
+import PreparedOrders from './Views/PreparedOrders';
+import RejectedOrders from './Views/RejectedOrders';
+import StudentOrderCard from './Views/StudentOrderCard';
+import ContractorOrderCard from './Views/ContractorOrderCard';
 import AddSnackPopup from './Popups/AddSnack.Popup';
 import AddItemPopup from './Popups/AddItem.Popup';
 import EmailVerificationPopup from './Popups/EmailVerification.Popup';
-import AdminKeyVerificationPopup from './Popups/AdminKeyVerification.Popup';
 import OrderPlacedPopup from './Popups/OrderPlaced.Popup';
 import EmptyCart from './Views/EmptyCart';
+import OrderDropdown from './General/OrderDropdown';
 
 export {
     Header,
@@ -47,13 +50,15 @@ export {
     Button,
     Searchbar,
     InputField,
+    OrderDropdown,
     ContributorCard,
     UpdateAccountDetails,
+    ContractorOrderCard,
     UpdatePassword,
     Popup,
     RemoveStudentPopup,
     RemoveAllStudentsPopup,
-    OrderCard,
+    StudentOrderCard,
     NotificationsPopup,
     EditStudentPopup,
     UpdateAvatarPopup,
@@ -64,6 +69,8 @@ export {
     PackagedItems,
     PendingOrders,
     CompletedOrders,
+    RejectedOrders,
+    PreparedOrders,
     RemoveItemPopup,
     RemoveSnackPopup,
     EditItemPopup,
@@ -72,6 +79,5 @@ export {
     AddItemPopup,
     EmailVerificationPopup,
     EmptyCart,
-    AdminKeyVerificationPopup,
     OrderPlacedPopup,
 };

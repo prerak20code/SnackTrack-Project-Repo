@@ -6,12 +6,12 @@ import {
     getStudentOrders,
     getCanteenOrders,
     placeOrder,
-    changeOrderStatus,
+    updateOrderStatus,
 } from '../Controllers/order.Controller.js';
 
 orderRouter.use(verifyJwt);
 
-orderRouter.route('/:orderId').patch(changeOrderStatus);
+orderRouter.route('/:orderId').patch(updateOrderStatus);
 
 orderRouter.route('/:studentId').get(getStudentOrders);
 

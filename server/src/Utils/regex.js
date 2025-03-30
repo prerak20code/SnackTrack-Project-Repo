@@ -34,6 +34,11 @@ export default function verifyRegex(name, value) {
                 return value.length >= 8 && value.length <= 12;
             }
 
+            case 'kitchenKey': {
+                // hostelType + hostelNumber + kitchenPassword
+                return /^[A-Z]{2}\d{2}[a-zA-Z0-9]{4,12}$/.test(value);
+            }
+
             case 'phoneNumber': {
                 return /^[0-9]{10}$/.test(value);
             }

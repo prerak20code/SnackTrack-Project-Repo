@@ -15,12 +15,14 @@ export default function RegisterCanteenPage() {
         password: '',
         phoneNumber: '',
         email: '',
+        kitchenKey: '',
     };
     const [inputs, setInputs] = useState(initialInputs);
     const [error, setError] = useState({});
     const { setPopupInfo, setShowPopup } = usePopupContext();
     const [disabled, setDisabled] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [showkitchenKey, setShowKitchenKey] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [hostel, setHostel] = useState({});
@@ -120,6 +122,13 @@ export default function RegisterCanteenPage() {
             placeholder: 'Create New Password',
             required: true,
         },
+        {
+            type: showkitchenKey ? 'text' : 'password',
+            name: 'kitchenKey',
+            label: 'Kitchen Key',
+            placeholder: 'Create New Kitchen Key',
+            required: true,
+        },
     ];
 
     const inputElements = inputFields.map((field) => (
@@ -129,8 +138,14 @@ export default function RegisterCanteenPage() {
                 handleBlur={handleBlur}
                 handleChange={handleChange}
                 inputs={inputs}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
+                showPassword={
+                    field.name === 'kitchenKey' ? showkitchenKey : showPassword
+                }
+                setShowPassword={
+                    field.name === 'kitchenKey'
+                        ? setShowKitchenKey
+                        : setShowPassword
+                }
             />
             {error[field.name] && (
                 <div className="text-red-500 text-xs font-medium">
@@ -175,11 +190,7 @@ export default function RegisterCanteenPage() {
                     className="flex flex-col items-start justify-center gap-4 w-full"
                 >
                     <div className="w-full flex justify-center mt-4">
-                        <Dropdown
-                            options={hostels}
-                            className="mb-0 w-full"
-                            setValue={setHostel}
-                        />
+                        <Dropdown options={hostels} setValue={setHostel} />
                     </div>
 
                     <div className="w-full flex flex-col gap-1">

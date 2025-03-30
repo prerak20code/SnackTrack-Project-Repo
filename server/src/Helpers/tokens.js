@@ -54,6 +54,18 @@ const generateAdminKeyToken = async (key) => {
 };
 
 /**
+ * Util to generate staff key Token
+ * @param {Object} key - The staff key
+ * @returns JWT Token
+ */
+
+const generateStaffKeyToken = async (key) => {
+    return jwt.sign({ key }, process.env.STAFF_KEY_TOKEN_SECRET, {
+        expiresIn: process.env.STAFF_KEY_TOKEN_EXPIRY,
+    });
+};
+
+/**
  * @param {object} req - The http req object to extract the token from.
  * @param {object} tokenName - Name of the token (snackTrack_accessToken or snackTrack_RefreshToken).
  * @returns Token
@@ -71,6 +83,9 @@ const extractTokens = (req) => {
 
         adminKeyToken:
             req.cookies?.snackTrack_adminKeyToken || req.headers['x-admin-key'],
+
+        staffKeyToken:
+            req.cookies?.snackTrack_staffKeyToken || req.headers['x-staff-key'],
     };
 };
 
@@ -80,4 +95,5 @@ export {
     generateAccessToken,
     generateRefreshToken,
     generateAdminKeyToken,
+    generateStaffKeyToken,
 };

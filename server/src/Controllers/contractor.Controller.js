@@ -31,15 +31,27 @@ import { sendMail } from '../mailer.js';
 // personal usage
 
 const register = tryCatch('register as contractor', async (req, res, next) => {
-    const { fullName, email, phoneNumber, password, hostel } = req.body;
+    const { fullName, email, phoneNumber, password, hostel, kitchenKey } =
+        req.body;
 
-    if (!fullName || !email || !phoneNumber || !password || !hostel) {
+    if (
+        !fullName ||
+        !email ||
+        !phoneNumber ||
+        !password ||
+        !hostel ||
+        !kitchenKey
+    ) {
         return next(new ErrorHandler('Missing fields', BAD_REQUEST));
     }
 
-    const isValid = ['fullName', 'email', 'phoneNumber', 'password'].every(
-        (key) => verifyExpression(key, req.body[key]?.trim())
-    );
+    const isValid = [
+        'fullName',
+        'email',
+        'phoneNumber',
+        'password',
+        'kitchenKey',
+    ].every((key) => verifyExpression(key, req.body[key]?.trim()));
 
     if (!isValid) {
         return next(new ErrorHandler('Invalid input data', BAD_REQUEST));
@@ -80,8 +92,15 @@ const register = tryCatch('register as contractor', async (req, res, next) => {
 const completeRegistration = tryCatch(
     'complete contractor registration',
     async (req, res, next) => {
-        const { email, code, fullName, phoneNumber, password, hostel } =
-            req.body;
+        const {
+            email,
+            code,
+            fullName,
+            phoneNumber,
+            password,
+            hostel,
+            kitchenKey,
+        } = req.body;
 
         if (
             !email ||
@@ -89,7 +108,8 @@ const completeRegistration = tryCatch(
             !fullName ||
             !phoneNumber ||
             !password ||
-            !hostel
+            !hostel ||
+            !kitchenKey
         ) {
             return next(new ErrorHandler('Missing fields', BAD_REQUEST));
         }
@@ -107,6 +127,7 @@ const completeRegistration = tryCatch(
             hostelName: hostel.hostelName.trim(),
             hostelNumber: hostel.hostelNumber.trim(),
             hostelType: hostel.hostelType.trim(),
+            kitchenKey,
         });
 
         // password hashing auto done by pre hook in the model

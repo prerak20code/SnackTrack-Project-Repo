@@ -1,32 +1,29 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../Components';
-import { usePopupContext, useUserContext } from '../Contexts';
 
 export default function NewUserPage() {
-    const { setShowPopup, setPopupInfo } = usePopupContext();
-    const { adminVerified } = useUserContext();
     const navigate = useNavigate();
 
     return (
         <div className="text-center min-h-screen bg-gradient-to-r from-sky-500 to-blue-600 flex items-center justify-center p-6">
             <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full transform transition-all duration-500 hover:scale-105">
                 <h1 className="text-3xl font-bold text-gray-800 mb-4 animate-fade-in">
-                    Welcome!
+                    Welcome to Our System!
                 </h1>
-                <p className="text-gray-600 mb-9 animate-fade-in animate-delay-100">
+                <p className="text-gray-600 mb-6 animate-fade-in animate-delay-100">
                     <Link
                         to="/login"
-                        style={{ color: '#3a67d8' }} // Apply custom color directly
+                        style={{ color: '#3a67d8' }}
                         className="font-semibold underline hover:opacity-80 transition-opacity duration-300"
                     >
                         Login
                     </Link>{' '}
-                    if you already have an account or visit your nearest POC to
-                    get registered.
+                    if you have an account or visit your nearest POC for
+                    registration.
                 </p>
 
                 {/* Animated Icon */}
-                <div className="mb-4 flex justify-center animate-bounce animate-infinite animate-duration-2000">
+                <div className="mb-6 flex justify-center animate-bounce animate-infinite animate-duration-2000">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         style={{ color: '#3a67d8' }}
@@ -44,22 +41,23 @@ export default function NewUserPage() {
                     </svg>
                 </div>
 
-                {/* Admin Controls Navigation */}
+                {/* Staff Controls */}
                 <div className="animate-fade-in animate-delay-200">
                     <p className="text-gray-600 mb-4">
-                        Are you an admin? Access the admin controls below:
+                        Staff member? Access your controls:
                     </p>
-                    <Button
-                        onClick={() => {
-                            if (adminVerified) navigate('/admin');
-                            else {
-                                setShowPopup(true);
-                                setPopupInfo({ type: 'verifyAdminKey' });
-                            }
-                        }}
-                        btnText="Admin Controls"
-                        className="bg-[#3a67d8] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#2c4fa8]"
-                    />
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <Button
+                            onClick={() => navigate('/admin')}
+                            btnText="Admin Panel"
+                            className="bg-[#3a67d8] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#2c4fa8] flex-1"
+                        />
+                        <Button
+                            onClick={() => navigate('/kitchen')}
+                            btnText="Kitchen Dashboard"
+                            className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-emerald-700 flex-1"
+                        />
+                    </div>
                 </div>
             </div>
         </div>

@@ -116,7 +116,7 @@ class ContractorService {
     async getStudents(signal, page = 1, limit = 10) {
         try {
             const res = await fetch(
-                `/api/contractors/?page=${page}&limit=${limit}`,
+                `/api/contractors/students?page=${page}&limit=${limit}`,
                 { method: 'GET', signal, credentials: 'include' }
             );
 

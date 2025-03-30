@@ -12,8 +12,9 @@ import {
     uploadOnCloudinary,
     deleteFromCloudinary,
 } from '../Helpers/index.js';
-import { Canteen, Student, Contractor } from '../Models/index.js';
+import { Canteen, Student, Contractor, Order } from '../Models/index.js';
 import bcrypt from 'bcrypt';
+import { Types } from 'mongoose';
 
 const login = tryCatch('login as contractor', async (req, res, next) => {
     const { loginInput, password, role } = req.body;
@@ -161,11 +162,122 @@ const getCanteens = tryCatch('get canteens', async (req, res) => {
     return res.status(200).json(HOSTELS);
 });
 
+// for admin page
+const getContractors = tryCatch('get contractors', async (req, res) => {
+    const canteens = await Canteen.aggregate([
+        { $match: {} },
+        {
+            $lookup: {
+                from: 'contractors',
+                localField: 'contractorId',
+                foreignField: '_id',
+                as: 'contractor',
+                pipeline: [
+                    {
+                        $project: {
+                            fullName: 1,
+                            email: 1,
+                            phoneNumber: 1,
+                            avatar: 1,
+                        },
+                    },
+                ],
+            },
+        },
+        { $unwind: '$contractor' },
+        { $project: { snacks: 0, packagedItems: 0 } },
+    ]);
+    return res.status(OK).json(canteens);
+});
+
+// for kitchen page
+const getOrders = tryCatch('get orders', async (req, res, next) => {
+    const hostelType = req.hostelType;
+    const hostelNumber = req.hostelNumber;
+
+    const canteen = await Canteen.findOne({ hostelType, hostelNumber });
+
+    const orders = await Order.aggregate([
+        { $match: { canteenId: new Types.ObjectId(canteen._id) } },
+        { $unwind: '$items' },
+        {
+            $lookup: {
+                from: 'snacks',
+                localField: 'items.itemId',
+                foreignField: '_id',
+                as: 'snackDetails',
+                pipeline: [{ $project: { name: 1, image: 1 } }],
+            },
+        },
+        {
+            $lookup: {
+                from: 'packagedfoods',
+                localField: 'items.itemId',
+                foreignField: '_id',
+                as: 'packagedFoodDetails',
+                pipeline: [{ $project: { category: 1 } }],
+            },
+        },
+        {
+            $addFields: {
+                'items.name': {
+                    $cond: [
+                        { $eq: ['$items.itemType', 'Snack'] },
+                        { $arrayElemAt: ['$snackDetails.name', 0] },
+                        null,
+                    ],
+                },
+                'items.image': {
+                    $cond: [
+                        { $eq: ['$items.itemType', 'Snack'] },
+                        { $arrayElemAt: ['$snackDetails.image', 0] },
+                        null,
+                    ],
+                },
+                'items.category': {
+                    $cond: [
+                        { $eq: ['$items.itemType', 'PackagedFood'] },
+                        { $arrayElemAt: ['$packagedFoodDetails.category', 0] },
+                        null,
+                    ],
+                },
+            },
+        },
+        {
+            $group: {
+                _id: '$_id',
+                amount: { $first: '$amount' },
+                status: { $first: '$status' },
+                canteenId: { $first: '$canteenId' },
+                studentId: { $first: '$studentId' },
+                items: { $push: '$items' },
+                createdAt: { $first: '$createdAt' },
+                updatedAt: { $first: '$updatedAt' },
+            },
+        },
+        {
+            $lookup: {
+                from: 'students',
+                localField: 'studentId',
+                foreignField: '_id',
+                as: 'student',
+                pipeline: [{ $project: { fullName: 1, _id: 1, userName: 1 } }],
+            },
+        },
+        { $unwind: '$student' },
+        { $project: { snackDetails: 0, packagedFoodDetails: 0 } },
+    ]);
+
+    return res.status(OK).json(orders);
+});
+
 export {
     getCurrentUser,
     login,
     logout,
-    getCanteens,
+    getContractors,
     updatePassword,
     updateAvatar,
+    getCanteens,
+    getOrders,
 };

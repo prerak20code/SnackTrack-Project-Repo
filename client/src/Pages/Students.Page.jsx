@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { contractorService } from '../Services';
 import { paginate } from '../Utils';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
     useStudentContext,
     usePopupContext,

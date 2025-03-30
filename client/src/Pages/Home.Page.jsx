@@ -70,12 +70,8 @@ export default function HomePage() {
 
     return (
         <div>
-            <div className="w-full flex justify-end">
-                <Filter
-                    options={options}
-                    defaultOption={filter}
-                    className="mb-6 w-40 md:w-48"
-                />
+            <div className="w-full flex justify-end mb-6">
+                <Filter options={options} defaultOption={filter} />
             </div>
 
             {/* Render Based on Filter */}

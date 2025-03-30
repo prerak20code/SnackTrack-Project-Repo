@@ -4,13 +4,19 @@ import { orderService } from '../Services';
 import { useUserContext } from '../Contexts';
 import { motion } from 'framer-motion';
 import { icons } from '../Assets/icons';
-import { Button, OrderCard } from '../Components';
+import { Button, StudentOrderCard } from '../Components';
+import { paginate } from '../Utils';
+import { LIMIT } from '../Constants/constants';
 
 export default function MyOrdersPage() {
     const [orders, setOrders] = useState([]);
+    const [ordersInfo, setOrdersInfo] = useState({});
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const { user } = useUserContext();
+    const [page, setPage] = useState(1);
+
+    const paginateRef = paginate(ordersInfo?.hasNextPage, loading, setPage);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -20,9 +26,14 @@ export default function MyOrdersPage() {
             try {
                 const data = await orderService.getStudentOrders(
                     user._id,
-                    signal
+                    signal,
+                    page,
+                    LIMIT
                 );
-                setOrders(data.orders);
+                if (data && !data.message) {
+                    setOrders(data.orders);
+                    setOrdersInfo(data.ordersInfo);
+                }
             } catch (err) {
                 navigate('/server-error');
             } finally {
@@ -34,7 +45,7 @@ export default function MyOrdersPage() {
     }, []);
 
     return (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <div className="max-w-6xl mx-auto px-2 sm:px-6 py-4">
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
                 {orders.length > 0 && (
@@ -72,7 +83,15 @@ export default function MyOrdersPage() {
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <OrderCard order={order} />
+                            <StudentOrderCard
+                                order={order}
+                                reference={
+                                    index + 1 === orders.length &&
+                                    ordersInfo?.hasNextPage
+                                        ? paginateRef
+                                        : null
+                                }
+                            />
                         </motion.div>
                     ))}
                 </motion.div>

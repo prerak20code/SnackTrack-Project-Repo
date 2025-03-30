@@ -116,9 +116,53 @@ class UserService {
         }
     }
 
+    async getContractors(key = '') {
+        try {
+            const res = await fetch('/api/users/contractors', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key }),
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in getContractors service', err);
+            throw err;
+        }
+    }
+
+    async getOrders(key = '') {
+        try {
+            const res = await fetch('/api/users/orders', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key }),
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (err) {
+            console.error('error in getOrders service', err);
+            throw err;
+        }
+    }
+
     async getCanteens(signal) {
         try {
-            const res = await fetch(`/api/users/canteens`, {
+            const res = await fetch('/api/users/canteens', {
                 method: 'GET',
                 signal,
             });
@@ -131,12 +175,8 @@ class UserService {
             }
             return data;
         } catch (err) {
-            if (err.name === 'AbortError') {
-                console.log('getCanteens request aborted.');
-            } else {
-                console.error('error in getCanteens service', err);
-                throw err;
-            }
+            console.error('error in getCanteens service', err);
+            throw err;
         }
     }
 

@@ -32,31 +32,33 @@ export default function StudentOrderCard({ order, reference }) {
                             })}
                         </p>
                     </div>
-                    <div className="flex flex-col items-center gap-[5px]">
-                        <div className="flex items-center gap-4">
-                            <span
-                                className={`px-2 pt-[2px] pb-[3px] text-xs font-bold rounded-full ${
-                                    status === 'Pending'
-                                        ? 'bg-yellow-50 text-yellow-700'
-                                        : status === 'Rejected'
-                                          ? 'bg-red-50 text-red-700'
-                                          : 'bg-green-50 text-green-700'
-                                }`}
-                            >
-                                {status}
+                    <div className="flex flex-col items-end gap-2">
+                        <span
+                            className={`px-2 pt-[2px] pb-[3px] text-xs font-bold rounded-full ${
+                                status === 'Pending'
+                                    ? 'bg-yellow-50 text-yellow-700'
+                                    : status === 'Rejected'
+                                      ? 'bg-red-50 text-red-700'
+                                      : 'bg-green-50 text-green-700'
+                            }`}
+                        >
+                            {status}
+                        </span>
+
+                        <div className="flex items-center gap-3">
+                            <span className="text-[17px] font-semibold text-gray-900">
+                                ₹{amount.toFixed(2)}
                             </span>
-                            <div
-                                className={`transition-transform ${expanded ? 'rotate-180' : ''}`}
-                            >
-                                <div className="size-[11px] fill-gray-500">
-                                    {icons.arrowDown}
+                            <div className="flex items-center gap-4">
+                                <div
+                                    className={`transition-transform ${expanded ? 'rotate-180' : ''}`}
+                                >
+                                    <div className="size-[11px] fill-gray-500">
+                                        {icons.arrowDown}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <span className="text-[18px] font-semibold text-gray-900">
-                            ₹{amount.toFixed(2)}
-                        </span>
                     </div>
                 </div>
             </div>

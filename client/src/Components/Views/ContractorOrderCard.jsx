@@ -44,7 +44,7 @@ export default function ContractorOrderCard({ order, reference }) {
                 <div className="flex justify-between items-center mb-3 w-full">
                     {/* User Info Section */}
                     <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-full overflow-hidden ">
+                        <div className="size-10 rounded-full overflow-hidden drop-shadow-sm">
                             <img
                                 src={studentInfo?.avatar}
                                 alt={studentInfo?.fullName}
@@ -103,7 +103,7 @@ export default function ContractorOrderCard({ order, reference }) {
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <span className="text-[18px] font-semibold text-gray-900">
+                        <span className="text-[17px] font-semibold text-gray-900">
                             ₹{amount.toFixed(2)}
                         </span>
                         <div className="flex items-center gap-4">

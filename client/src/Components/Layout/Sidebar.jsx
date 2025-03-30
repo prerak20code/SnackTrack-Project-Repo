@@ -35,6 +35,12 @@ export default function Sidebar() {
             show: user.role === 'contractor',
         },
         {
+            path: '/bills',
+            name: 'Bills',
+            icon: icons.rupee,
+            show: user.role === 'contractor',
+        },
+        {
             path: '/students',
             name: 'Students',
             icon: icons.user,
@@ -100,14 +106,14 @@ export default function Sidebar() {
             x: 0,
             transition: {
                 type: 'tween',
-                duration: 0.4,
+                duration: 0.5,
             },
         },
         exit: {
             x: '-100vw',
             transition: {
                 type: 'tween',
-                duration: 0.8,
+                duration: 1,
             },
         },
     };
@@ -116,7 +122,7 @@ export default function Sidebar() {
         visible: {
             backdropFilter: 'brightness(0.65)',
             transition: {
-                duration: 0.2,
+                duration: 0.5,
             },
         },
         hidden: {

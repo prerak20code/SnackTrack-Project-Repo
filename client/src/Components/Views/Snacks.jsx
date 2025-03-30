@@ -27,7 +27,7 @@ export default function Snacks() {
     }
 
     return snackElements.length > 0 ? (
-        <div className="relative md:px-6">
+        <div className="relative">
             {user.role === 'contractor' && (
                 <Button
                     onClick={addSnack}

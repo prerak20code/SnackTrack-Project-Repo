@@ -27,7 +27,7 @@ export default function PackagedItems() {
     }
 
     return itemElements.length > 0 ? (
-        <div className="relative md:px-6">
+        <div className="relative">
             {user.role === 'contractor' && (
                 <Button
                     onClick={addItem}

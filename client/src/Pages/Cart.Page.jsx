@@ -75,30 +75,28 @@ export default function CartPage() {
                 key={`${_id}-${price}`}
                 className="w-full flex flex-col sm:flex-row items-end sm:items-center justify-between border-b border-gray-200 py-4"
             >
-                <div className="w-full flex items-center space-x-4">
-                    {/* image */}
-                    <div className="size-[50px] overflow-hidden border rounded-lg flex items-center justify-center">
-                        <img
-                            src={image || SNACK_PLACEHOLDER_IMAGE}
-                            alt={`${name || category} image`}
-                            className="object-cover size-full"
-                        />
+                <div className="w-full flex items-center gap-4 justify-between">
+                    <div className="flex items-center gap-4">
+                        {/* image */}
+                        <div className="size-[50px] overflow-hidden border rounded-lg flex items-center justify-center">
+                            <img
+                                src={image || SNACK_PLACEHOLDER_IMAGE}
+                                alt={`${name || category} image`}
+                                className="object-cover size-full"
+                            />
+                        </div>
+                        {/* info */}
+                        <div>
+                            <h3 className="text-lg font-medium text-gray-900">
+                                {name || category}
+                            </h3>
+                            <p className="text-sm text-gray-500">
+                                ₹{price.toFixed(2)}
+                            </p>
+                        </div>
                     </div>
 
-                    {/* info */}
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900">
-                            {name || category}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                            ₹{price.toFixed(2)}
-                        </p>
-                    </div>
-                </div>
-
-                {/* price & quantity */}
-                <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-                    <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                    <div className="sm:hidden flex items-center border border-gray-300 rounded-lg overflow-hidden">
                         <Button
                             className="px-3 py-1 text-gray-500 hover:bg-gray-100"
                             onClick={() =>
@@ -119,18 +117,54 @@ export default function CartPage() {
                             btnText="+"
                         />
                     </div>
-                    <p className="text-lg font-semibold text-gray-900">
-                        ₹{(price * quantity).toFixed(2)}
-                    </p>
-                    <Button
-                        btnText={
-                            <div className="size-[18px] fill-red-600">
-                                {icons.delete}
-                            </div>
-                        }
-                        className="hover:bg-gray-100 p-2 rounded-full"
-                        onClick={() => removeFromCart(_id, price, type)}
-                    />
+                </div>
+
+                {/* price & quantity */}
+                <div className="flex items-center space-x-4 mt-3 sm:mt-0">
+                    <div className="hidden sm:flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                        <Button
+                            className="px-3 py-1 text-gray-500 hover:bg-gray-100"
+                            onClick={() =>
+                                quantity === 1
+                                    ? removeFromCart(_id, price, type)
+                                    : updateQuantity(_id, price, quantity - 1)
+                            }
+                            btnText="-"
+                        />
+                        <span className="px-3 py-1 text-gray-900">
+                            {quantity}
+                        </span>
+                        <Button
+                            className="px-3 py-1 text-gray-500 hover:bg-gray-100"
+                            onClick={() =>
+                                updateQuantity(_id, price, quantity + 1)
+                            }
+                            btnText="+"
+                        />
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <p className="text-lg font-semibold mr-1 text-gray-900">
+                            ₹{(price * quantity).toFixed(2)}
+                        </p>
+                        <Button
+                            btnText={
+                                <div className="size-[18px] fill-red-600">
+                                    {icons.delete}
+                                </div>
+                            }
+                            className="hover:bg-gray-100 p-2 rounded-full"
+                            onClick={() => removeFromCart(_id, price, type)}
+                        />
+                        <Button
+                            btnText={
+                                <div className="size-[18px] fill-[#4977ec]">
+                                    {icons.edit}
+                                </div>
+                            }
+                            className="hover:bg-gray-100 p-2 rounded-full"
+                            onClick={() => editItem(_id, price, type)}
+                        />
+                    </div>
                 </div>
             </div>
         )

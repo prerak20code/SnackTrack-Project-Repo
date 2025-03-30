@@ -1,3 +1,3 @@
 export default function BillsPage() {
-    return <div>BillsPage for student for each month</div>;
+    return <div>BillsPage for students month wise</div>;
 }

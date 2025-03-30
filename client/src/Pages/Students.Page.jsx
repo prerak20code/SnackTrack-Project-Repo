@@ -60,12 +60,12 @@ export default function StudentsPage() {
                 student.fullName.toLowerCase().includes(search.toLowerCase()) ||
                 student.userName.toLowerCase().includes(search.toLowerCase())
         )
-        .map((student, index) => (
+        .map((student, i) => (
             <StudentView
                 key={student._id}
                 student={student}
                 reference={
-                    index + 1 === students.length && studentsInfo?.hasNextPage
+                    i + 1 === students.length && studentsInfo?.hasNextPage
                         ? paginateRef
                         : null
                 }

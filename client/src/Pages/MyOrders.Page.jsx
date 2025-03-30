@@ -76,7 +76,7 @@ export default function MyOrdersPage() {
                     animate={{ opacity: 1 }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
-                    {orders.map((order) => (
+                    {orders.map((order, i) => (
                         <motion.div
                             key={order._id}
                             initial={{ y: 20, opacity: 0 }}
@@ -86,7 +86,7 @@ export default function MyOrdersPage() {
                             <StudentOrderCard
                                 order={order}
                                 reference={
-                                    index + 1 === orders.length &&
+                                    i + 1 === orders.length &&
                                     ordersInfo?.hasNextPage
                                         ? paginateRef
                                         : null

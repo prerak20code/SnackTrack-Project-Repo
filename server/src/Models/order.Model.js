@@ -29,6 +29,10 @@ const orderSchema = new Schema(
         },
         items: [
             {
+                name: {
+                    type: String,
+                    required: false,
+                },
                 itemType: {
                     type: String,
                     required: true,

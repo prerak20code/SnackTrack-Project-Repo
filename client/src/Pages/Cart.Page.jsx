@@ -5,15 +5,15 @@ import { icons } from '../Assets/icons';
 import { SNACK_PLACEHOLDER_IMAGE } from '../Constants/constants';
 import { orderService } from '../Services';
 import { usePopupContext } from '../Contexts';
-
+import { useSocket } from '../customhooks/socket';
 export default function CartPage() {
     const [ordering, setOrdering] = useState(false);
     const navigate = useNavigate();
     const { setShowPopup, setPopupInfo } = usePopupContext();
+    const socket = useSocket(false);
     const [cartItems, setCartItems] = useState(
         JSON.parse(localStorage.getItem('cartItems')) || []
     );
-
     const subtotal = cartItems.reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
@@ -52,7 +52,9 @@ export default function CartPage() {
             setOrdering(true);
             const cartItems =
                 JSON.parse(localStorage.getItem('cartItems')) || [];
-            const res = await orderService.placeOrder(cartItems, total);
+            console.log('cart items are', cartItems);
+            const res = await orderService.placeOrder(cartItems, total, socket);
+
             if (res && !res.message) {
                 setShowPopup(true);
                 setPopupInfo({

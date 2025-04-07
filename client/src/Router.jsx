@@ -33,7 +33,6 @@ import {
 } from './Pages';
 
 import { UpdateAccountDetails, UpdatePassword, Layout } from './Components';
-
 export const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<App />}>

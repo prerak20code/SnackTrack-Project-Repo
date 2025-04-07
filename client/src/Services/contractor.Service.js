@@ -11,8 +11,15 @@ class ContractorService {
         hostelType,
         hostelNumber,
         hostelName,
+        kitchenKey,
     }) {
         try {
+            console.log(
+                'register service called',
+                hostelType,
+                hostelNumber,
+                hostelName
+            );
             const res = await fetch(`/api/contractors/register`, {
                 method: 'POST',
                 credentials: 'include',
@@ -25,18 +32,19 @@ class ContractorService {
                     hostelType,
                     hostelNumber,
                     hostelName,
+                    kitchenKey,
                 }),
             });
 
             const data = await res.json();
-            console.log(data);
+            console.log('data', data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
             }
             return data;
         } catch (err) {
-            console.error('error in register service', err);
+            console.error('error in register servicejj', err);
             throw err;
         }
     }
@@ -50,8 +58,18 @@ class ContractorService {
         hostelType,
         hostelNumber,
         hostelName,
+        kitchenKey,
     }) {
         try {
+            console.log(
+                fullName,
+                password,
+                phoneNumber,
+                email,
+                hostelType,
+                hostelNumber,
+                code
+            );
             const res = await fetch(`/api/contractors/complete-registeration`, {
                 method: 'POST',
                 credentials: 'include',
@@ -65,11 +83,12 @@ class ContractorService {
                     hostelType,
                     hostelNumber,
                     hostelName,
+                    kitchenKey,
                 }),
             });
 
             const data = await res.json();
-            console.log(data);
+            console.log('Data', data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);

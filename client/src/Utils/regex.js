@@ -72,6 +72,7 @@ export default function verifyExpression(name, value, setError) {
                           ...prevError,
                           [name]: `key must be 4-12 characters.`,
                       }));
+                break;
             }
 
             default: {

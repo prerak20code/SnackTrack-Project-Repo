@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import {
     CompletedOrders,
     PendingOrders,
@@ -6,11 +8,31 @@ import {
     RejectedOrders,
     PreparedOrders,
 } from '../Components';
-
+import { useSocket } from '../customhooks/socket';
 export default function TodayOrdersPage() {
     const [searchParams] = useSearchParams();
     const filter = searchParams.get('filter') || 'Pending'; // Default to 'Pending'
+    const [pendingOrders, setPendingOrders] = useState([]);
+    // Fetch existing pending orders from backend on mount
 
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await fetch(`/api/orders?status=Pending`); // Adjust API URL as needed
+                const data = await response.json();
+                if (response.ok) {
+                    console.log('✅ Existing orders fetched:', data.orders);
+                    setPendingOrders(data.orders);
+                } else {
+                    console.error('⚠️ Failed to fetch orders:', data.message);
+                }
+            } catch (error) {
+                console.error('❌ Error fetching orders:', error);
+            }
+        };
+
+        fetchOrders();
+    }, []);
     const options = [
         { value: 'Pending', label: 'Pending' },
         { value: 'PickedUp', label: 'Completed' },
@@ -28,9 +50,9 @@ export default function TodayOrdersPage() {
             </div>
 
             {/* Render Based on Filter */}
-            <div className="">
+            <div>
                 {filter === 'Pending' ? (
-                    <PendingOrders />
+                    <PendingOrders orders={pendingOrders} />
                 ) : filter === 'Rejected' ? (
                     <RejectedOrders />
                 ) : filter === 'Prepared' ? (

@@ -26,7 +26,7 @@ export default function PackagedItems() {
         setPopupInfo({ type: 'addItem' });
     }
 
-    return itemElements.length > 0 ? (
+    return itemElements.length >= 0 ? (
         <div className="relative">
             {user.role === 'contractor' && (
                 <Button

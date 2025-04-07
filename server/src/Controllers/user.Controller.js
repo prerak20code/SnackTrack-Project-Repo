@@ -88,7 +88,7 @@ const logout = tryCatch('logout user', async (req, res, next) => {
 
 const getCurrentUser = tryCatch('get current user', async (req, res, next) => {
     let { password, refreshToken, ...user } = req.user;
-
+    console.log('user in getCurrentUser', refreshToken);
     // populate canteen Info
     const canteen = await Canteen.findById(user.canteenId);
     user = {
@@ -97,7 +97,7 @@ const getCurrentUser = tryCatch('get current user', async (req, res, next) => {
         hostelNumber: canteen.hostelNumber,
         hostelName: canteen.hostelName,
     };
-
+    //    console.log("user in getCurrentUser",refreshToken);
     return res.status(OK).json(user);
 });
 
@@ -118,7 +118,7 @@ const updatePassword = tryCatch('update password', async (req, res, next) => {
     // hash new password
     const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
 
-    const Model = role === 'contractor' ? Contractor : Student;
+    const Model = user.role === 'contractor' ? Contractor : Student;
     await Model.findByIdAndUpdate(user._id, {
         $set: { password: hashedNewPassword },
     });
@@ -194,9 +194,10 @@ const getContractors = tryCatch('get contractors', async (req, res) => {
 const getOrders = tryCatch('get orders', async (req, res, next) => {
     const hostelType = req.hostelType;
     const hostelNumber = req.hostelNumber;
-
+    console.log('hostelType in getorder', hostelType);
+    console.log('hostelNumber in getorder', hostelNumber);
     const canteen = await Canteen.findOne({ hostelType, hostelNumber });
-
+    console.log('canteen', canteen);
     const orders = await Order.aggregate([
         { $match: { canteenId: new Types.ObjectId(canteen._id) } },
         { $unwind: '$items' },
@@ -270,7 +271,6 @@ const getOrders = tryCatch('get orders', async (req, res, next) => {
 
     return res.status(OK).json(orders);
 });
-
 export {
     getCurrentUser,
     login,

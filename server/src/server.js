@@ -5,7 +5,7 @@ import { http } from './socket.js';
 import { connectRedis } from './DB/connectRedis.js';
 // import { seedDatabase } from './seeder.js';
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3001;
 
 // MongoDB connection
 await connectDB();

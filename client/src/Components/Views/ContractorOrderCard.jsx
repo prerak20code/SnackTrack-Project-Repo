@@ -5,24 +5,54 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { orderService } from '../../Services';
-
-export default function ContractorOrderCard({ order, reference }) {
+// import { useSocket } from '../../customhooks/socket';
+import toast from 'react-hot-toast';
+import { useEffect } from 'react';
+export default function ContractorOrderCard({
+    order,
+    reference,
+    socket,
+    onStatusChange,
+}) {
     const [expanded, setExpanded] = useState(false);
-    const { amount, _id, createdAt, items, studentInfo } = order;
-    const rollNo = getRollNo(studentInfo?.userName);
-    const [statusOptions, setStatusOptions] = useState([
+    // const socket = useSocket(true);
+    // Ensure `order` is valid
+    if (!order) return null;
+
+    const {
+        amount = 0,
+        _id = '',
+        createdAt,
+        items = [],
+        studentInfo = {},
+    } = order;
+
+    // Ensure `studentInfo` and `userName` are valid before calling getRollNo
+    console.log(items);
+
+    const rollNo = studentInfo?.userName
+        ? getRollNo(studentInfo.userName)
+        : 'N/A';
+
+    const [statusOptions] = useState([
         { value: '', label: 'Pending' },
         { value: 'PickedUp', label: 'Picked Up' },
         { value: 'Prepared', label: 'Prepared' },
         { value: 'Rejected', label: 'Rejected' },
     ]);
-    const [status, setStatus] = useState(order.status);
+    const [status, setStatus] = useState(order.status || 'Pending');
     const navigate = useNavigate();
 
     async function handleStatusChange(status) {
         try {
-            const res = await orderService.updateOrderStatus(_id, status);
-            if (res && res.message === 'order status updated successfully') {
+            const res = await orderService.updateOrderStatus(
+                order,
+                _id,
+                status,
+                socket
+            );
+            if (onStatusChange) onStatusChange(_id);
+            if (res?.message === 'order status updated successfully') {
                 setStatus(status);
             }
         } catch (err) {
@@ -46,14 +76,16 @@ export default function ContractorOrderCard({ order, reference }) {
                     <div className="flex items-center gap-3">
                         <div className="size-10 rounded-full overflow-hidden drop-shadow-sm">
                             <img
-                                src={studentInfo?.avatar}
-                                alt={studentInfo?.fullName}
+                                src={
+                                    studentInfo?.avatar || '/default-avatar.png'
+                                }
+                                alt={studentInfo?.fullName || 'Unknown'}
                                 className="size-full object-cover"
                             />
                         </div>
                         <div className="flex-1 space-y-[2px]">
                             <h3 className="text-sm font-medium text-gray-800 truncate">
-                                {studentInfo?.fullName}
+                                {studentInfo?.fullName || 'Unknown Student'}
                             </h3>
                             <div className="flex items-center gap-1 text-xs text-gray-600">
                                 <span>Roll No: {rollNo}</span>
@@ -90,16 +122,21 @@ export default function ContractorOrderCard({ order, reference }) {
                 <div className="flex flex-row justify-between items-center w-full">
                     <div className="flex flex-col items-center gap-1">
                         <h2 className="text-sm font-medium text-gray-800">
-                            ORDER #{_id.slice(-8).toUpperCase()}
+                            ORDER #{_id ? _id.slice(-8).toUpperCase() : 'N/A'}
                         </h2>
                         <p className="text-xs text-gray-500">
-                            {new Date(createdAt).toLocaleDateString('en-US', {
-                                weekday: 'short',
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })}
+                            {createdAt
+                                ? new Date(createdAt).toLocaleDateString(
+                                      'en-US',
+                                      {
+                                          weekday: 'short',
+                                          month: 'short',
+                                          day: 'numeric',
+                                          hour: '2-digit',
+                                          minute: '2-digit',
+                                      }
+                                  )
+                                : 'Unknown Date'}
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -126,34 +163,48 @@ export default function ContractorOrderCard({ order, reference }) {
                     className="px-5 pb-5 border-t border-gray-100"
                 >
                     <div className="space-y-4 mt-4">
-                        {items.map((item) => (
-                            <div
-                                key={item._id}
-                                className="flex justify-between items-center"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="size-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <div className="size-5 text-gray-400">
-                                            {item.itemType === 'Snack'
-                                                ? icons.snack
-                                                : icons.soda}
+                        {items.length > 0 ? (
+                            items.map((item) => (
+                                <div
+                                    key={item._id || Math.random()}
+                                    className="flex justify-between items-center"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="size-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                            <div className="size-5 text-gray-400">
+                                                {item.itemType === 'Snack'
+                                                    ? icons.snack
+                                                    : icons.soda}
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <h3 className="text-sm font-medium text-gray-800 capitalize">
+                                                {item.name || 'Unknown Item'}
+                                            </h3>
+                                            <p className="text-xs text-gray-500">
+                                                Qty: {item.quantity || 1} • ₹
+                                                {item.price
+                                                    ? item.price.toFixed(2)
+                                                    : 'N/A'}{' '}
+                                                each
+                                            </p>
                                         </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <h3 className="text-sm font-medium text-gray-800 capitalize">
-                                            {item.name || item.category}
-                                        </h3>
-                                        <p className="text-xs text-gray-500">
-                                            Qty: {item.quantity} • ₹
-                                            {item.price.toFixed(2)} each
-                                        </p>
-                                    </div>
+                                    <span className="text-sm font-semibold text-gray-900">
+                                        ₹
+                                        {item.price && item.quantity
+                                            ? (
+                                                  item.price * item.quantity
+                                              ).toFixed(2)
+                                            : 'N/A'}
+                                    </span>
                                 </div>
-                                <span className="text-sm font-semibold text-gray-900">
-                                    ₹{(item.price * item.quantity).toFixed(2)}
-                                </span>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-sm text-gray-500">
+                                No items in order
+                            </p>
+                        )}
                     </div>
 
                     <div className="mt-6 pt-4 border-t border-gray-100">

@@ -1,9 +1,12 @@
 import { OK } from '../Constants/index.js';
 import { tryCatch } from '../Utils/index.js';
 import { Order } from '../Models/index.js';
+import { Types } from 'mongoose';
+import { Student } from '../Models/index.js';
+import { io } from '../socket.js';
+import { getSocketId } from '../Utils/index.js';
 import { Snack } from '../Models/snack.Model.js';
 import mongoose, { Types } from 'mongoose';
-
 // only student can do
 
 const placeOrder = tryCatch('place order', async (req, res) => {
@@ -17,7 +20,14 @@ const placeOrder = tryCatch('place order', async (req, res) => {
         items: cartItems,
     });
 
-    return res.status(OK).json(order);
+    const studentinfo = await Student.findById(student._id)
+        .select('fullName phoneNumber rollNo avatar userName -_id')
+        .lean(); // Optional: returns plain JS object instead of Mongoose document
+
+    return res.status(OK).json({
+        order,
+        studentinfo,
+    });
 });
 
 // implement something to flush all the orders after 6 months to save space

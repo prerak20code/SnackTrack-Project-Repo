@@ -26,7 +26,7 @@ export default function Snacks() {
         setPopupInfo({ type: 'addSnack' });
     }
 
-    return snackElements.length > 0 ? (
+    return snackElements.length >= 0 ? (
         <div className="relative">
             {user.role === 'contractor' && (
                 <Button

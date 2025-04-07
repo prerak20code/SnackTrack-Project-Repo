@@ -148,7 +148,6 @@ class UserService {
             });
 
             const data = await res.json();
-            console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);

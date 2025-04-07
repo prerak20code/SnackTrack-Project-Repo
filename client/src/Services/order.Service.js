@@ -79,6 +79,122 @@ class OrderService {
         }
     }
 
+    async getStudentMonthlyBill(studentId, year, month) {
+        try {
+            const res = await fetch(
+                `/api/orders/bills/student/${studentId}?year=${year}&month=${month}`,
+                {
+                    method: 'GET',
+                    credentials: 'include',
+                }
+            );
+            console.log(res);
+
+            if (!res.ok) {
+                throw new Error(`Error: ${res.status} ${res.statusText}`);
+            }
+
+            return await res.json();
+        } catch (error) {
+            console.error('Error in getStudentMonthlyBill service:', error);
+            throw error;
+        }
+    }
+
+    // async getContractorStudentMonthlyBill(studentId, year, month) {
+    //     try {
+    //         const res = await fetch(
+    //             `/api/orders/bills/student/${studentId}?year=${year}&month=${month}`,
+    //             {
+    //                 method: 'GET',
+    //                 credentials: 'include',
+    //             }
+    //         );
+
+    //         if (!res.ok) {
+    //             throw new Error(`Error: ${res.status} ${res.statusText}`);
+    //         }
+
+    //         return await res.json();
+    //     } catch (error) {
+    //         console.error('Error in getStudentMonthlyBill service:', error);
+    //         throw error;
+    //     }
+    // }
+
+    async getCanteenMonthlyBill(canteenId, year, month) {
+        if (!canteenId || !year || !month) {
+            console.error('Invalid canteenId, year, or month:', {
+                canteenId,
+                year,
+                month,
+            });
+            throw new Error('Invalid canteenId, year, or month');
+        }
+
+        try {
+            const res = await fetch(
+                `/api/orders/bills/canteen/${canteenId}?year=${year}&month=${month}`,
+                { method: 'GET', credentials: 'include' }
+            );
+
+            if (!res.ok) {
+                throw new Error(`Error: ${res.status} ${res.statusText}`);
+            }
+
+            return await res.json();
+        } catch (error) {
+            console.error('Error in getCanteenMonthlyBill service:', error);
+            throw error;
+        }
+    }
+
+    async getCanteenStatistics(canteenId, year, month) {
+        if (!canteenId || !year || !month) {
+            console.error('Missing parameters for getCanteenStatistics:', {
+                canteenId,
+                year,
+                month,
+            });
+            throw new Error('Invalid canteenId, year, or month');
+        }
+
+        try {
+            const res = await fetch(
+                `/api/orders/statistics/${canteenId}?year=${year}&month=${month}`,
+                {
+                    method: 'GET',
+                    credentials: 'include',
+                }
+            );
+
+            if (!res.ok) {
+                throw new Error(`Error: ${res.status} ${res.statusText}`);
+            }
+
+            const data = await res.json();
+
+            return {
+                revenueTrend: data.revenueTrend || [],
+                revenueByItem: data.revenueByItem || [],
+                // revenueByItemType: data.revenueByItemType || [],
+                topSellingItems: data.topSellingItems || [],
+                dailyOrderCounts: data.dailyOrderCounts || [],
+                // averageOrderValue: data.averageOrderValue || [],
+            };
+        } catch (error) {
+            console.error('Error in getCanteenStatistics service:', error);
+            return {
+                revenueTrend: [],
+                revenueByItem: [],
+                // revenueByItemType: [],
+                topSellingItems: [],
+                dailyOrderCounts: [],
+                // averageOrderValue: [],
+            };
+        }
+    }
+
     async getCanteenOrders(status, page, limit, signal) {
         try {
             const res = await fetch(

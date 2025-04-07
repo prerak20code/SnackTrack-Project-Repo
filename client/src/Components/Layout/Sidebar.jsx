@@ -36,7 +36,7 @@ export default function Sidebar() {
         },
         {
             path: '/bills',
-            name: 'Bills',
+            name: 'Monthly Revenue',
             icon: icons.rupee,
             show: user.role === 'contractor',
         },
@@ -106,7 +106,7 @@ export default function Sidebar() {
             x: 0,
             transition: {
                 type: 'tween',
-                duration: 0.5,
+                duration: 0.3,
             },
         },
         exit: {

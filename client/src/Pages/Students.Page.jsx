@@ -11,7 +11,6 @@ import { LIMIT } from '../Constants/constants';
 import { Button, StudentView } from '../Components';
 import { icons } from '../Assets/icons';
 
-
 export default function StudentsPage() {
     const { students, setStudents } = useStudentContext();
     const { setPopupInfo, setShowPopup } = usePopupContext();
@@ -70,9 +69,9 @@ export default function StudentsPage() {
                         ? paginateRef
                         : null
                 }
-            />  
+            />
         ));
- 
+
     async function removeAllStudents() {
         setPopupInfo({ type: 'removeAllStudents' });
         setShowPopup(true);

@@ -8,6 +8,7 @@ import { Button, StudentOrderCard } from '../Components';
 import { LIMIT } from '../Constants/constants';
 import { useSocket } from '../customhooks/socket';
 import toast from 'react-hot-toast';
+import { sendNotification } from '../Utils/notification';
 
 export default function MyOrdersPage() {
     const [orders, setOrders] = useState([]);
@@ -53,7 +54,6 @@ export default function MyOrdersPage() {
         return () => controller.abort();
     }, [page, loadOrders]);
 
-    // 🧠 Infinite scroll logic
     const lastOrderRef = useCallback(
         (node) => {
             if (loading || fetchingNext) return;
@@ -71,34 +71,48 @@ export default function MyOrdersPage() {
         [loading, fetchingNext, ordersInfo]
     );
 
-    // 🔁 Socket status updates
+    const updateOrderInUI = (orderId, status) => {
+        setOrders((prev) =>
+            prev.map((order) =>
+                order._id === orderId ? { ...order, status } : order
+            )
+        );
+    };
+
     useEffect(() => {
         if (!socket) return;
 
-        const handleStatusChange = (updatedOrder) => {
-            setOrders((prev) =>
-                prev.map((order) =>
-                    order._id === updatedOrder._id
-                        ? { ...order, status: updatedOrder.status }
-                        : order
-                )
-            );
+        socket.on('orderPrepared', (order) => {
+            toast.success('Your order is prepared!');
+            sendNotification('Order Prepared', {
+                body: 'Your order is ready to be picked up.',
+                icon: '/prepared-icon.png',
+            });
+            updateOrderInUI(order._id, 'Prepared');
+        });
 
-            if (updatedOrder.status === 'Rejected') {
-                toast.error(`Order ${updatedOrder.status}`);
-            } else {
-                toast.success(`Order ${updatedOrder.status} successfully`);
-            }
-        };
+        socket.on('orderRejected', (order) => {
+            toast.error('Your order was rejected.');
+            sendNotification('Order Rejected', {
+                body: 'Your order was rejected by the canteen.',
+                icon: '/rejected-icon.png',
+            });
+            updateOrderInUI(order._id, 'Rejected');
+        });
 
-        socket.on('orderPrepared', handleStatusChange);
-        socket.on('orderPickedUp', handleStatusChange);
-        socket.on('orderRejected', handleStatusChange);
+        socket.on('orderPickedUp', (order) => {
+            toast.success('Order picked up!');
+            sendNotification('Order Picked Up', {
+                body: 'You have picked up your order.',
+                icon: '/pickedup-icon.png',
+            });
+            updateOrderInUI(order._id, 'PickedUp');
+        });
 
         return () => {
-            socket.off('orderPrepared', handleStatusChange);
-            socket.off('orderPickedUp', handleStatusChange);
-            socket.off('orderRejected', handleStatusChange);
+            socket.off('orderPrepared');
+            socket.off('orderRejected');
+            socket.off('orderPickedUp');
         };
     }, [socket]);
 

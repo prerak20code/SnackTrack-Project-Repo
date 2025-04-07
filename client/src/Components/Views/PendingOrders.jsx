@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { ContractorOrderCard } from '..';
 import { useSocket } from '../../customhooks/socket';
 import toast from 'react-hot-toast';
+import { sendNotification } from '../../Utils/notification';
 export default function PendingOrders() {
     const [orders, setOrders] = useState(() => []); // ✅ Always initialize as an array
     const [ordersInfo, setOrdersInfo] = useState({});
@@ -61,12 +62,14 @@ export default function PendingOrders() {
             console.log('🔔 New order received:', order);
             console.log(order._id);
             toast.success(`New order by: ${order.studentInfo.fullName}`);
-            // if (!order || !order._id) return;
-            // ✅ Correctly append the new order to the array
-            setOrders((prevOrders) => [order, ...prevOrders]);
 
-            console.log(orders);
-            // setTrigger((prev) => prev + 1); // ✅ Force re-render
+            // 🎯 Push Notification
+            sendNotification('New Order Placed', {
+                body: `Order from ${order.studentInfo.fullName}`,
+                icon: '/order-icon.png', // use a relevant icon
+            });
+
+            setOrders((prevOrders) => [order, ...prevOrders]);
         }
 
         socket.on('newOrder', handleNewOrder);

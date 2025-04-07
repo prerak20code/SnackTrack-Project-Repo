@@ -31,15 +31,26 @@ import { sendMail } from '../mailer.js';
 // personal usage
 
 const register = tryCatch('register as contractor', async (req, res, next) => {
-    const { fullName, email, phoneNumber, password, hostel, kitchenKey } =
-        req.body;
-
+    const {
+        fullName,
+        email,
+        phoneNumber,
+        password,
+        hostelType,
+        hostelName,
+        hostelNumber,
+        kitchenKey,
+    } = req.body;
+    console.log('req.body', req.body);
+    console.log('hello in frontend register');
     if (
         !fullName ||
         !email ||
         !phoneNumber ||
         !password ||
-        !hostel ||
+        !hostelType ||
+        !hostelNumber ||
+        !hostelName ||
         !kitchenKey
     ) {
         return next(new ErrorHandler('Missing fields', BAD_REQUEST));
@@ -52,7 +63,7 @@ const register = tryCatch('register as contractor', async (req, res, next) => {
         'password',
         'kitchenKey',
     ].every((key) => verifyExpression(key, req.body[key]?.trim()));
-
+    console.log('isValid', isValid);
     if (!isValid) {
         return next(new ErrorHandler('Invalid input data', BAD_REQUEST));
     }
@@ -61,11 +72,11 @@ const register = tryCatch('register as contractor', async (req, res, next) => {
     const [existingCanteen, existingContractor] = await Promise.all([
         Canteen.findOne({
             $or: [
-                { hostelName: hostel.hostelName.trim() },
+                { hostelName: hostelName.trim() },
                 {
                     $and: [
-                        { hostelNumber: hostel.hostelNumber.trim() },
-                        { hostelType: hostel.hostelType.trim() },
+                        { hostelNumber: hostelNumber },
+                        { hostelType: hostelType.trim() },
                     ],
                 },
             ],
@@ -76,15 +87,26 @@ const register = tryCatch('register as contractor', async (req, res, next) => {
     ]);
 
     if (existingCanteen) {
+        console.log('Existing Canteen:', existingCanteen);
+
         return next(new ErrorHandler('canteen already exists', NOT_FOUND));
     }
 
     if (existingContractor) {
+        console.log('Existing Contractor:', existingContractor);
         return next(new ErrorHandler('contractor already exists', BAD_REQUEST));
     }
 
-    // Send email verification
-    await sendVerificationEmail(email.trim());
+    try {
+        await sendVerificationEmail(email.trim());
+    } catch (error) {
+        return next(
+            new ErrorHandler(
+                'Failed to send verification email',
+                INTERNAL_SERVER_ERROR
+            )
+        );
+    }
 
     return res.status(OK).json({ message: 'Verification code sent' });
 });
@@ -98,17 +120,32 @@ const completeRegistration = tryCatch(
             fullName,
             phoneNumber,
             password,
-            hostel,
+            hostelType,
+            hostelName,
+            hostelNumber,
             kitchenKey,
         } = req.body;
 
+        console.log(
+            email,
+            code,
+            fullName,
+            phoneNumber,
+            password,
+            hostelType,
+            hostelName,
+            hostelNumber,
+            kitchenKey
+        );
         if (
             !email ||
             !code ||
             !fullName ||
             !phoneNumber ||
             !password ||
-            !hostel ||
+            !hostelType ||
+            !hostelName ||
+            !hostelNumber ||
             !kitchenKey
         ) {
             return next(new ErrorHandler('Missing fields', BAD_REQUEST));
@@ -116,6 +153,7 @@ const completeRegistration = tryCatch(
 
         // Verify code
         const isValid = await verifyEmail(email, code);
+        console.log('isValid', isValid);
         if (!isValid) {
             return next(
                 new ErrorHandler('Invalid verification code', BAD_REQUEST)
@@ -124,9 +162,9 @@ const completeRegistration = tryCatch(
 
         // Now register the contractor & canteen
         const canteen = await Canteen.create({
-            hostelName: hostel.hostelName.trim(),
-            hostelNumber: hostel.hostelNumber.trim(),
-            hostelType: hostel.hostelType.trim(),
+            hostelName: hostelName.trim(),
+            hostelNumber: hostelNumber,
+            hostelType: hostelType,
             kitchenKey,
         });
 
@@ -292,9 +330,9 @@ const registerStudent = tryCatch(
 
         // send this password on student's email
         await sendMail({
-            to: data.email,
+            to: student.email,
             subject: 'Welcome to SnackTrack',
-            html: `Hello ${data.fullName}, <br> Your temporary password is ${randomPassword}, You can update it anytime after logging in from settings.`,
+            html: `Hello ${student.fullName}, <br> Your temporary password is ${randomPassword}, You can update it anytime after logging in from settings.`,
         });
 
         return res.status(CREATED).json(student);

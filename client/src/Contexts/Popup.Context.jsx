@@ -5,7 +5,6 @@ const PopupContext = createContext();
 const PopupContextProvider = ({ children }) => {
     const [showPopup, setShowPopup] = useState(false);
     const [popupInfo, setPopupInfo] = useState({ type: '', target: {} });
-
     return (
         <PopupContext.Provider
             value={{

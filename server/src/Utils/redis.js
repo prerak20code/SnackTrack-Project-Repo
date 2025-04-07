@@ -5,7 +5,18 @@ async function setSocketId(userId, socket) {
 }
 
 async function getSocketId(userId) {
-    return await redisClient.get(userId);
+    if (!userId || typeof userId !== 'string') {
+        throw new Error('Invalid userId provided to getSocketId');
+    }
+
+    try {
+        const socketId = await redisClient.get(userId);
+        console.log(`Fetched socketId for userId ${userId}:`, socketId);
+        return socketId;
+    } catch (err) {
+        console.error('Redis get error:', err);
+        throw err;
+    }
 }
 
 async function deleteSocketId(userId) {

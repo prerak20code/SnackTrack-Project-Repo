@@ -7,12 +7,12 @@ import { MAX_FILE_SIZE, ALLOWED_EXT } from '../Constants/index.js';
  * @param {String} value - Value/File for the key.
  * @returns {Boolean} Boolean.
  */
-export default function verifyRegex(name, value) {
+export default function verifyExpression(name, value) {
     if (value) {
         switch (name) {
             case 'fullName':
             case 'name': {
-                return /^[a-zA-Z ]{1,20}$/.test(value);
+                return /^[a-zA-Z ]{1,20}$/.test(value.trim());
             }
 
             case 'email': {
@@ -23,54 +23,55 @@ export default function verifyRegex(name, value) {
 
             case 'hostelNumber':
             case 'rollNo': {
+                console.log('hostelNumber', value);
+                console.log(/^\d+$/.test(value));
                 return /^\d+$/.test(value);
             }
 
             case 'hostelType': {
+                console.log('hostelType', value);
                 return value === 'GH' || value === 'BH' || value === 'IH';
             }
 
             case 'password': {
+                console.log('password', value);
                 return value.length >= 8 && value.length <= 12;
             }
 
             case 'kitchenKey': {
-                // hostelType + hostelNumber + kitchenPassword
+                console.log('kitchenKey', value);
                 return /^[A-Z]{2}\d{2}[a-zA-Z0-9]{4,12}$/.test(value);
             }
 
             case 'phoneNumber': {
+                console.log('phoneNumber', value);
                 return /^[0-9]{10}$/.test(value);
             }
 
             case 'file': {
-                if (fs.existsSync(value)) {
-                    try {
-                        const stats = fs.statSync(value);
-                        const fileSizeMB = stats.size / (1024 * 1024);
-                        const extension = value.split('.').pop().toLowerCase();
+                try {
+                    fs.accessSync(value, fs.constants.F_OK); // Check if the file exists
+                    const stats = fs.statSync(value);
+                    const fileSizeMB = stats.size / (1024 * 1024);
+                    const extension = value.split('.').pop().toLowerCase();
 
-                        return (
-                            ALLOWED_EXT.includes(extension) &&
-                            fileSizeMB <= MAX_FILE_SIZE
-                        );
-                    } catch (err) {
-                        console.error('Error accessing file:', err);
-                        return false;
-                    }
-                } else {
-                    console.log('File does not exist:', value);
+                    return (
+                        ALLOWED_EXT.includes(extension) &&
+                        fileSizeMB <= MAX_FILE_SIZE
+                    );
+                } catch (err) {
+                    console.error('Error accessing file:', err);
                     return false;
                 }
             }
 
             default: {
-                console.log("Doesn't have a defined regex.", name);
-                return false;
+                console.warn(`No regex defined for field: ${name}`);
+                return false; // Return false if no regex is defined for this field
             }
         }
     } else {
-        console.log('provide a value to validate');
+        console.log('No value provided to validate for', name);
         return false;
     }
 }

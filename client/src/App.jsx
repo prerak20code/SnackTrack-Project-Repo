@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useSideBarContext, useUserContext, usePopupContext } from './Contexts';
 import { userService } from './Services';
 import { icons } from './Assets/icons';
-
+import { useSocket } from './customhooks/socket';
 export default function App() {
     const [loading, setLoading] = useState(true);
     const { setUser } = useUserContext();
@@ -11,7 +11,6 @@ export default function App() {
     const { setShowPopup } = usePopupContext();
     const navigate = useNavigate();
     const location = useLocation();
-
     // get current user
     useEffect(() => {
         const controller = new AbortController();

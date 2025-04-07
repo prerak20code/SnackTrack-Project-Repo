@@ -17,18 +17,25 @@ const validateToken = async (token, type) => {
             : process.env.REFRESH_TOKEN_SECRET
     );
 
-    if (!decodedToken) throw new Error(`invalid ${type} token`);
+    if (!decodedToken || !decodedToken._id || !decodedToken.role) {
+        throw new Error(`Invalid ${type} token payload`);
+    }
 
     let currentUser = null;
     if (decodedToken.role === 'student') {
         currentUser = await Student.findById(decodedToken._id).lean();
-    } else currentUser = await Contractor.findById(decodedToken._id).lean();
+    } else {
+        currentUser = await Contractor.findById(decodedToken._id).lean();
+    }
 
-    if (
-        !currentUser ||
-        (type === 'refresh' && currentUser.refreshToken !== token)
-    ) {
-        throw new Error('user not found');
+    if (!currentUser) {
+        console.warn(`User not found for _id: ${decodedToken._id}`);
+        throw new Error('User not found');
+    }
+
+    if (type === 'refresh' && currentUser.refreshToken !== token) {
+        console.warn(`Refresh token mismatch for user ${decodedToken._id}`);
+        throw new Error('Refresh token mismatch');
     }
 
     return { ...currentUser, role: decodedToken.role };
@@ -60,7 +67,8 @@ const refreshAccessToken = async (res, refreshToken) => {
 const verifyJwt = async (req, res, next) => {
     try {
         const { accessToken, refreshToken } = extractTokens(req);
-
+        console.log('accessToken', accessToken);
+        console.log('refreshToken', refreshToken);
         if (accessToken) {
             // verify access token
             req.user = await validateToken(accessToken, 'access');
@@ -70,7 +78,9 @@ const verifyJwt = async (req, res, next) => {
             req.user = await refreshAccessToken(res, refreshToken);
             return next();
         } else {
-            return res.status(BAD_REQUEST).json({ message: 'tokens missing' });
+            return res
+                .status(BAD_REQUEST)
+                .json({ message: 'tokens missingdddd' });
         }
     } catch (err) {
         return res

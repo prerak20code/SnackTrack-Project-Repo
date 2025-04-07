@@ -28,7 +28,6 @@ export default function EmailVerificationPopup() {
         // Enable/disable the Verify button
         setDisabled(newCode.some((digit) => !digit));
     };
-
     // Handle backspace key
     const handleKeyDown = (i, e) => {
         if (e.key === 'Backspace' && !code[i] && i > 0) {
@@ -41,7 +40,7 @@ export default function EmailVerificationPopup() {
         setDisabled(true);
         try {
             const res = await contractorService.completeRegistration({
-                ...popupInfo.target.data,
+                ...popupInfo.target,
                 code: code.join(''),
             });
             if (res && !res.message) {

@@ -1,48 +1,106 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { orderService } from '../Services';
 import { useUserContext } from '../Contexts';
 import { motion } from 'framer-motion';
 import { icons } from '../Assets/icons';
 import { Button, StudentOrderCard } from '../Components';
-import { paginate } from '../Utils';
 import { LIMIT } from '../Constants/constants';
+import { useSocket } from '../customhooks/socket';
+import toast from 'react-hot-toast';
 
 export default function MyOrdersPage() {
     const [orders, setOrders] = useState([]);
     const [ordersInfo, setOrdersInfo] = useState({});
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [fetchingNext, setFetchingNext] = useState(false);
+
     const navigate = useNavigate();
     const { user } = useUserContext();
-    const [page, setPage] = useState(1);
+    const socket = useSocket(false);
+    const observerRef = useRef();
 
-    const paginateRef = paginate(ordersInfo?.hasNextPage, loading, setPage);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-
-        (async function getOrders() {
+    const loadOrders = useCallback(
+        async (signal, currentPage) => {
             try {
                 const data = await orderService.getStudentOrders(
                     user._id,
                     signal,
-                    page,
+                    currentPage,
                     LIMIT
                 );
                 if (data && !data.message) {
-                    setOrders(data.orders);
+                    setOrders((prev) => [...prev, ...data.orders]);
                     setOrdersInfo(data.ordersInfo);
                 }
             } catch (err) {
+                console.error(err);
                 navigate('/server-error');
             } finally {
                 setLoading(false);
+                setFetchingNext(false);
             }
-        })();
+        },
+        [user._id, navigate]
+    );
+
+    useEffect(() => {
+        const controller = new AbortController();
+        setLoading(true);
+        loadOrders(controller.signal, page);
 
         return () => controller.abort();
-    }, []);
+    }, [page, loadOrders]);
+
+    // 🧠 Infinite scroll logic
+    const lastOrderRef = useCallback(
+        (node) => {
+            if (loading || fetchingNext) return;
+            if (observerRef.current) observerRef.current.disconnect();
+
+            observerRef.current = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && ordersInfo.hasNextPage) {
+                    setFetchingNext(true);
+                    setPage((prev) => prev + 1);
+                }
+            });
+
+            if (node) observerRef.current.observe(node);
+        },
+        [loading, fetchingNext, ordersInfo]
+    );
+
+    // 🔁 Socket status updates
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleStatusChange = (updatedOrder) => {
+            setOrders((prev) =>
+                prev.map((order) =>
+                    order._id === updatedOrder._id
+                        ? { ...order, status: updatedOrder.status }
+                        : order
+                )
+            );
+
+            if (updatedOrder.status === 'Rejected') {
+                toast.error(`Order ${updatedOrder.status}`);
+            } else {
+                toast.success(`Order ${updatedOrder.status} successfully`);
+            }
+        };
+
+        socket.on('orderPrepared', handleStatusChange);
+        socket.on('orderPickedUp', handleStatusChange);
+        socket.on('orderRejected', handleStatusChange);
+
+        return () => {
+            socket.off('orderPrepared', handleStatusChange);
+            socket.off('orderPickedUp', handleStatusChange);
+            socket.off('orderRejected', handleStatusChange);
+        };
+    }, [socket]);
 
     return (
         <div className="w-full p-4">
@@ -64,7 +122,7 @@ export default function MyOrdersPage() {
                 )}
             </div>
 
-            {loading ? (
+            {loading && orders.length === 0 ? (
                 <div className="flex justify-center py-12">
                     <div className="size-[25px] fill-[#4977ec] dark:text-[#a2bdff]">
                         {icons.loading}
@@ -79,19 +137,17 @@ export default function MyOrdersPage() {
                     {orders.map((order, i) => (
                         <motion.div
                             key={order._id}
+                            ref={
+                                i === orders.length - 1 &&
+                                ordersInfo?.hasNextPage
+                                    ? lastOrderRef
+                                    : null
+                            }
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <StudentOrderCard
-                                order={order}
-                                reference={
-                                    i + 1 === orders.length &&
-                                    ordersInfo?.hasNextPage
-                                        ? paginateRef
-                                        : null
-                                }
-                            />
+                            <StudentOrderCard order={order} />
                         </motion.div>
                     ))}
                 </motion.div>

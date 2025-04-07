@@ -9,9 +9,11 @@ const io = new Server(http, { cors: CORS_OPTIONS });
 
 io.on('connection', async (socket) => {
     const userId = socket.handshake.auth.userId;
-
+    if (!userId) {
+        console.error('User ID not provided in socket connection');
+        return socket.disconnect();
+    }
     console.log('a user connected:', socket.id);
-
     // store its socket id in cache (redis)
     try {
         await setSocketId(userId, socket);
@@ -24,24 +26,46 @@ io.on('connection', async (socket) => {
 
     // new order => notify canteen
     socket.on('newOrder', async (order) => {
-        const socketId = await getSocketId(order.canteenId);
-        socket.to(socketId).emit('newOrder', order);
+        console.log('📥 New order event received!');
+        if (!order) {
+            console.error('❌ Invalid order data:', order);
+            return;
+        }
+        try {
+            const socketId = await getSocketId(order.canteenId);
+
+            if (!socketId) {
+                console.warn(
+                    `⚠️ No active socket for canteen ${order.canteenId}. Order notification cannot be sent.`
+                );
+                return;
+            }
+
+            console.log(`📤 Sending order to canteen (Socket ID: ${socketId})`);
+            io.to(socketId).emit('newOrder', order);
+        } catch (error) {
+            console.error('⚠️ Error fetching socket ID:', error);
+        }
     });
 
     // order rejected => notify student
     socket.on('orderRejected', async (order) => {
+        console.log('order is rejected');
         const socketId = await getSocketId(order.studentId);
         socket.to(socketId).emit('orderRejected', order);
     });
 
     // order prepared  => notify student
+
     socket.on('orderPrepared', async (order) => {
+        console.log('order is prepared');
         const socketId = await getSocketId(order.studentId);
         socket.to(socketId).emit('orderPrepared', order);
     });
 
     // order picked up => notify student
     socket.on('orderPickedUp', async (order) => {
+        console.log('in backend orderpickedup');
         const socketId = await getSocketId(order.studentId);
         socket.to(socketId).emit('orderPickedUp', order);
     });

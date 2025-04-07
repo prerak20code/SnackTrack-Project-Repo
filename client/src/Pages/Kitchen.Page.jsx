@@ -5,7 +5,7 @@ import { Button, Dropdown, OrderDropdown } from '../Components';
 import { icons } from '../Assets/icons';
 import toast from 'react-hot-toast';
 import { getRollNo } from '../Utils';
-
+import { io } from 'socket.io-client';
 export default function KitchenPage() {
     const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
@@ -25,7 +25,19 @@ export default function KitchenPage() {
         { value: 'Prepared', label: 'Prepared' },
         { value: 'Rejected', label: 'Rejected' },
     ]);
-
+    // const socket= useSocket(true);
+    const usesocket = () => {
+        const token = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('snackTrack_staffKeyToken='))
+            ?.split('=')[1];
+        const socket = io(import.meta.env.VITE_BACKEND_URL, {
+            auth: { token },
+            reconnection: true,
+            transports: ['websocket'],
+        });
+    };
+    const socket = usesocket();
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
@@ -62,9 +74,7 @@ export default function KitchenPage() {
         if (!key || !hostel) return;
         setVerifying(true);
         try {
-            const res = await userService.getOrders(
-                `${hostel.hostelType}${hostel.hostelNumber}-${key}`
-            );
+            const res = await userService.getOrders(key);
             if (res && !res.message) {
                 setError(false);
                 setOrders(res);

@@ -52,7 +52,7 @@ export default function CartPage() {
             setOrdering(true);
             const cartItems =
                 JSON.parse(localStorage.getItem('cartItems')) || [];
-            console.log('cart items are', cartItems);
+            // console.log('cart items are', cartItems);
             const res = await orderService.placeOrder(cartItems, total, socket);
 
             if (res && !res.message) {

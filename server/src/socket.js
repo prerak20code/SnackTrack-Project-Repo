@@ -9,6 +9,8 @@ const io = new Server(http, { cors: CORS_OPTIONS });
 
 io.on('connection', async (socket) => {
     const userId = socket.handshake.auth.userId;
+    console.log('🔗 Connected socket:', socket.id, 'for user:', userId);
+
     if (!userId) {
         console.error('User ID not provided in socket connection');
         return socket.disconnect();
@@ -32,17 +34,30 @@ io.on('connection', async (socket) => {
             return;
         }
         try {
-            const socketId = await getSocketId(order.canteenId);
-
-            if (!socketId) {
+            const socketId1 = await getSocketId(order.canteenId);
+            const socketId2 = await getSocketId(order.contractorId);
+            if (!socketId1) {
                 console.warn(
                     `⚠️ No active socket for canteen ${order.canteenId}. Order notification cannot be sent.`
                 );
+
                 return;
             }
-
-            console.log(`📤 Sending order to canteen (Socket ID: ${socketId})`);
-            io.to(socketId).emit('newOrder', order);
+            if (!socketId2) {
+                console.warn(
+                    `⚠️ No active socket for contractor ${order.contractorId}. Order notification cannot
+                    be sent.`
+                );
+                return;
+            }
+            console.log(
+                `📤 Sending order to canteen (Socket ID: ${socketId1})`
+            );
+            io.to(socketId1).emit('newOrder', order);
+            console.log(
+                `📤 Sending order to contractor (Socket ID: ${socketId2})`
+            );
+            io.to(socketId2).emit('newOrder', order);
         } catch (error) {
             console.error('⚠️ Error fetching socket ID:', error);
         }
@@ -52,7 +67,9 @@ io.on('connection', async (socket) => {
     socket.on('orderRejected', async (order) => {
         console.log('order is rejected');
         const socketId = await getSocketId(order.studentId);
+        const socketId2 = await getSocketId(order.canteenId);
         socket.to(socketId).emit('orderRejected', order);
+        socket.to(socketId2).emit('orderRejected', order);
     });
 
     // order prepared  => notify student
@@ -60,14 +77,18 @@ io.on('connection', async (socket) => {
     socket.on('orderPrepared', async (order) => {
         console.log('order is prepared');
         const socketId = await getSocketId(order.studentId);
+        const socketId2 = await getSocketId(order.canteenId);
         socket.to(socketId).emit('orderPrepared', order);
+        socket.to(socketId2).emit('orderPrepared', order);
     });
 
     // order picked up => notify student
     socket.on('orderPickedUp', async (order) => {
         console.log('in backend orderpickedup');
         const socketId = await getSocketId(order.studentId);
+        const socketId2 = await getSocketId(order.canteenId);
         socket.to(socketId).emit('orderPickedUp', order);
+        socket.to(socketId2).emit('orderPickedUp', order);
     });
 
     socket.on('disconnect', async () => {
@@ -75,7 +96,7 @@ io.on('connection', async (socket) => {
 
         // delete the socket id from cache (redis)
         try {
-            await deleteSocketId(userId);
+            await deleteSocketId(userId, socket);
             console.log(`socket id of user ${userId} deleted from cache.`);
         } catch (err) {
             return console.error(

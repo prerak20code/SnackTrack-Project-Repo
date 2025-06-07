@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "client": "cd client && npm i && npm run dev",
-        "server": "cd server && npm i && npm run dev",
+        "client": "cd client && npm i && npm run dev --host",
+        "server": "cd server && npm i && npm run dev --host",
         "dev": "concurrently \"npm run client\" \"npm run server\""
     },
     "keywords": [],
@@ -15,6 +15,7 @@
         "bcrypt": "^5.1.1",
         "chart.js": "^4.4.8",
         "concurrently": "^9.1.2",
+        "lucide-react": "^0.487.0",
         "nodemon": "^3.1.9",
         "prettier": "^3.5.3",
         "react-chartjs-2": "^5.3.0",

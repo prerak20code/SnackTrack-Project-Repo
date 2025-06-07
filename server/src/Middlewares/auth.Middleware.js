@@ -67,8 +67,8 @@ const refreshAccessToken = async (res, refreshToken) => {
 const verifyJwt = async (req, res, next) => {
     try {
         const { accessToken, refreshToken } = extractTokens(req);
-        console.log('accessToken', accessToken);
-        console.log('refreshToken', refreshToken);
+        // console.log('accessToken', accessToken);
+        // console.log('refreshToken', refreshToken);
         if (accessToken) {
             // verify access token
             req.user = await validateToken(accessToken, 'access');

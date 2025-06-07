@@ -39,7 +39,7 @@ const BillsPage = () => {
                 year,
                 monthNum
             );
-            console.log(data);
+            // console.log(data);
             if (data && !data.message) {
                 const pickedUpOrders = data.orders.filter(
                     (order) => order.status === 'PickedUp'

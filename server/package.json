@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "format": "prettier --write .",
-        "dev": "npm run format && nodemon src/server.js",
+        "dev": "npm run format && nodemon src/server.js --host",
         "start": "node src/server.js"
     },
     "keywords": [],

@@ -10,10 +10,9 @@ export const requestNotificationPermission = async () => {
 };
 
 export function sendNotification(title, options = {}) {
-    if (!("Notification" in window)) return;
+    if (!('Notification' in window)) return;
 
-    if (Notification.permission === "granted") {
+    if (Notification.permission === 'granted') {
         new Notification(title, options);
     }
-};
-
+}

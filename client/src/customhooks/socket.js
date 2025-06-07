@@ -10,11 +10,8 @@ export const useSocket = (canteen) => {
         // console.log('Connecting to socket with user ID:', user._id);
         let userId = user._id;
         if (canteen) {
-            console.log(
-                'Connecting to socket with canteen ID:',
-                user.canteenId
-            );
-            userId = user.canteenId;
+            console.log('Connecting to socket with canteen ID:', user._id);
+            userId = user._id;
         } else {
             console.log('Connecting to socket with student ID:', user._id);
         }

@@ -8,14 +8,14 @@ import { ContractorOrderCard } from '..';
 import { useSocket } from '../../customhooks/socket';
 import toast from 'react-hot-toast';
 import { sendNotification } from '../../Utils/notification';
-export default function PendingOrders() {
+export default function PendingOrders({ socket }) {
     const [orders, setOrders] = useState(() => []); // ✅ Always initialize as an array
     const [ordersInfo, setOrdersInfo] = useState({});
     const [loading, setLoading] = useState(false);
     const [trigger, setTrigger] = useState(0); // ✅ Force rerender when updated
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
-    const socket = useSocket(true);
+    // const socket = useSocket(true);
 
     const paginateRef = paginate(ordersInfo?.hasNextPage, loading, setPage);
 
@@ -60,7 +60,7 @@ export default function PendingOrders() {
 
         function handleNewOrder(order) {
             console.log('🔔 New order received:', order);
-            console.log(order._id);
+            // console.log(order._id);
             toast.success(`New order by: ${order.studentInfo.fullName}`);
 
             // 🎯 Push Notification

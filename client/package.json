@@ -4,7 +4,7 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "npm run format && vite",
+        "dev": "npm run format && vite --host",
         "format": "prettier --write .",
         "build": "vite build",
         "lint": "eslint .",

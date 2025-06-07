@@ -11,18 +11,22 @@ import mongoose, { Types } from 'mongoose';
 const placeOrder = tryCatch('place order', async (req, res) => {
     const { cartItems, total } = req.body;
     const student = req.user;
-
+    console.log('hello student details ', student);
     const order = await Order.create({
         studentId: student._id,
         canteenId: student.canteenId,
+        contractorId: student.contractorId,
         amount: total,
         items: cartItems,
     });
 
-    const studentinfo = await Student.findById(student._id)
-        .select('fullName phoneNumber rollNo avatar userName -_id')
-        .lean(); // Optional: returns plain JS object instead of Mongoose document
-
+    const studentinfo = {
+        fullName: student.fullName,
+        phoneNumber: student.phoneNumber,
+        rollNo: student.rollNo,
+        avatar: student.avatar,
+        userName: student.userName,
+    };
     return res.status(OK).json({
         order,
         studentinfo,
@@ -308,7 +312,7 @@ const updateOrderStatus = tryCatch(
         const { orderId } = req.params;
         const { status } = req.query; // status: "PickedUp" or "Prepared" or "Rejected"
         const contractor = req.user;
-
+        // console.log('contractor for order update', contractor);
         // Find the order and ensure it belongs to the contractor's canteen
         const order = await Order.findOneAndUpdate(
             {

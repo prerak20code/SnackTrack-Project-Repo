@@ -2,6 +2,8 @@ import { SERVER_ERROR } from '../Constants/constants';
 class OrderService {
     async placeOrder(cartItems, total, socket) {
         try {
+            // if (cartItems.canteenId)
+            //     console.log('hello');
             const res = await fetch('/api/orders', {
                 method: 'POST',
                 credentials: 'include',
@@ -19,7 +21,6 @@ class OrderService {
                     total,
                 }),
             });
-
             const data = await res.json();
 
             if (res.status === SERVER_ERROR) {
@@ -32,6 +33,7 @@ class OrderService {
                 _id: order._id,
                 amount: order.amount,
                 canteenId: order.canteenId,
+                contractorId: order.contractorId,
                 createdAt: order.createdAt,
                 updatedAt: order.updatedAt,
                 status: order.status,
@@ -51,8 +53,8 @@ class OrderService {
                 studentInfo: studentinfo,
             };
 
-            console.log('studentinfo', finalOrder.studentInfo);
-            console.log('data item', finalOrder.items);
+            // console.log('studentinfo', finalOrder.studentInfo);
+            // console.log('data item', finalOrder.items);
             if (socket) {
                 socket.emit('newOrder', finalOrder);
                 console.log('📦 Order placed & event emitted:', finalOrder);
@@ -71,10 +73,14 @@ class OrderService {
 
     async updateOrderStatus(order, orderId, status, socket) {
         try {
+            // console.log('order in updateOrderStatus', order);
+            // console.log('orderId in updateOrderStatus', orderId);
+            // console.log('status in updateOrderStatus', status);
             const res = await fetch(`/api/orders/${orderId}?status=${status}`, {
                 method: 'PATCH',
                 credentials: 'include',
             });
+            // console.log('order', order);
             order.status = status;
             if (status === 'PickedUp') {
                 socket.emit('orderPickedUp', order, status);
@@ -111,7 +117,7 @@ class OrderService {
             );
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -136,7 +142,7 @@ class OrderService {
                     credentials: 'include',
                 }
             );
-            console.log(res);
+            // console.log(res);
 
             if (!res.ok) {
                 throw new Error(`Error: ${res.status} ${res.statusText}`);
@@ -255,7 +261,7 @@ class OrderService {
             );
 
             const data = await res.json();
-            console.log('data lll', data);
+            // console.log('data lll', data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);

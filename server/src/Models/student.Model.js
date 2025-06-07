@@ -4,6 +4,11 @@ import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 const studentSchema = new Schema(
     {
+        contractorId: {
+            type: Types.ObjectId,
+            ref: 'Canteen',
+            required: true,
+        },
         canteenId: {
             type: Types.ObjectId,
             required: true,

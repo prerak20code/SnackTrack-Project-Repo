@@ -321,6 +321,7 @@ const registerStudent = tryCatch(
         const student = await Student.create({
             fullName,
             canteenId: contractor.canteenId,
+            contractorId: contractor._id,
             userName,
             phoneNumber,
             email,

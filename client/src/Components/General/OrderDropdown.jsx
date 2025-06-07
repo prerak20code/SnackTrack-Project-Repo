@@ -10,8 +10,21 @@ export default function OrderDropdown({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
+    // Sync external defaultOption with internal state
+    useEffect(() => {
+        setSelectedValue(defaultOption);
+    }, [defaultOption]);
+
     const handleOptionClick = (value) => {
-        onChange(value);
+        if (value === selectedValue) return;
+
+        setSelectedValue(value);
+        if (typeof onChange === 'function') {
+            onChange(value);
+        } else {
+            console.warn('onChange prop is not a function:', onChange);
+        }
+        setIsDropdownOpen(false);
     };
 
     useEffect(() => {
@@ -38,37 +51,39 @@ export default function OrderDropdown({
     return (
         <div className="w-full mb-0">
             <div className="relative inline-block w-full" ref={dropdownRef}>
-                {/* Dropdown Button */}
                 <button
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="w-full font-medium flex items-center gap-2 cursor-pointer justify-between bg-[#e0e0e010] border-[0.01rem] border-gray-500 hover:border-gray-400 px-2 py-1 rounded-md text-[14px] text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#4977ec] focus:border-[#4977ec] transition-all duration-200"
                 >
-                    {options.find((opt) => opt.value === selectedValue)?.label}
+                    {options.find((opt) => opt.value === selectedValue)
+                        ?.label ||
+                        options[0]?.label ||
+                        'Select'}
                     <div
-                        className={`size-[10px] fill-gray-800 transition-all duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}
+                        className={`size-[10px] fill-gray-800 transition-all duration-300 ${
+                            isDropdownOpen ? 'rotate-180' : 'rotate-0'
+                        }`}
                     >
                         {icons.arrowDown}
                     </div>
                 </button>
 
-                {/* Dropdown Options */}
                 {isDropdownOpen && (
-                    <div className="text-[14px] text-nowrap absolute z-10 mt-2 w-full cursor-pointer bg-white border border-gray-300 rounded-md shadow-sm overflow-hidden max-h-[200px] overflow-y-auto">
-                        {options.map(
-                            (option) =>
-                                option.value !== defaultOption && (
-                                    <div
-                                        key={option.label}
-                                        onClick={() =>
-                                            handleOptionClick(option.value)
-                                        }
-                                        className="px-2 py-1 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
-                                    >
-                                        {option.label}
-                                    </div>
-                                )
-                        )}
+                    <div className="text-[14px] absolute z-10 mt-2 w-full cursor-pointer bg-white border border-gray-300 rounded-md shadow-sm overflow-hidden max-h-[200px] overflow-y-auto">
+                        {options.map((option) => (
+                            <div
+                                key={option.value}
+                                onClick={() => handleOptionClick(option.value)}
+                                className={`px-2 py-1 transition-colors duration-200 ${
+                                    option.value === selectedValue
+                                        ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                                        : 'hover:bg-gray-100'
+                                }`}
+                            >
+                                {option.label}
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>

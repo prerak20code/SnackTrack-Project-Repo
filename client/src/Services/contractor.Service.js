@@ -2,7 +2,22 @@ import { SERVER_ERROR } from '../Constants/constants';
 
 class ContractorService {
     // personal usage
-
+    async getContractor() {
+        try {
+            const res = await fetch('/api/contractors/getContractor', {
+                method: 'GET',
+                credentials: 'include',
+            });
+            const data = await res.json();
+            if (res.status === SERVER_ERROR) {
+                throw new Error(data.message);
+            }
+            return data;
+        } catch (error) {
+            console.error('Error in getContractor service:', error);
+            throw error;
+        }
+    }
     async register({
         fullName,
         password,
@@ -14,12 +29,12 @@ class ContractorService {
         kitchenKey,
     }) {
         try {
-            console.log(
-                'register service called',
-                hostelType,
-                hostelNumber,
-                hostelName
-            );
+            // console.log(
+            //     'register service called',
+            //     hostelType,
+            //     hostelNumber,
+            //     hostelName
+            // );
             const res = await fetch(`/api/contractors/register`, {
                 method: 'POST',
                 credentials: 'include',
@@ -37,7 +52,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log('data', data);
+            // console.log('data', data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -61,15 +76,15 @@ class ContractorService {
         kitchenKey,
     }) {
         try {
-            console.log(
-                fullName,
-                password,
-                phoneNumber,
-                email,
-                hostelType,
-                hostelNumber,
-                code
-            );
+            // console.log(
+            //     fullName,
+            //     password,
+            //     phoneNumber,
+            //     email,
+            //     hostelType,
+            //     hostelNumber,
+            //     code
+            // );
             const res = await fetch(`/api/contractors/complete-registeration`, {
                 method: 'POST',
                 credentials: 'include',
@@ -88,7 +103,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log('Data', data);
+            // console.log('Data', data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -115,7 +130,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -140,7 +155,7 @@ class ContractorService {
             );
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -172,7 +187,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -194,7 +209,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -216,7 +231,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -247,7 +262,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -271,7 +286,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -298,7 +313,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -326,7 +341,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -349,7 +364,7 @@ class ContractorService {
             );
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -373,7 +388,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -399,7 +414,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -425,7 +440,7 @@ class ContractorService {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);

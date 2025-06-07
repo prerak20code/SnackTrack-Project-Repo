@@ -8,6 +8,11 @@ const orderSchema = new Schema(
             required: true,
             ref: 'Student',
         },
+        contractorId: {
+            type: Types.ObjectId,
+            required: true,
+            ref: 'Contractor',
+        },
         canteenId: {
             type: Types.ObjectId,
             required: true,

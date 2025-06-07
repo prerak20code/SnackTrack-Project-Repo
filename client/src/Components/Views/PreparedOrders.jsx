@@ -6,7 +6,7 @@ import { orderService } from '../../Services';
 import { motion } from 'framer-motion';
 import { ContractorOrderCard } from '..';
 
-export default function PreparedOrders() {
+export default function PreparedOrders({ socket }) {
     const [orders, setOrders] = useState([]);
     const [ordersInfo, setOrdersInfo] = useState({});
     const [loading, setLoading] = useState(false);
@@ -64,6 +64,12 @@ export default function PreparedOrders() {
                                 ? paginateRef
                                 : null
                         }
+                        socket={socket}
+                        onStatusChange={(id) => {
+                            setOrders((prev) =>
+                                prev.filter((o) => o._id !== id)
+                            );
+                        }}
                     />
                 </motion.div>
             ))}

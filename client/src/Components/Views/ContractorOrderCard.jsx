@@ -28,7 +28,7 @@ export default function ContractorOrderCard({
     } = order;
 
     // Ensure `studentInfo` and `userName` are valid before calling getRollNo
-    console.log(items);
+    // console.log(items);
 
     const rollNo = studentInfo?.userName
         ? getRollNo(studentInfo.userName)
@@ -96,7 +96,7 @@ export default function ContractorOrderCard({
                             </div>
                         </div>
                     </div>
-                    {status === 'Pending' ? (
+                    {status === 'Pending' || status === 'Prepared' ? (
                         <div
                             className="w-fit"
                             onClick={(e) => e.stopPropagation()}

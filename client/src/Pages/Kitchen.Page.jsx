@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { userService } from '../Services';
+import { userService, orderService } from '../Services';
 import { useNavigate } from 'react-router-dom';
 import { Button, Dropdown, OrderDropdown } from '../Components';
 import { icons } from '../Assets/icons';
@@ -25,19 +25,9 @@ export default function KitchenPage() {
         { value: 'Prepared', label: 'Prepared' },
         { value: 'Rejected', label: 'Rejected' },
     ]);
-    // const socket= useSocket(true);
-    const usesocket = () => {
-        const token = document.cookie
-            .split('; ')
-            .find((row) => row.startsWith('snackTrack_staffKeyToken='))
-            ?.split('=')[1];
-        const socket = io(import.meta.env.VITE_BACKEND_URL, {
-            auth: { token },
-            reconnection: true,
-            transports: ['websocket'],
-        });
-    };
-    const socket = usesocket();
+    const [canteen, setCanteen] = useState('');
+    const [Socket, setSocket] = useState(null);
+    // const socket= useSocket(true)
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
@@ -45,6 +35,7 @@ export default function KitchenPage() {
         (async function getOrders() {
             try {
                 const res = await userService.getOrders();
+
                 if (res) {
                     if (res.message) {
                         const data = await userService.getCanteens(signal);
@@ -58,7 +49,10 @@ export default function KitchenPage() {
                             ]);
                             setError(true);
                         }
-                    } else setOrders(res);
+                    } else {
+                        setOrders(res.orders);
+                        setCanteen(res.canteen);
+                    }
                 }
             } catch (err) {
                 console.log(err);
@@ -69,7 +63,56 @@ export default function KitchenPage() {
         })();
         return () => controller.abort();
     }, []);
+    useEffect(() => {
+        if (!canteen._id) return;
+        const socket = io(import.meta.env.VITE_BACKEND_URL, {
+            transports: ['websocket'],
+            auth: {
+                userId: canteen._id,
+            },
+        });
+        console.log('socket', socket);
+        setSocket(socket);
 
+        socket.on('connect', () => {
+            console.log('socket connected', socket.id);
+        });
+        socket.on('newOrder', (data) => {
+            console.log('new order', data);
+            data.student = data.studentInfo;
+            setOrders((prev) => [...prev, data]);
+            toast.success(`${data.student.fullName} has placed a new order`);
+        });
+        socket.on('orderRejected', (order) => {
+            console.log('order rejected', order);
+            setOrders((prev) => prev.filter((o) => o._id !== order._id));
+
+            toast.error(
+                `order for ${order.studentInfo.fullName} has been rejected `
+            );
+        });
+        socket.on('orderPrepared', (order) => {
+            console.log('order prepared', order);
+            setOrders((prev) => prev.filter((o) => o._id !== order._id));
+            toast.success(
+                `order for ${order.studentInfo.fullName} has been prepared `
+            );
+        });
+
+        socket.on('orderPickedUp', (order) => {
+            console.log('order picked up', order);
+            setOrders((prev) => prev.filter((o) => o._id !== order._id));
+            toast.success(
+                `order for ${order.studentInfo.fullName} has been picked up `
+            );
+        });
+        return () => {
+            socket.disconnect();
+            socket.off('connect');
+            socket.off('newOrder');
+            socket.off('orderStatus');
+        };
+    }, [canteen]);
     const verifyKey = async () => {
         if (!key || !hostel) return;
         setVerifying(true);
@@ -77,7 +120,8 @@ export default function KitchenPage() {
             const res = await userService.getOrders(key);
             if (res && !res.message) {
                 setError(false);
-                setOrders(res);
+                setOrders(res.orders);
+                setCanteen(res.canteen);
             } else toast.error('Please Enter a Valid Key');
         } catch (err) {
             navigate('/server-error');
@@ -85,7 +129,6 @@ export default function KitchenPage() {
             setVerifying(false);
         }
     };
-
     function processOrders() {
         const individualItems = [],
             itemSummary = {};
@@ -99,9 +142,9 @@ export default function KitchenPage() {
                     name,
                     itemId,
                     specialInstructions,
+                    status,
                 }) => {
                     if (itemType === 'Snack') {
-                        // for left side
                         individualItems.push({
                             orderId: _id,
                             itemId,
@@ -113,9 +156,9 @@ export default function KitchenPage() {
                             specialInstructions:
                                 specialInstructions ||
                                 'No special instructions',
+                            status,
                         });
 
-                        // for right side
                         itemSummary[name]
                             ? (itemSummary[name].quantity += quantity)
                             : (itemSummary[name] = { quantity });
@@ -132,7 +175,6 @@ export default function KitchenPage() {
     return loading ? (
         <div>loading...</div>
     ) : error ? (
-        // verify staff key
         <div className="w-full h-full flex items-center justify-center bg-gray-100">
             <div className="sm:px-8 drop-shadow-md relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl text-black p-5 flex flex-col items-center justify-center gap-4">
                 <p className="text-2xl font-bold text-center mb-2">
@@ -181,7 +223,6 @@ export default function KitchenPage() {
             </div>
         </div>
     ) : (
-        // Orders
         <div className="min-h-screen bg-gray-100 p-4 md:p-6">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
@@ -195,7 +236,6 @@ export default function KitchenPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Individual Orders Column */}
                     <div className="bg-white rounded-xl shadow-md overflow-hidden">
                         <div className="p-4 border-b border-gray-200 text-center">
                             <h2 className="text-xl font-semibold text-gray-800">
@@ -217,11 +257,12 @@ export default function KitchenPage() {
                                             itemName,
                                             quantity,
                                             specialInstructions,
+                                            status,
                                         },
                                         i
                                     ) => (
                                         <div
-                                            key={orderId + itemId}
+                                            key={orderId + itemId + i}
                                             className="p-4 hover:bg-gray-50 transition-colors flex flex-col gap-2"
                                         >
                                             <div className="flex justify-between items-start">
@@ -246,13 +287,6 @@ export default function KitchenPage() {
                                                 <p className="text-sm text-gray-500 mt-1 italic">
                                                     {specialInstructions}
                                                 </p>
-
-                                                <div className="w-fit">
-                                                    <OrderDropdown
-                                                        options={statusOptions}
-                                                        setValue={setStatus}
-                                                    />
-                                                </div>
                                             </div>
                                         </div>
                                     )
@@ -265,38 +299,35 @@ export default function KitchenPage() {
                         </div>
                     </div>
 
-                    {/* Item Summary Column */}
                     <div className="bg-white rounded-xl shadow-md overflow-hidden">
                         <div className="p-4 border-b border-gray-200 text-center">
                             <h2 className="text-xl font-semibold text-gray-800">
-                                Kitchen Summary
+                                Item Summary
                             </h2>
                             <p className="text-sm text-gray-500">
-                                Aggregated items for preparation
+                                Total quantity required per snack item
                             </p>
                         </div>
-                        <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[calc(100vh-220px)] overflow-y-auto">
+                        <div className="p-4 divide-y divide-gray-200">
                             {Object.entries(itemSummary).length > 0 ? (
                                 Object.entries(itemSummary).map(
-                                    ([itemName, itemData]) => (
+                                    ([itemName, { quantity }], i) => (
                                         <div
-                                            key={itemName}
-                                            className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:border-[#4977ec]/50 transition-colors"
+                                            key={itemName + i}
+                                            className="flex justify-between py-2"
                                         >
-                                            <div className="flex gap-4 flex-col items-center text-center">
-                                                <h3 className="font-semibold text-lg text-gray-900 truncate w-full">
-                                                    {itemName}
-                                                </h3>
-                                                <div className="bg-[#4977ec]/10 text-[#4977ec] flex items-center justify-center size-[40px] rounded-full font-bold">
-                                                    {itemData.quantity}
-                                                </div>
-                                            </div>
+                                            <span className="text-gray-800 font-medium">
+                                                {itemName}
+                                            </span>
+                                            <span className="text-[#4977ec] font-semibold">
+                                                × {quantity}
+                                            </span>
                                         </div>
                                     )
                                 )
                             ) : (
-                                <div className="col-span-full p-4 text-center text-gray-500">
-                                    No items summary available
+                                <div className="text-center text-gray-500">
+                                    No item summary available
                                 </div>
                             )}
                         </div>

@@ -14,7 +14,7 @@ export default function TodayOrdersPage() {
     const filter = searchParams.get('filter') || 'Pending'; // Default to 'Pending'
     const [pendingOrders, setPendingOrders] = useState([]);
     // Fetch existing pending orders from backend on mount
-
+    const socket = useSocket(true);
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -52,13 +52,13 @@ export default function TodayOrdersPage() {
             {/* Render Based on Filter */}
             <div>
                 {filter === 'Pending' ? (
-                    <PendingOrders orders={pendingOrders} />
+                    <PendingOrders orders={pendingOrders} socket={socket} />
                 ) : filter === 'Rejected' ? (
-                    <RejectedOrders />
+                    <RejectedOrders socket={socket} />
                 ) : filter === 'Prepared' ? (
-                    <PreparedOrders />
+                    <PreparedOrders socket={socket} />
                 ) : (
-                    <CompletedOrders />
+                    <CompletedOrders socket={socket} />
                 )}
             </div>
         </div>

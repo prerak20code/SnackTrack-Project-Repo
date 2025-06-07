@@ -88,7 +88,7 @@ const logout = tryCatch('logout user', async (req, res, next) => {
 
 const getCurrentUser = tryCatch('get current user', async (req, res, next) => {
     let { password, refreshToken, ...user } = req.user;
-    console.log('user in getCurrentUser', refreshToken);
+    // console.log('user in getCurrentUser', refreshToken);
     // populate canteen Info
     const canteen = await Canteen.findById(user.canteenId);
     user = {
@@ -194,12 +194,17 @@ const getContractors = tryCatch('get contractors', async (req, res) => {
 const getOrders = tryCatch('get orders', async (req, res, next) => {
     const hostelType = req.hostelType;
     const hostelNumber = req.hostelNumber;
-    console.log('hostelType in getorder', hostelType);
-    console.log('hostelNumber in getorder', hostelNumber);
+    // console.log('hostelType in getorder', hostelType);
+    // console.log('hostelNumber in getorder', hostelNumber);
     const canteen = await Canteen.findOne({ hostelType, hostelNumber });
     console.log('canteen', canteen);
     const orders = await Order.aggregate([
-        { $match: { canteenId: new Types.ObjectId(canteen._id) } },
+        {
+            $match: {
+                canteenId: new Types.ObjectId(canteen._id),
+                status: 'Pending',
+            },
+        },
         { $unwind: '$items' },
         {
             $lookup: {
@@ -269,7 +274,7 @@ const getOrders = tryCatch('get orders', async (req, res, next) => {
         { $project: { snackDetails: 0, packagedFoodDetails: 0 } },
     ]);
 
-    return res.status(OK).json(orders);
+    return res.status(OK).json({ orders, canteen });
 });
 export {
     getCurrentUser,

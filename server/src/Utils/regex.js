@@ -40,7 +40,7 @@ export default function verifyExpression(name, value) {
 
             case 'kitchenKey': {
                 console.log('kitchenKey', value);
-                return /^[A-Z]{2}\d{2}[a-zA-Z0-9]{4,12}$/.test(value);
+                return /^[A-Z]{2}\d{2}[a-zA-Z0-9]{4,12}$/.test(value); //GH10kartik174
             }
 
             case 'phoneNumber': {

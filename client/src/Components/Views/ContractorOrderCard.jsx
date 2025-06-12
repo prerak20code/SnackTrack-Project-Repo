@@ -188,6 +188,12 @@ export default function ContractorOrderCard({
                                                     : 'N/A'}{' '}
                                                 each
                                             </p>
+                                            <p className="text-sm text-gray-600 font-medium">
+                                                🪑 Table No:{' '}
+                                                <span className="font-bold text-black">
+                                                    {order.tableNumber ?? 'N/A'}
+                                                </span>
+                                            </p>
                                         </div>
                                     </div>
                                     <span className="text-sm font-semibold text-gray-900">

@@ -1,9 +1,8 @@
 import { SERVER_ERROR } from '../Constants/constants';
+
 class OrderService {
-    async placeOrder(cartItems, total, socket) {
+    async placeOrder(cartItems, total, socket, tableNumber) {
         try {
-            // if (cartItems.canteenId)
-            //     console.log('hello');
             const res = await fetch('/api/orders', {
                 method: 'POST',
                 credentials: 'include',
@@ -19,15 +18,17 @@ class OrderService {
                         name: i.name,
                     })),
                     total,
+                    tableNumber, // ✅ Added here
                 }),
             });
+
             const data = await res.json();
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
             }
 
-            const { order, studentinfo } = await data;
+            const { order, studentinfo } = data;
 
             const finalOrder = {
                 _id: order._id,
@@ -37,6 +38,7 @@ class OrderService {
                 createdAt: order.createdAt,
                 updatedAt: order.updatedAt,
                 status: order.status,
+                tableNumber: order.tableNumber, // ✅ Optional: include in finalOrder
                 items: [
                     ...order.items?.map((item) => ({
                         _id: item._id,
@@ -53,8 +55,6 @@ class OrderService {
                 studentInfo: studentinfo,
             };
 
-            // console.log('studentinfo', finalOrder.studentInfo);
-            // console.log('data item', finalOrder.items);
             if (socket) {
                 socket.emit('newOrder', finalOrder);
                 console.log('📦 Order placed & event emitted:', finalOrder);
@@ -73,14 +73,11 @@ class OrderService {
 
     async updateOrderStatus(order, orderId, status, socket) {
         try {
-            // console.log('order in updateOrderStatus', order);
-            // console.log('orderId in updateOrderStatus', orderId);
-            // console.log('status in updateOrderStatus', status);
             const res = await fetch(`/api/orders/${orderId}?status=${status}`, {
                 method: 'PATCH',
                 credentials: 'include',
             });
-            // console.log('order', order);
+
             order.status = status;
             if (status === 'PickedUp') {
                 socket.emit('orderPickedUp', order, status);
@@ -117,7 +114,6 @@ class OrderService {
             );
 
             const data = await res.json();
-            // console.log(data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);
@@ -142,7 +138,6 @@ class OrderService {
                     credentials: 'include',
                 }
             );
-            // console.log(res);
 
             if (!res.ok) {
                 throw new Error(`Error: ${res.status} ${res.statusText}`);
@@ -154,27 +149,6 @@ class OrderService {
             throw error;
         }
     }
-
-    // async getContractorStudentMonthlyBill(studentId, year, month) {
-    //     try {
-    //         const res = await fetch(
-    //             `/api/orders/bills/student/${studentId}?year=${year}&month=${month}`,
-    //             {
-    //                 method: 'GET',
-    //                 credentials: 'include',
-    //             }
-    //         );
-
-    //         if (!res.ok) {
-    //             throw new Error(`Error: ${res.status} ${res.statusText}`);
-    //         }
-
-    //         return await res.json();
-    //     } catch (error) {
-    //         console.error('Error in getStudentMonthlyBill service:', error);
-    //         throw error;
-    //     }
-    // }
 
     async getCanteenMonthlyBill(canteenId, year, month) {
         if (!canteenId || !year || !month) {
@@ -231,20 +205,16 @@ class OrderService {
             return {
                 revenueTrend: data.revenueTrend || [],
                 revenueByItem: data.revenueByItem || [],
-                // revenueByItemType: data.revenueByItemType || [],
                 topSellingItems: data.topSellingItems || [],
                 dailyOrderCounts: data.dailyOrderCounts || [],
-                // averageOrderValue: data.averageOrderValue || [],
             };
         } catch (error) {
             console.error('Error in getCanteenStatistics service:', error);
             return {
                 revenueTrend: [],
                 revenueByItem: [],
-                // revenueByItemType: [],
                 topSellingItems: [],
                 dailyOrderCounts: [],
-                // averageOrderValue: [],
             };
         }
     }
@@ -261,7 +231,6 @@ class OrderService {
             );
 
             const data = await res.json();
-            // console.log('data lll', data);
 
             if (res.status === SERVER_ERROR) {
                 throw new Error(data.message);

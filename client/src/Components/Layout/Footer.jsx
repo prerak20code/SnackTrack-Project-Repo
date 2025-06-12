@@ -4,31 +4,31 @@ import { Button } from '..';
 import { useState } from 'react';
 import { CONTRIBUTORS, LOGO } from '../../Constants/constants';
 import toast from 'react-hot-toast';
-import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from 'react-icons/fa';
 const socialIcons = {
     github: <FaGithub />,
     linkedin: <FaLinkedin />,
     twitter: <FaTwitter />,
-    instagram: <FaInstagram />
+    instagram: <FaInstagram />,
 };
 export default function Footer() {
     const [feedback, setFeedback] = useState({ content: '', email: '' });
 
     // Social media icons
-const socials = {
-    github: "https://github.com/",
-    linkedin: "https://linkedin.com/in/",
-    twitter: "https://twitter.com/",
-    instagram: "https://instagram.com/"
-};
+    const socials = {
+        github: 'https://github.com/',
+        linkedin: 'https://linkedin.com/in/',
+        twitter: 'https://twitter.com/',
+        instagram: 'https://instagram.com/',
+    };
 
-const socialElements = Object.entries(socials).map(([platform, url]) => (
-    <a key={platform} href={url} target="_blank" rel="noopener noreferrer">
-        <div className="bg-white p-[6px] rounded-full drop-shadow-sm hover:bg-[#d4d4d4] transition-colors duration-300 w-fit">
-            <div className="size-[18px]">{socialIcons[platform]}</div>
-        </div>
-    </a>
-));
+    const socialElements = Object.entries(socials).map(([platform, url]) => (
+        <a key={platform} href={url} target="_blank" rel="noopener noreferrer">
+            <div className="bg-white p-[6px] rounded-full drop-shadow-sm hover:bg-[#d4d4d4] transition-colors duration-300 w-fit">
+                <div className="size-[18px]">{socialIcons[platform]}</div>
+            </div>
+        </a>
+    ));
 
     // Footer links
     const links = [

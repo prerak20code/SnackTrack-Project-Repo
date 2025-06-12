@@ -6,11 +6,14 @@ import { SNACK_PLACEHOLDER_IMAGE } from '../Constants/constants';
 import { orderService } from '../Services';
 import { usePopupContext } from '../Contexts';
 import { useSocket } from '../customhooks/socket';
+import SelectTablePopup from '../Components/Popups/SelectTablePopup';
+
 export default function CartPage() {
     const [ordering, setOrdering] = useState(false);
     const navigate = useNavigate();
     const { setShowPopup, setPopupInfo } = usePopupContext();
     const socket = useSocket(false);
+    const [showTablePopup, setShowTablePopup] = useState(false);
     const [cartItems, setCartItems] = useState(
         JSON.parse(localStorage.getItem('cartItems')) || []
     );
@@ -47,13 +50,17 @@ export default function CartPage() {
         setCartItems(updatedCartItems);
     }
 
-    async function placeOrder() {
+    async function placeOrder(tableNumber) {
         try {
             setOrdering(true);
             const cartItems =
                 JSON.parse(localStorage.getItem('cartItems')) || [];
-            // console.log('cart items are', cartItems);
-            const res = await orderService.placeOrder(cartItems, total, socket);
+            const res = await orderService.placeOrder(
+                cartItems,
+                total,
+                socket,
+                tableNumber
+            );
 
             if (res && !res.message) {
                 setShowPopup(true);
@@ -212,7 +219,7 @@ export default function CartPage() {
                         </div>
                     </div>
                     <Button
-                        onClick={placeOrder}
+                        onClick={() => setShowTablePopup(true)}
                         className="text-white rounded-md py-2 mt-4 h-[40px] flex items-center justify-center w-full bg-[#4977ec] hover:bg-[#3b62c2]"
                         btnText={
                             ordering ? (
@@ -220,7 +227,7 @@ export default function CartPage() {
                                     {icons.loading}
                                 </div>
                             ) : (
-                                'Place Order'
+                                'Choose Table'
                             )
                         }
                     />
@@ -231,6 +238,22 @@ export default function CartPage() {
                     />
                 </div>
             </div>
+
+            {/* === SelectTablePopup === */}
+            {showTablePopup && (
+                <SelectTablePopup
+                    onConfirm={(tableNumber) => {
+                        setShowTablePopup(false);
+                        if (tableNumber !== null) {
+                            placeOrder(tableNumber);
+                        }
+                    }}
+                    onCancel={() => {
+                        setShowTablePopup(false);
+                        navigate('/cart'); // or just stay on cart without navigating
+                    }}
+                />
+            )}
         </div>
     ) : (
         <EmptyCart />

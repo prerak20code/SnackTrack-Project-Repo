@@ -49,7 +49,8 @@ const CONTRIBUTORS = [
             threads: '',
             instagram: '',
         },
-    },{
+    },
+    {
         image: USER_PLACEHOLDER_IMAGE,
         role: 'Full Stack Developer',
         bio: 'Full-stack developer passionate about creating beautiful, scalable applications',

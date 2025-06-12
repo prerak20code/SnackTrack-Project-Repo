@@ -1,0 +1,41 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to droplet via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /var/www/mern-app
+
+            # Pull latest code
+            git reset --hard
+            git pull origin main
+
+            npm install 
+            
+            # Install backend dependencies
+            cd server
+            npm install
+
+            # Install frontend dependencies
+            cd ../client
+            npm install
+
+            # Start or reload backend with PM2
+            pm2 delete snacktrack || true
+            pm2 start server/src/server.js --name snacktrack

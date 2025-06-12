@@ -11,22 +11,23 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Deploy to droplet via SSH
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
+            # Go to app directory
             cd /var/www/mern-app
 
-            # Pull latest code
+            # Pull latest changes
             git reset --hard
             git pull origin main
 
-            npm install 
+            npm install
             
             # Install backend dependencies
             cd server
@@ -36,6 +37,7 @@ jobs:
             cd ../client
             npm install
 
-            # Start or reload backend with PM2
+            # Start or restart backend with PM2
+            cd ../server
             pm2 delete snacktrack || true
-            pm2 start server/src/server.js --name snacktrack
+            pm2 start src/server.js --name snacktrack

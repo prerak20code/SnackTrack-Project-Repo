@@ -34,32 +34,48 @@ io.on('connection', async (socket) => {
             return;
         }
         try {
+            // Add detailed logging of the order object
+            console.log('📋 Order details:', {
+                orderId: order._id,
+                studentId: order.studentId,
+                specialInstructions:
+                    order.specialInstructions || 'No instructions provided',
+                items: order.items,
+            });
+
             const socketId1 = await getSocketId(order.canteenId);
             const socketId2 = await getSocketId(order.contractorId);
+
             if (!socketId1) {
                 console.warn(
                     `⚠️ No active socket for canteen ${order.canteenId}. Order notification cannot be sent.`
                 );
-
                 return;
             }
             if (!socketId2) {
                 console.warn(
-                    `⚠️ No active socket for contractor ${order.contractorId}. Order notification cannot
-                    be sent.`
+                    `⚠️ No active socket for contractor ${order.contractorId}. Order notification cannot be sent.`
                 );
                 return;
             }
+
+            // Ensure the order object is properly structured before emitting
+            const orderToSend = {
+                ...order,
+                specialInstructions: order.specialInstructions || '',
+            };
+
             console.log(
                 `📤 Sending order to canteen (Socket ID: ${socketId1})`
             );
-            io.to(socketId1).emit('newOrder', order);
+            io.to(socketId1).emit('newOrder', orderToSend);
+
             console.log(
                 `📤 Sending order to contractor (Socket ID: ${socketId2})`
             );
-            io.to(socketId2).emit('newOrder', order);
+            io.to(socketId2).emit('newOrder', orderToSend);
         } catch (error) {
-            console.error('⚠️ Error fetching socket ID:', error);
+            console.error('⚠️ Error processing order:', error);
         }
     });
 

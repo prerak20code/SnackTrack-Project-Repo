@@ -6,6 +6,7 @@ import { icons } from '../Assets/icons';
 import toast from 'react-hot-toast';
 import { getRollNo } from '../Utils';
 import { io } from 'socket.io-client';
+
 export default function KitchenPage() {
     const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function KitchenPage() {
     ]);
     const [canteen, setCanteen] = useState('');
     const [Socket, setSocket] = useState(null);
-    // const socket= useSocket(true)
+
     useEffect(() => {
         const controller = new AbortController();
         const signal = controller.signal;
@@ -63,6 +64,7 @@ export default function KitchenPage() {
         })();
         return () => controller.abort();
     }, []);
+
     useEffect(() => {
         if (!canteen._id) return;
         const socket = io(import.meta.env.VITE_BACKEND_URL, {
@@ -77,12 +79,14 @@ export default function KitchenPage() {
         socket.on('connect', () => {
             console.log('socket connected', socket.id);
         });
+
         socket.on('newOrder', (data) => {
             console.log('new order', data);
             data.student = data.studentInfo;
             setOrders((prev) => [...prev, data]);
             toast.success(`${data.student.fullName} has placed a new order`);
         });
+
         socket.on('orderRejected', (order) => {
             console.log('order rejected', order);
             setOrders((prev) => prev.filter((o) => o._id !== order._id));
@@ -113,6 +117,7 @@ export default function KitchenPage() {
             socket.off('orderStatus');
         };
     }, [canteen]);
+
     const verifyKey = async () => {
         if (!key || !hostel) return;
         setVerifying(true);
@@ -129,48 +134,70 @@ export default function KitchenPage() {
             setVerifying(false);
         }
     };
-    function processOrders() {
-        const individualItems = [],
-            itemSummary = {};
 
-        orders.forEach(({ student: { fullName, userName }, items, _id }) => {
-            items.forEach(
-                ({
-                    price,
-                    quantity,
-                    itemType,
-                    name,
-                    itemId,
-                    specialInstructions,
-                    status,
-                }) => {
-                    if (itemType === 'Snack') {
-                        individualItems.push({
-                            orderId: _id,
+    function processOrders() {
+        const groupedOrders = [];
+        const itemSummary = {};
+
+        console.log('Processing orders:', orders.length);
+
+        orders.forEach((order) => {
+            console.log('Processing order:', order);
+
+            // Get student data
+            const studentData = order.student || order.studentInfo || {};
+            console.log('Student data:', studentData);
+
+            // Get special instructions
+            const specialInstructions =
+                order.specialInstructions || 'No special instructions';
+            console.log('Special instructions for order:', specialInstructions);
+
+            const { fullName, userName } = studentData;
+            const { items, _id, amount, tableNumber } = order;
+
+            // Filter snack items from this order
+            const snackItems = items.filter(
+                (item) => item.itemType === 'Snack'
+            );
+
+            // Only proceed if this order has any snack items
+            if (snackItems.length > 0) {
+                // Create ONE entry per order (not per snack item)
+                const orderEntry = {
+                    orderId: _id,
+                    fullName,
+                    rollNo: getRollNo(userName),
+                    amount,
+                    tableNumber,
+                    items: snackItems.map(
+                        ({ name, quantity, itemId, price }) => ({
                             itemId,
-                            fullName,
-                            rollNo: getRollNo(userName),
-                            itemName: name,
+                            name,
                             quantity,
                             price,
-                            specialInstructions:
-                                specialInstructions ||
-                                'No special instructions',
-                            status,
-                        });
+                        })
+                    ),
+                    specialInstructions, // This will be shown once per order
+                    status: order.status || 'Pending',
+                    createdAt: order.createdAt,
+                };
 
-                        itemSummary[name]
-                            ? (itemSummary[name].quantity += quantity)
-                            : (itemSummary[name] = { quantity });
-                    }
-                }
-            );
+                groupedOrders.push(orderEntry);
+
+                // Update item summary
+                snackItems.forEach(({ name, quantity }) => {
+                    itemSummary[name] = itemSummary[name] || { quantity: 0 };
+                    itemSummary[name].quantity += quantity;
+                });
+            }
         });
 
-        return { individualItems, itemSummary };
+        console.log('Grouped orders:', groupedOrders);
+        return { groupedOrders, itemSummary };
     }
 
-    const { individualItems, itemSummary } = processOrders();
+    const { groupedOrders, itemSummary } = processOrders();
 
     return loading ? (
         <div>loading...</div>
@@ -242,30 +269,27 @@ export default function KitchenPage() {
                                 Order Details
                             </h2>
                             <p className="text-sm text-gray-500">
-                                Individual items from each order
+                                Grouped orders with all items per customer
                             </p>
                         </div>
                         <div className="divide-y divide-gray-200 max-h-[calc(100vh-220px)] overflow-y-auto">
-                            {individualItems.length > 0 ? (
-                                individualItems.map(
+                            {groupedOrders.length > 0 ? (
+                                groupedOrders.map(
                                     (
                                         {
                                             orderId,
-                                            itemId,
                                             fullName,
                                             rollNo,
-                                            itemName,
-                                            quantity,
+                                            items,
                                             specialInstructions,
-                                            status,
                                         },
                                         i
                                     ) => (
                                         <div
-                                            key={orderId + itemId + i}
-                                            className="p-4 hover:bg-gray-50 transition-colors flex flex-col gap-2"
+                                            key={orderId + i}
+                                            className="p-4 hover:bg-gray-50 transition-colors"
                                         >
-                                            <div className="flex justify-between items-start">
+                                            <div className="flex justify-between items-start mb-3">
                                                 <div className="flex flex-col gap-1">
                                                     <div className="flex items-center gap-2">
                                                         <span className="font-medium text-gray-900">
@@ -276,18 +300,48 @@ export default function KitchenPage() {
                                                         </span>
                                                     </div>
                                                 </div>
+                                            </div>
 
-                                                <div className="text-right flex gap-2">
-                                                    <span className="text-gray-800">
-                                                        {itemName}
-                                                    </span>
-                                                    <span className="font-bold text-[#4977ec] block">
-                                                        × {quantity}
-                                                    </span>
+                                            {/* Display all items for this order */}
+                                            <div className="mb-3">
+                                                <div className="text-sm font-medium text-gray-700 mb-2">
+                                                    Items:
+                                                </div>
+                                                <div className="space-y-1">
+                                                    {items.map(
+                                                        (
+                                                            {
+                                                                itemId,
+                                                                name,
+                                                                quantity,
+                                                            },
+                                                            itemIndex
+                                                        ) => (
+                                                            <div
+                                                                key={
+                                                                    itemId +
+                                                                    itemIndex
+                                                                }
+                                                                className="flex justify-between items-center bg-gray-50 px-3 py-1 rounded"
+                                                            >
+                                                                <span className="text-gray-800">
+                                                                    {name}
+                                                                </span>
+                                                                <span className="font-bold text-[#4977ec]">
+                                                                    × {quantity}
+                                                                </span>
+                                                            </div>
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
-                                            <div className="flex justify-between gap-4">
-                                                <p className="text-sm text-gray-500 mt-1 italic">
+
+                                            {/* Special instructions for the entire order */}
+                                            <div className="border-t pt-2">
+                                                <p className="text-sm text-gray-500 italic">
+                                                    <span className="font-medium">
+                                                        Special Instructions:
+                                                    </span>{' '}
                                                     {specialInstructions}
                                                 </p>
                                             </div>
@@ -296,7 +350,7 @@ export default function KitchenPage() {
                                 )
                             ) : (
                                 <div className="p-4 text-center text-gray-500">
-                                    No individual orders found
+                                    No orders found
                                 </div>
                             )}
                         </div>

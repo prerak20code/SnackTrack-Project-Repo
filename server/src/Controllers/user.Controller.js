@@ -205,6 +205,7 @@ const getOrders = tryCatch('get orders', async (req, res, next) => {
                 status: 'Pending',
             },
         },
+        { $sort: { createdAt: 1 } },
         { $unwind: '$items' },
         {
             $lookup: {
@@ -259,8 +260,10 @@ const getOrders = tryCatch('get orders', async (req, res, next) => {
                 items: { $push: '$items' },
                 createdAt: { $first: '$createdAt' },
                 updatedAt: { $first: '$updatedAt' },
+                specialInstructions: { $first: '$specialInstructions' },
             },
         },
+        { $sort: { createdAt: 1 } },
         {
             $lookup: {
                 from: 'students',

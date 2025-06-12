@@ -10,6 +10,7 @@ import SelectTablePopup from '../Components/Popups/SelectTablePopup';
 
 export default function CartPage() {
     const [ordering, setOrdering] = useState(false);
+    const [specialInstructions, setSpecialInstructions] = useState('');
     const navigate = useNavigate();
     const { setShowPopup, setPopupInfo } = usePopupContext();
     const socket = useSocket(false);
@@ -17,6 +18,7 @@ export default function CartPage() {
     const [cartItems, setCartItems] = useState(
         JSON.parse(localStorage.getItem('cartItems')) || []
     );
+    const containsSnack = cartItems.some((item) => item.type === 'Snack');
     const subtotal = cartItems.reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
@@ -25,6 +27,7 @@ export default function CartPage() {
     const total = subtotal + tax;
 
     function updateQuantity(itemId, price, newQuantity) {
+        console.log('containsSnack:', containsSnack);
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
         const updatedCartItems = cartItems.map((item) =>
             item._id === itemId && item.price === price
@@ -37,7 +40,6 @@ export default function CartPage() {
 
     function removeFromCart(itemId, price, type) {
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-
         const updatedCartItems = cartItems.filter((item) => {
             if (type === 'Snack') {
                 return item._id !== itemId;
@@ -45,7 +47,6 @@ export default function CartPage() {
                 return !(item._id === itemId && item.price === price);
             }
         });
-
         localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
         setCartItems(updatedCartItems);
     }
@@ -59,7 +60,8 @@ export default function CartPage() {
                 cartItems,
                 total,
                 socket,
-                tableNumber
+                tableNumber,
+                specialInstructions
             );
 
             if (res && !res.message) {
@@ -70,6 +72,7 @@ export default function CartPage() {
                 });
                 localStorage.removeItem('cartItems');
                 setCartItems([]);
+                setSpecialInstructions('');
             }
         } catch (err) {
             navigate('/server-error');
@@ -86,7 +89,6 @@ export default function CartPage() {
             >
                 <div className="w-full flex items-center gap-4 justify-between">
                     <div className="flex items-center gap-4">
-                        {/* image */}
                         <div className="size-[50px] overflow-hidden border rounded-lg flex items-center justify-center">
                             <img
                                 src={image || SNACK_PLACEHOLDER_IMAGE}
@@ -94,7 +96,6 @@ export default function CartPage() {
                                 className="object-cover size-full"
                             />
                         </div>
-                        {/* info */}
                         <div>
                             <h3 className="text-lg font-medium text-gray-900">
                                 {name || category}
@@ -128,7 +129,6 @@ export default function CartPage() {
                     </div>
                 </div>
 
-                {/* price & quantity */}
                 <div className="flex items-center space-x-4 mt-3 sm:mt-0">
                     <div className="hidden sm:flex items-center border border-gray-300 rounded-lg overflow-hidden">
                         <Button
@@ -183,15 +183,37 @@ export default function CartPage() {
         <div className="bg-gray-100 rounded-xl drop-shadow-sm w-full py-10 px-4 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-8">Your Cart</h1>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Product List */}
+                {/* Cart Items Section */}
                 <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">
                         Cart Items
                     </h2>
                     {cartItemElements}
+
+                    {/* Special Instructions Input */}
+                    {containsSnack && (
+                        <div className="mt-6">
+                            <label
+                                htmlFor="specialInstructions"
+                                className="block text-gray-700 font-medium mb-1"
+                            >
+                                Special Instructions (optional)
+                            </label>
+                            <textarea
+                                id="specialInstructions"
+                                value={specialInstructions}
+                                onChange={(e) =>
+                                    setSpecialInstructions(e.target.value)
+                                }
+                                rows={3}
+                                placeholder="E.g., Make it extra spicy, no onions, etc."
+                                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#4977ec] focus:outline-none resize-none"
+                            />
+                        </div>
+                    )}
                 </div>
 
-                {/* Order Summary */}
+                {/* Order Summary Section */}
                 <div className="bg-white rounded-lg shadow-md p-6">
                     <h2 className="text-xl font-semibold text-gray-900 mb-6">
                         Order Summary
@@ -239,7 +261,6 @@ export default function CartPage() {
                 </div>
             </div>
 
-            {/* === SelectTablePopup === */}
             {showTablePopup && (
                 <SelectTablePopup
                     onConfirm={(tableNumber) => {
@@ -250,7 +271,7 @@ export default function CartPage() {
                     }}
                     onCancel={() => {
                         setShowTablePopup(false);
-                        navigate('/cart'); // or just stay on cart without navigating
+                        navigate('/cart');
                     }}
                 />
             )}

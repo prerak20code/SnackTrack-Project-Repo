@@ -1,7 +1,13 @@
 import { SERVER_ERROR } from '../Constants/constants';
 
 class OrderService {
-    async placeOrder(cartItems, total, socket, tableNumber) {
+    async placeOrder(
+        cartItems,
+        total,
+        socket,
+        tableNumber,
+        specialInstructions
+    ) {
         try {
             const res = await fetch('/api/orders', {
                 method: 'POST',
@@ -18,7 +24,8 @@ class OrderService {
                         name: i.name,
                     })),
                     total,
-                    tableNumber, // ✅ Added here
+                    tableNumber,
+                    specialInstructions,
                 }),
             });
 
@@ -38,7 +45,8 @@ class OrderService {
                 createdAt: order.createdAt,
                 updatedAt: order.updatedAt,
                 status: order.status,
-                tableNumber: order.tableNumber, // ✅ Optional: include in finalOrder
+                tableNumber: order.tableNumber,
+                specialInstructions: order.specialInstructions, // ✅ Optional: include in finalOrder
                 items: [
                     ...order.items?.map((item) => ({
                         _id: item._id,

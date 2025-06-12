@@ -124,6 +124,7 @@ export default function ContractorOrderCard({
                         <h2 className="text-sm font-medium text-gray-800">
                             ORDER #{_id ? _id.slice(-8).toUpperCase() : 'N/A'}
                         </h2>
+
                         <p className="text-xs text-gray-500">
                             {createdAt
                                 ? new Date(createdAt).toLocaleDateString(
@@ -137,6 +138,12 @@ export default function ContractorOrderCard({
                                       }
                                   )
                                 : 'Unknown Date'}
+                        </p>
+                        <p className="text-sm text-gray-600 font-medium">
+                            🪑 Table No:{' '}
+                            <span className="font-bold text-black">
+                                {order.tableNumber ?? 'N/A'}
+                            </span>
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -187,12 +194,6 @@ export default function ContractorOrderCard({
                                                     ? item.price.toFixed(2)
                                                     : 'N/A'}{' '}
                                                 each
-                                            </p>
-                                            <p className="text-sm text-gray-600 font-medium">
-                                                🪑 Table No:{' '}
-                                                <span className="font-bold text-black">
-                                                    {order.tableNumber ?? 'N/A'}
-                                                </span>
                                             </p>
                                         </div>
                                     </div>

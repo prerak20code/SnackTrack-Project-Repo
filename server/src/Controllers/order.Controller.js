@@ -9,9 +9,10 @@ import mongoose, { Types } from 'mongoose';
 // only student can do
 
 const placeOrder = tryCatch('place order', async (req, res) => {
-    const { cartItems, total, tableNumber } = req.body;
+    const { cartItems, total, tableNumber, specialInstructions } = req.body;
     const student = req.user;
     console.log('hello student details ', student);
+
     const order = await Order.create({
         studentId: student._id,
         canteenId: student.canteenId,
@@ -19,6 +20,7 @@ const placeOrder = tryCatch('place order', async (req, res) => {
         amount: total,
         items: cartItems,
         tableNumber,
+        specialInstructions,
     });
 
     const studentinfo = {
@@ -28,6 +30,7 @@ const placeOrder = tryCatch('place order', async (req, res) => {
         avatar: student.avatar,
         userName: student.userName,
     };
+
     return res.status(OK).json({
         order,
         studentinfo,

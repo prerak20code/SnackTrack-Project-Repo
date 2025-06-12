@@ -8,7 +8,7 @@ import ServerErrorPage from './ServerError.Page';
 import Redirect from './Redirect';
 import AboutUsPage from './AboutUs.Page';
 import ContactUsPage from './ContactUs.Page';
-import FAQpage from './FAQ.Page';
+import FAQpage from './Faq.Page';
 import NewUserPage from './NewUser.Page';
 import StudentsPage from './Students.Page';
 import TodayOrdersPage from './TodayOrders.Page';

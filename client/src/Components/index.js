@@ -8,7 +8,7 @@ import Dropdown from './General/Dropdown';
 import Button from './General/Button';
 import InputField from './General/InputField';
 import ContributorCard from './General/ContributorCard';
-import Popup from './Popups/Popup';
+import Popup from './Popups/popup';
 import Logout from './User/Logout';
 import UpdateAccountDetails from './User/UpdateAccountDetails';
 import UpdatePassword from './User/UpdatePassword';

@@ -9,7 +9,7 @@ import mongoose, { Types } from 'mongoose';
 // only student can do
 
 const placeOrder = tryCatch('place order', async (req, res) => {
-    const { cartItems, total } = req.body;
+    const { cartItems, total, tableNumber } = req.body;
     const student = req.user;
     console.log('hello student details ', student);
     const order = await Order.create({
@@ -18,6 +18,7 @@ const placeOrder = tryCatch('place order', async (req, res) => {
         contractorId: student.contractorId,
         amount: total,
         items: cartItems,
+        tableNumber,
     });
 
     const studentinfo = {
@@ -97,6 +98,7 @@ const getStudentOrders = tryCatch('get student orders', async (req, res) => {
                     status: { $first: '$status' },
                     canteenId: { $first: '$canteenId' },
                     studentId: { $first: '$studentId' },
+                    tableNumber: { $first: '$tableNumber' },
                     items: { $push: '$items' },
                     createdAt: { $first: '$createdAt' },
                     updatedAt: { $first: '$updatedAt' },
@@ -124,33 +126,6 @@ const getStudentOrders = tryCatch('get student orders', async (req, res) => {
             : { message: 'No orders found' }
     );
 });
-
-// const getStudentMonthlyBill = async (req, res) => {
-//     const { studentId } = req.params;
-//     const { year, month } = req.query;
-
-//     if (!studentId || !year || !month) {
-//         return res.status(400).json({ message: 'Missing parameters' });
-//     }
-
-//     try {
-//         const bills = await Order.find({
-//             studentId,
-//             createdAt: {
-//                 $gte: new Date(`${year}-${month}-01`),
-//                 $lt: new Date(`${year}-${month}-31`),
-//             },
-//         }).populate('items.itemId', 'name');
-
-//         // ✅ Calculate total amount
-//         const totalAmount = bills.reduce((sum, bill) => sum + bill.amount, 0);
-
-//         res.json({ orders: bills, totalAmount }); // ✅ Send totalAmount in response
-//     } catch (error) {
-//         console.error('Error fetching bills:', error);
-//         res.status(500).json({ message: 'Server error' });
-//     }
-// };
 
 const getStudentMonthlyBill = async (req, res) => {
     const { studentId } = req.params;
@@ -185,40 +160,6 @@ const getStudentMonthlyBill = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
-// const getContractorStudentMonthlyBill = async (req, res) => {
-//     const { studentId } = req.params;
-//     const { year, month } = req.query;
-
-//     if (!studentId || !year || !month) {
-//         return res.status(400).json({ message: 'Missing parameters' });
-//     }
-
-//     try {
-//         // Convert studentId to ObjectId
-//         const objectIdStudentId = new mongoose.Types.ObjectId(studentId);
-
-//         // Create proper date range for the month
-//         const startDate = new Date(year, parseInt(month) - 1, 1);
-//         const endDate = new Date(year, parseInt(month), 0); // Last day of the specified month
-
-//         const bills = await Order.find({
-//             studentId: objectIdStudentId,
-//             createdAt: {
-//                 $gte: startDate,
-//                 $lte: endDate,
-//             },
-//         }).populate('items.itemId', 'name');
-
-//         // Calculate total amount
-//         const totalAmount = bills.reduce((sum, bill) => sum + bill.amount, 0);
-
-//         res.json({ orders: bills, totalAmount });
-//     } catch (error) {
-//         console.error('Error fetching bills:', error);
-//         res.status(500).json({ message: 'Server error' });
-//     }
-// };
 
 const getCanteenMonthlyBill = async (req, res) => {
     try {
@@ -291,6 +232,7 @@ const getCanteenMonthlyBill = async (req, res) => {
                     createdAt: { $first: '$createdAt' },
                     studentName: { $first: '$student.fullName' },
                     studentRollNumber: { $first: '$student.userName' },
+                    tableNumber: { $first: '$tableNumber' },
                     items: { $push: '$items' },
                 },
             },
@@ -429,6 +371,7 @@ const getCanteenOrders = tryCatch('get canteen orders', async (req, res) => {
                     status: { $first: '$status' },
                     canteenId: { $first: '$canteenId' },
                     studentId: { $first: '$studentId' },
+                    tableNumber: { $first: '$tableNumber' }, // Add this line
                     items: { $push: '$items' },
                     createdAt: { $first: '$createdAt' },
                     updatedAt: { $first: '$updatedAt' },
@@ -542,44 +485,6 @@ const getCanteenStatistics = async (req, res, next) => {
             { $sort: { value: -1 } },
         ]);
 
-        // // 3. Revenue by item type (pie chart)
-        // const revenueByItemType = await Order.aggregate([
-        //     {
-        //         $match: {
-        //             canteenId: canteenObjectId,
-        //             status: 'PickedUp',
-        //             createdAt: { $gte: startDate, $lt: endDate },
-        //         },
-        //     },
-        //     { $unwind: '$items' },
-        //     {
-        //         $lookup: {
-        //             from: 'snacks',
-        //             localField: 'items.itemId',
-        //             foreignField: '_id',
-        //             as: 'itemDetails',
-        //         },
-        //     },
-        //     { $unwind: '$itemDetails' },
-        //     {
-        //         $group: {
-        //             _id: '$itemDetails.type', // 'snack' or 'packaged'
-        //             totalRevenue: {
-        //                 $sum: {
-        //                     $multiply: ['$items.quantity', '$items.price'],
-        //                 },
-        //             },
-        //         },
-        //     },
-        //     {
-        //         $project: {
-        //             type: '$_id',
-        //             value: '$totalRevenue',
-        //             _id: 0,
-        //         },
-        //     },
-        // ]);
-
         // 4. Top selling items (bar chart)
         const topSellingItems = await Order.aggregate([
             {
@@ -645,48 +550,6 @@ const getCanteenStatistics = async (req, res, next) => {
             },
             { $sort: { date: 1 } },
         ]);
-
-        // // 6. Average order value (line chart)
-        // const averageOrderValue = await Order.aggregate([
-        //     {
-        //         $match: {
-        //             canteenId: canteenObjectId,
-        //             status: 'PickedUp',
-        //             createdAt: { $gte: startDate, $lt: endDate },
-        //         },
-        //     },
-        //     {
-        //         $group: {
-        //             _id: {
-        //                 $dateToString: {
-        //                     format: '%Y-%m-%d',
-        //                     date: '$createdAt',
-        //                 },
-        //             },
-        //             totalRevenue: { $sum: '$amount' },
-        //             orderIds: { $addToSet: '$_id' },
-        //         },
-        //     },
-        //     {
-        //         $project: {
-        //             date: '$_id',
-        //             averageValue: {
-        //                 $cond: [
-        //                     { $gt: [{ $size: '$orderIds' }, 0] },
-        //                     {
-        //                         $divide: [
-        //                             '$totalRevenue',
-        //                             { $size: '$orderIds' },
-        //                         ],
-        //                     },
-        //                     0,
-        //                 ],
-        //             },
-        //             _id: 0,
-        //         },
-        //     },
-        //     { $sort: { date: 1 } },
-        // ]);
 
         return res.status(200).json({
             revenueTrend,

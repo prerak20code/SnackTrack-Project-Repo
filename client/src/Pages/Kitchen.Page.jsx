@@ -266,14 +266,17 @@ export default function KitchenPage() {
                                             className="p-4 hover:bg-gray-50 transition-colors flex flex-col gap-2"
                                         >
                                             <div className="flex justify-between items-start">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-medium text-gray-900">
-                                                        {fullName}
-                                                    </span>
-                                                    <span className="text-xs text-gray-600">
-                                                        Roll No: {rollNo}
-                                                    </span>
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-medium text-gray-900">
+                                                            {fullName}
+                                                        </span>
+                                                        <span className="text-xs text-gray-600">
+                                                            Roll No: {rollNo}
+                                                        </span>
+                                                    </div>
                                                 </div>
+
                                                 <div className="text-right flex gap-2">
                                                     <span className="text-gray-800">
                                                         {itemName}

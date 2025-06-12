@@ -32,6 +32,10 @@ const orderSchema = new Schema(
             type: Number,
             default: 0,
         },
+        tableNumber: {
+            type: String, // You can change this to Number if needed
+            required: false, // or true if always required
+        },
         items: [
             {
                 name: {
@@ -54,7 +58,6 @@ const orderSchema = new Schema(
                     default: 1,
                 },
                 price: {
-                    // usefull when we are adding specific variants for items (each variant will be considered as separate item)
                     type: Number,
                     required: true,
                 },
@@ -66,4 +69,4 @@ const orderSchema = new Schema(
 
 orderSchema.plugin(aggregatePaginate);
 
-export const Order = new model('Order', orderSchema);
+export const Order = model('Order', orderSchema);

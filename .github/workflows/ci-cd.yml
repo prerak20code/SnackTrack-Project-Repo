@@ -37,5 +37,5 @@ jobs:
             cd ../client
             npm install
 
-            # Start or restart backend with PM2
+            # start the application
             npm run dev

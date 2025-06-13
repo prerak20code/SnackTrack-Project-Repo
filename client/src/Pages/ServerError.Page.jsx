@@ -36,7 +36,7 @@ export default function ServerErrorPage() {
                     transition={{ delay: 0.9, duration: 0.5 }}
                     className="text-gray-600 mt-4"
                 >
-                    Oops! Something went wrong on our end. Please try again
+                    Oops! Something went wrong, Please try again
                     later.
                 </motion.p>
 

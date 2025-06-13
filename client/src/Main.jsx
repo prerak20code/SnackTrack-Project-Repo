@@ -13,7 +13,7 @@ import {
     StudentContextProvider,
     SnackContextProvider,
 } from './Contexts';
-import { NotificationsProvider } from './Contexts/notifications.context';
+import { NotificationsProvider } from './Contexts/notifications.Context';
 import { DarkModeProvider } from './Contexts/DarkMode';
 
 function Root() {

@@ -9,7 +9,7 @@ import { LIMIT } from '../Constants/constants';
 import { useSocket } from '../customhooks/socket';
 import toast from 'react-hot-toast';
 import { sendNotification } from '../Utils/notification';
-import { useNotifications } from '../Contexts/notifications.context';
+import { useNotifications } from '../Contexts/notifications.Context';
 import { useDarkMode } from '../Contexts/DarkMode';
 
 export default function MyOrdersPage() {

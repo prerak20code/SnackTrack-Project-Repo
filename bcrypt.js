@@ -20,5 +20,8 @@ async function main() {
   console.log('Plain Password:', password);
   console.log('Hashed Password:', hashed);
 }
-//hiiiihoooo
+//hiii
+//triger
+//trigger2
+//triiii
 main();

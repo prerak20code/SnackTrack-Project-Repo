@@ -20,24 +20,31 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            # Go to app directory
+            # Navigate to app directory
             cd /var/www/mern-app
 
             # Pull latest changes
             git reset --hard
             git pull origin main
 
-            npm install
-            
-            # Install backend dependencies
+            # Install root-level dependencies (optional)
+            npm install || true
+
+            # Backend setup
             cd server
             npm install
 
-            # Install frontend dependencies
+            # Restart backend with PM2
+            pm2 delete snacktrack-backend || true
+            pm2 start src/server.js --name snacktrack-backend
+
+            # Frontend setup
             cd ../client
             npm install
 
-            # Start or restart backend with PM2
-            cd ../server
-            pm2 delete snacktrack || true
-            pm2 start src/server.js --name snacktrack
+            # Restart Vite frontend with PM2
+            pm2 delete vite || true
+            pm2 start "npm run dev -- --host --port 5173" --name vite
+
+            # Save PM2 process list for reboot
+            pm2 save

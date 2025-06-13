@@ -1,4 +1,4 @@
-name: CI/CD
+name: Deploy MERN App
 
 on:
   push:
@@ -6,36 +6,32 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Deploy via SSH
+      - name: SSH Deploy to Droplet
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
-            # Go to app directory
             cd /var/www/mern-app
-
-            # Pull latest changes
-            git reset --hard
             git pull origin main
-
             npm install
 
-            # Install backend dependencies
+            # BACKEND
             cd server
             npm install
+            pm2 delete snacktrack-backend || true
+            pm2 start src/server.js --name snacktrack-backend
 
-            # Install frontend dependencies
+            # FRONTEND
             cd ../client
             npm install
-
-            # start the application
-            npm run dev
+            pm2 delete vite || true
+            pm2 start "npm run dev -- --host --port 5173" --name vite

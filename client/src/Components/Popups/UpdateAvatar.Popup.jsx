@@ -4,6 +4,8 @@ import { usePopupContext, useUserContext } from '../../Contexts';
 import { fileRestrictions } from '../../Utils';
 import { userService } from '../../Services';
 import { icons } from '../../Assets/icons';
+import { useDarkMode } from '../../Contexts/DarkMode';
+
 import {
     MAX_FILE_SIZE,
     USER_PLACEHOLDER_IMAGE,
@@ -15,10 +17,13 @@ export default function UpdateAvatarPopup() {
     const { user, setUser } = useUserContext();
     const { setShowPopup } = usePopupContext();
     const [error, setError] = useState('');
+
     const [loading, setLoading] = useState(false);
     const [avatarPreview, setAvatarPreview] = useState(user.avatar);
     const [avatar, setAvatar] = useState(null);
     const [disabled, setDisabled] = useState(false);
+    const { isDarkMode } = useDarkMode();
+
     const navigate = useNavigate();
     const ref = useRef();
 
@@ -66,8 +71,16 @@ export default function UpdateAvatarPopup() {
     }
 
     return (
-        <div className="w-[300px] drop-shadow-md bg-white p-5 rounded-xl">
-            <div className="w-full text-center text-2xl font-semibold mb-4 text-black">
+        <div
+            className={`w-[300px] drop-shadow-md p-5 rounded-xl transition-colors duration-300 ${
+                isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}
+        >
+            <div
+                className={`w-full text-center text-2xl font-semibold mb-4 ${
+                    isDarkMode ? 'text-white' : 'text-black'
+                }`}
+            >
                 Update Avatar
             </div>
 
@@ -103,13 +116,18 @@ export default function UpdateAvatarPopup() {
                     </div>
                 )}
 
-                {/* upload btn */}
                 <div className="w-full mt-4 flex items-center justify-center">
                     <Button
                         btnText={
                             loading ? (
                                 <div className="flex items-center justify-center w-full">
-                                    <div className="size-5 text-center fill-[#4977ec] dark:text-[#a2bdff]">
+                                    <div
+                                        className={`size-5 text-center ${
+                                            isDarkMode
+                                                ? 'fill-[#a2bdff]'
+                                                : 'fill-[#4977ec]'
+                                        }`}
+                                    >
                                         {icons.loading}
                                     </div>
                                 </div>
@@ -126,10 +144,15 @@ export default function UpdateAvatarPopup() {
             </form>
 
             {/* cross */}
+
             <Button
                 title="Close"
                 btnText={
-                    <div className="size-[22px] fill-none stroke-black">
+                    <div
+                        className={`size-[22px] fill-none ${
+                            isDarkMode ? 'stroke-white' : 'stroke-black'
+                        }`}
+                    >
                         {icons.cross}
                     </div>
                 }

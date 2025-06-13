@@ -6,6 +6,7 @@ import { Button, InputField } from '..';
 import toast from 'react-hot-toast';
 import { useUserContext } from '../../Contexts';
 import { icons } from '../../Assets/icons';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function UpdatePassword() {
     const initialInputs = {
@@ -17,6 +18,8 @@ export default function UpdatePassword() {
     const [error, setError] = useState({});
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(false);
+    const { isDarkMode } = useDarkMode();
+
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -154,10 +157,24 @@ export default function UpdatePassword() {
 
     return (
         <div className="w-full p-2">
-            <div className="rounded-xl drop-shadow-md flex flex-col sm:flex-row bg-white px-8 py-6 sm:gap-14">
+            <div
+                className={`rounded-xl drop-shadow-md flex flex-col sm:flex-row px-8 py-6 sm:gap-14 ${
+                    isDarkMode ? 'bg-gray-800' : 'bg-white'
+                }`}
+            >
                 <div className="w-full py-4">
-                    <h3 className="text-2xl font-bold">Change Password</h3>
-                    <p className="mt-2">
+                    <h3
+                        className={`text-2xl font-bold ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}
+                    >
+                        Change Password
+                    </h3>
+                    <p
+                        className={`mt-2 ${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                        }`}
+                    >
                         Update your password to secure your account. Changes are
                         final once saved and cannot be undone.
                     </p>
@@ -173,13 +190,25 @@ export default function UpdatePassword() {
                                 setInputs(initialInputs);
                                 setError({});
                             }}
-                            className="text-white rounded-md h-[40px] text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className={`text-white rounded-md h-[40px] text-lg w-full ${
+                                loading
+                                    ? isDarkMode
+                                        ? 'bg-gray-700 cursor-not-allowed'
+                                        : 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-[#4977ec] hover:bg-[#3b62c2]'
+                            }`}
                         />
                         <Button
                             btnText={
                                 loading ? (
                                     <div className="flex items-center justify-center w-full">
-                                        <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
+                                        <div
+                                            className={`size-5 ${
+                                                isDarkMode
+                                                    ? 'fill-[#a2bdff]'
+                                                    : 'fill-[#4977ec]'
+                                            }`}
+                                        >
                                             {icons.loading}
                                         </div>
                                     </div>
@@ -190,7 +219,13 @@ export default function UpdatePassword() {
                             type="submit"
                             disabled={disabled}
                             onMouseOver={onMouseOver}
-                            className="text-white rounded-md h-[40px] text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className={`text-white rounded-md h-[40px] text-lg w-full ${
+                                disabled
+                                    ? isDarkMode
+                                        ? 'bg-gray-700 cursor-not-allowed'
+                                        : 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-[#4977ec] hover:bg-[#3b62c2]'
+                            }`}
                         />
                     </div>
                 </form>

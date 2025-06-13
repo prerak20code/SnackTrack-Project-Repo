@@ -6,12 +6,14 @@ import {
     useUserContext,
 } from '../../Contexts';
 import { icons } from '../../Assets/icons';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function PackagedItems() {
     const { items } = useSnackContext();
     const { search } = useSearchContext();
     const { setShowPopup, setPopupInfo } = usePopupContext();
     const { user } = useUserContext();
+    const { isDarkMode } = useDarkMode();
 
     const itemElements = items
         ?.filter(
@@ -46,6 +48,10 @@ export default function PackagedItems() {
             <div className={`flex flex-col w-full gap-6`}>{itemElements}</div>
         </div>
     ) : (
-        <div>No Items Found !!</div>
+        <div
+            className={`text-center py-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+        >
+            No Items Found !!
+        </div>
     );
 }

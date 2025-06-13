@@ -6,6 +6,7 @@ import { icons } from './Assets/icons';
 import { useSocket } from './customhooks/socket';
 import toast from 'react-hot-toast';
 import { sendNotification } from './Utils/notification';
+import { useDarkMode } from './Contexts/DarkMode';
 
 export default function App() {
     const [loading, setLoading] = useState(true);
@@ -15,6 +16,7 @@ export default function App() {
     const navigate = useNavigate();
     const location = useLocation();
     const socket = useSocket(false);
+    const { isDarkMode } = useDarkMode();
 
     // get current user
     useEffect(() => {
@@ -108,7 +110,10 @@ export default function App() {
     }, [location]);
 
     return (
-        <div className="bg-white h-screen w-screen">
+        <div
+            className={`h-screen w-screen ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}
+        >
+            {' '}
             {loading ? (
                 <div className="text-black h-full w-full flex flex-col items-center justify-center">
                     <div className="size-[33px] fill-[#4977ec] dark:text-[#ececec]">

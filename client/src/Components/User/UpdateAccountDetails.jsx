@@ -5,10 +5,14 @@ import { getRollNo, verifyExpression } from '../../Utils';
 import { contractorService } from '../../Services';
 import { Button, InputField } from '..';
 import toast from 'react-hot-toast';
+import { useDarkMode } from '../../Contexts/DarkMode';
+
 import { icons } from '../../Assets/icons';
 
 export default function UpdateAccountDetails() {
     const { user, setUser } = useUserContext();
+    const { isDarkMode } = useDarkMode();
+
     const initialInputs = {
         fullName: user.fullName,
         email: user.email,
@@ -134,12 +138,24 @@ export default function UpdateAccountDetails() {
     return (
         <div className="w-full p-2">
             {user.role !== 'student' ? (
-                <div className="rounded-xl drop-shadow-md flex flex-col sm:flex-row bg-white py-6 px-8 sm:gap-14">
+                <div
+                    className={`rounded-xl drop-shadow-md flex flex-col sm:flex-row py-6 px-8 sm:gap-14 ${
+                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}
+                >
                     <div className="w-full py-4">
-                        <h3 className="text-2xl font-bold">
+                        <h3
+                            className={`text-2xl font-bold ${
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                            }`}
+                        >
                             Update Personal Information
                         </h3>
-                        <p className="mt-2">
+                        <p
+                            className={`mt-2 ${
+                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                            }`}
+                        >
                             Update your personal details here. Please note that
                             changes cannot be undone.
                         </p>
@@ -161,13 +177,25 @@ export default function UpdateAccountDetails() {
                                     setError({});
                                 }}
                                 disabled={loading}
-                                className="text-white rounded-md h-[40px] text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                                className={`text-white rounded-md h-[40px] text-lg w-full ${
+                                    loading
+                                        ? isDarkMode
+                                            ? 'bg-gray-700 cursor-not-allowed'
+                                            : 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-[#4977ec] hover:bg-[#3b62c2]'
+                                }`}
                             />
                             <Button
                                 btnText={
                                     loading ? (
                                         <div className="flex items-center justify-center w-full">
-                                            <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
+                                            <div
+                                                className={`size-5 ${
+                                                    isDarkMode
+                                                        ? 'fill-[#a2bdff]'
+                                                        : 'fill-[#4977ec]'
+                                                }`}
+                                            >
                                                 {icons.loading}
                                             </div>
                                         </div>
@@ -178,56 +206,151 @@ export default function UpdateAccountDetails() {
                                 disabled={disabled}
                                 type="submit"
                                 onMouseOver={onMouseOver}
-                                className="text-white rounded-md h-[40px] text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                                className={`text-white rounded-md h-[40px] text-lg w-full ${
+                                    disabled
+                                        ? isDarkMode
+                                            ? 'bg-gray-700 cursor-not-allowed'
+                                            : 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-[#4977ec] hover:bg-[#3b62c2]'
+                                }`}
                             />
                         </div>
                     </form>
                 </div>
             ) : (
-                <div className="rounded-xl drop-shadow-md flex flex-col sm:flex-row bg-white py-6 px-8 sm:gap-14">
+                <div
+                    className={`rounded-xl drop-shadow-md flex flex-col sm:flex-row py-6 px-8 sm:gap-14 ${
+                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}
+                >
                     <div className="w-full py-4">
-                        <h3 className="text-2xl font-bold">
+                        <h3
+                            className={`text-2xl font-bold ${
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                            }`}
+                        >
                             Personal Information
                         </h3>
-                        <p className="mt-2">
-                            Your personal details are desplayed here. Please
+                        <p
+                            className={`mt-2 ${
+                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                            }`}
+                        >
+                            Your personal details are displayed here. Please
                             note that to make any changes here you have to go to
                             the POC from where you were registered.
                         </p>
                     </div>
 
                     <div className="w-full max-w-[600px]">
-                        <div className="shadow-md p-3 rounded-md w-full border-[0.01rem] border-gray-500 flex flex-col gap-4">
+                        <div
+                            className={`shadow-md p-3 rounded-md w-full border-[0.01rem] flex flex-col gap-4 ${
+                                isDarkMode
+                                    ? 'bg-gray-700 border-gray-600 text-white'
+                                    : 'bg-white border-gray-500 text-gray-900'
+                            }`}
+                        >
+                            {/* Info fields */}
                             <div>
-                                <span className="font-semibold text-lg">
+                                <span
+                                    className={`font-semibold text-lg ${
+                                        isDarkMode
+                                            ? 'text-gray-200'
+                                            : 'text-gray-900'
+                                    }`}
+                                >
                                     Hostel:{' '}
                                 </span>
-                                {user.hostelName} @
-                                {user.hostelType + user.hostelNumber}
+                                <span
+                                    className={
+                                        isDarkMode
+                                            ? 'text-gray-300'
+                                            : 'text-gray-700'
+                                    }
+                                >
+                                    {user.hostelName} @
+                                    {user.hostelType + user.hostelNumber}
+                                </span>
                             </div>
                             <div>
-                                <span className="font-semibold text-lg">
+                                <span
+                                    className={`font-semibold text-lg ${
+                                        isDarkMode
+                                            ? 'text-gray-200'
+                                            : 'text-gray-900'
+                                    }`}
+                                >
                                     Full Name:{' '}
                                 </span>
-                                {user.fullName}
+                                <span
+                                    className={
+                                        isDarkMode
+                                            ? 'text-gray-300'
+                                            : 'text-gray-700'
+                                    }
+                                >
+                                    {user.fullName}
+                                </span>
                             </div>
                             <div>
-                                <span className="font-semibold text-lg">
+                                <span
+                                    className={`font-semibold text-lg ${
+                                        isDarkMode
+                                            ? 'text-gray-200'
+                                            : 'text-gray-900'
+                                    }`}
+                                >
                                     Roll No:{' '}
                                 </span>
-                                {getRollNo(user.userName)}
+                                <span
+                                    className={
+                                        isDarkMode
+                                            ? 'text-gray-300'
+                                            : 'text-gray-700'
+                                    }
+                                >
+                                    {getRollNo(user.userName)}
+                                </span>
                             </div>
                             <div>
-                                <span className="font-semibold text-lg">
+                                <span
+                                    className={`font-semibold text-lg ${
+                                        isDarkMode
+                                            ? 'text-gray-200'
+                                            : 'text-gray-900'
+                                    }`}
+                                >
                                     Email:{' '}
                                 </span>
-                                {user.email}
+                                <span
+                                    className={
+                                        isDarkMode
+                                            ? 'text-gray-300'
+                                            : 'text-gray-700'
+                                    }
+                                >
+                                    {user.email}
+                                </span>
                             </div>
                             <div>
-                                <span className="font-semibold text-lg">
+                                <span
+                                    className={`font-semibold text-lg ${
+                                        isDarkMode
+                                            ? 'text-gray-200'
+                                            : 'text-gray-900'
+                                    }`}
+                                >
                                     Phone Number:{' '}
                                 </span>
-                                {user.phoneNumber}
+                                <span
+                                    className={
+                                        isDarkMode
+                                            ? 'text-gray-300'
+                                            : 'text-gray-700'
+                                    }
+                                >
+                                    {user.phoneNumber}
+                                </span>
                             </div>
                         </div>
                     </div>

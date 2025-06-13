@@ -4,6 +4,7 @@ import { icons } from '../Assets/icons';
 import { useEffect, useState } from 'react';
 import { useSnackContext } from '../Contexts';
 import { snackService } from '../Services';
+import { useDarkMode } from '../Contexts/DarkMode';
 
 export default function HomePage() {
     const [searchParams] = useSearchParams();
@@ -11,6 +12,7 @@ export default function HomePage() {
     const { setSnacks, setItems } = useSnackContext();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
+    const { isDarkMode } = useDarkMode();
 
     const options = [
         { value: 'snacks', label: 'Snacks', icon: icons.snack },
@@ -69,15 +71,20 @@ export default function HomePage() {
     }, []);
 
     return (
-        <div>
+        <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
             <div className="w-full flex justify-end mb-6">
                 <Filter options={options} defaultOption={filter} />
             </div>
 
-            {/* Render Based on Filter */}
             <div className="sm:px-4 pb-8">
                 {loading ? (
-                    <div className="w-full text-center">loading...</div>
+                    <div
+                        className={`w-full text-center ${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                    >
+                        loading...
+                    </div>
                 ) : filter === 'snacks' ? (
                     <Snacks />
                 ) : (

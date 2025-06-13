@@ -6,8 +6,10 @@ import { Button, InputField } from '..';
 import { verifyExpression } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function AddItemPopup() {
+    const { isDarkMode } = useDarkMode();
     const { setItems } = useSnackContext();
     const [inputs, setInputs] = useState({
         category: '',
@@ -158,10 +160,18 @@ export default function AddItemPopup() {
     ));
 
     return (
-        <div className="overflow-hidden relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl text-black p-5 flex flex-col items-center justify-center gap-3">
+        <div
+            className={`relative w-[350px] sm:w-[450px] transition-all duration-300 rounded-xl overflow-hidden p-5 flex flex-col items-center justify-center gap-3 ${
+                isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'
+            }`}
+        >
             <Button
                 btnText={
-                    <div className="size-[20px] stroke-black">
+                    <div
+                        className={`size-[20px] ${
+                            isDarkMode ? 'stroke-white' : 'stroke-black'
+                        }`}
+                    >
                         {icons.cross}
                     </div>
                 }
@@ -215,7 +225,11 @@ export default function AddItemPopup() {
                                 <Button
                                     btnText="Add Variant"
                                     onClick={addVariant}
-                                    className="w-full bg-gray-200 mt-4 hover:border-gray-800 border-transparent border-[0.01rem] text-gray-800 py-2 rounded-md"
+                                    className={`w-full mt-4 hover:border-gray-800 border-transparent border-[0.01rem] py-2 rounded-md ${
+                                        isDarkMode
+                                            ? 'bg-gray-700 text-white hover:bg-gray-600'
+                                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                                    }`}
                                 />
                             </div>
                         )}
@@ -240,7 +254,12 @@ export default function AddItemPopup() {
                     <div className="w-full">
                         <Button
                             type="submit"
-                            className="text-white rounded-md py-2 flex items-center justify-center text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                            // className="text-white rounded-md py-2 flex items-center justify-center text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className={`w-full mt-4 hover:border-gray-800 border-transparent border-[0.01rem] py-2 rounded-md ${
+                                isDarkMode
+                                    ? 'bg-gray-700 text-white hover:bg-gray-600'
+                                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                            }`}
                             disabled={disabled}
                             onMouseOver={onMouseOver}
                             btnText={

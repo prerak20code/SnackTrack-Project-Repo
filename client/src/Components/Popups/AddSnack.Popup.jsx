@@ -6,6 +6,8 @@ import { Button, InputField } from '..';
 import { verifyExpression, fileRestrictions } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
+import { useDarkMode } from '../../Contexts/DarkMode';
+
 import {
     MAX_FILE_SIZE,
     SNACK_PLACEHOLDER_IMAGE,
@@ -14,6 +16,8 @@ import {
 export default function AddSnackPopup() {
     const { setSnacks } = useSnackContext();
     const { setShowPopup } = usePopupContext();
+    const { isDarkMode } = useDarkMode();
+
     const ref = useRef();
     const [imagePreview, setImagePreview] = useState(SNACK_PLACEHOLDER_IMAGE);
     const [inputs, setInputs] = useState({
@@ -145,10 +149,18 @@ export default function AddSnackPopup() {
     );
 
     return (
-        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-5 flex flex-col items-center justify-center gap-3">
+        <div
+            className={`relative w-[350px] sm:w-[450px] transition-all duration-300 rounded-xl overflow-hidden p-5 flex flex-col items-center justify-center gap-3 ${
+                isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'
+            }`}
+        >
             <Button
                 btnText={
-                    <div className="size-[20px] stroke-black">
+                    <div
+                        className={`size-[20px] ${
+                            isDarkMode ? 'stroke-white' : 'stroke-black'
+                        }`}
+                    >
                         {icons.cross}
                     </div>
                 }

@@ -8,6 +8,7 @@ import {
 } from '../../Contexts';
 import { contractorService } from '../../Services';
 import { useState } from 'react';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function SnackView({ snack, reference }) {
     const { _id, image, name, price, info, isAvailable } = snack;
@@ -16,6 +17,7 @@ export default function SnackView({ snack, reference }) {
     const { setSnacks } = useSnackContext();
     const navigate = useNavigate();
     const { setShowPopup, setPopupInfo } = usePopupContext();
+    const { isDarkMode } = useDarkMode();
 
     async function toggleAvailability() {
         try {
@@ -83,27 +85,41 @@ export default function SnackView({ snack, reference }) {
     return (
         <div
             ref={reference}
-            className="p-4 relative cursor-pointer bg-white shadow-lg rounded-2xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl"
+            className={`p-4 relative cursor-pointer shadow-lg rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl ${
+                isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
+            }`}
         >
             {user.role === 'contractor' && (
                 <div className="absolute right-6 top-6 flex gap-3 justify-end">
                     <Button
                         btnText={
-                            <div className="size-[18px] group-hover:fill-[#4977ec]">
+                            <div
+                                className={`size-[18px] ${isDarkMode ? 'group-hover:fill-[#4977ec] fill-white' : 'group-hover:fill-[#4977ec]'}`}
+                            >
                                 {icons.edit}
                             </div>
                         }
-                        className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-sm hover:bg-[#ebeaea]"
+                        className={`p-[10px] group rounded-full drop-shadow-sm ${
+                            isDarkMode
+                                ? 'bg-gray-700 hover:bg-gray-600'
+                                : 'bg-[#f0efef] hover:bg-[#ebeaea]'
+                        }`}
                         onClick={editSnack}
                     />
                     <div>
                         <Button
                             btnText={
-                                <div className="size-[18px] group-hover:fill-red-700">
+                                <div
+                                    className={`size-[18px] ${isDarkMode ? 'group-hover:fill-red-500 fill-white' : 'group-hover:fill-red-700'}`}
+                                >
                                     {icons.delete}
                                 </div>
                             }
-                            className="bg-[#f0efef] p-[10px] group rounded-full drop-shadow-lg hover:bg-[#ebeaea]"
+                            className={`p-[10px] group rounded-full drop-shadow-lg ${
+                                isDarkMode
+                                    ? 'bg-gray-700 hover:bg-gray-600'
+                                    : 'bg-[#f0efef] hover:bg-[#ebeaea]'
+                            }`}
                             onClick={removeSnack}
                         />
                     </div>
@@ -124,19 +140,27 @@ export default function SnackView({ snack, reference }) {
                 {/* Availability and Price */}
                 <div className="flex items-center justify-between">
                     {/* Availability */}
-                    <div className="flex items-center gap-2 bg-gray-100 shadow-sm rounded-full px-3 py-1">
+                    <div
+                        className={`flex items-center gap-2 shadow-sm rounded-full px-3 py-1 ${
+                            isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                        }`}
+                    >
                         <div
                             className={`size-2 rounded-full ${isAvailable ? 'bg-green-600' : 'bg-red-500'}`}
                         />
                         <span
-                            className={`text-sm font-semibold ${isAvailable ? 'text-green-600' : 'text-red-600'}`}
+                            className={`text-sm font-semibold ${isAvailable ? 'text-green-500' : 'text-red-500'}`}
                         >
                             {isAvailable ? 'Available' : 'Not Available'}
                         </span>
                     </div>
 
                     {/* Price */}
-                    <p className="text-sm font-bold bg-gray-100 shadow-sm rounded-full px-3 py-1">
+                    <p
+                        className={`text-sm font-bold shadow-sm rounded-full px-3 py-1 ${
+                            isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                        }`}
+                    >
                         Rs. {price}
                     </p>
                 </div>
@@ -144,15 +168,22 @@ export default function SnackView({ snack, reference }) {
                 {/* Name and Info */}
                 <div className="flex flex-col gap-2">
                     {/* Name */}
-                    <p className="text-xl font-bold text-gray-900 truncate">
+                    <p
+                        className={`text-xl font-bold truncate ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}
+                    >
                         {name}
                     </p>
 
                     {/* Info */}
                     {info && (
-                        <p className="text-sm text-gray-600 line-clamp-2">
-                            {info} Lorem ipsum dolor sit amet, consectetur
-                            adipisicing elit. Consequatur, quidem.
+                        <p
+                            className={`text-sm line-clamp-2 ${
+                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                            }`}
+                        >
+                            {info}
                         </p>
                     )}
                 </div>
@@ -162,9 +193,19 @@ export default function SnackView({ snack, reference }) {
                     {user.role !== 'contractor' ? (
                         isAvailable &&
                         (quantityInCart > 0 ? (
-                            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                            <div
+                                className={`flex items-center border rounded-lg overflow-hidden ${
+                                    isDarkMode
+                                        ? 'border-gray-600'
+                                        : 'border-gray-300'
+                                }`}
+                            >
                                 <Button
-                                    className="px-3 py-1 text-gray-500 hover:bg-gray-100"
+                                    className={`px-3 py-1 ${
+                                        isDarkMode
+                                            ? 'text-gray-300 hover:bg-gray-700'
+                                            : 'text-gray-500 hover:bg-gray-100'
+                                    }`}
                                     onClick={() =>
                                         quantityInCart === 1
                                             ? removeFromCart()
@@ -172,11 +213,21 @@ export default function SnackView({ snack, reference }) {
                                     }
                                     btnText="-"
                                 />
-                                <span className="px-3 py-1 text-gray-900">
+                                <span
+                                    className={
+                                        isDarkMode
+                                            ? 'text-white px-3 py-1'
+                                            : 'text-gray-900 px-3 py-1'
+                                    }
+                                >
                                     {quantityInCart}
                                 </span>
                                 <Button
-                                    className="px-3 py-1 text-gray-500 hover:bg-gray-100"
+                                    className={`px-3 py-1 ${
+                                        isDarkMode
+                                            ? 'text-gray-300 hover:bg-gray-700'
+                                            : 'text-gray-500 hover:bg-gray-100'
+                                    }`}
                                     onClick={() =>
                                         updateQuantity(quantityInCart + 1)
                                     }

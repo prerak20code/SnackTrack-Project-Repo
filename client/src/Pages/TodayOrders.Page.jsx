@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useDarkMode } from '../Contexts/DarkMode';
 import { io } from 'socket.io-client';
 import {
     CompletedOrders,
@@ -13,6 +14,8 @@ export default function TodayOrdersPage() {
     const [searchParams] = useSearchParams();
     const filter = searchParams.get('filter') || 'Pending'; // Default to 'Pending'
     const [pendingOrders, setPendingOrders] = useState([]);
+    const { isDarkMode } = useDarkMode();
+
     // Fetch existing pending orders from backend on mount
     const socket = useSocket(true);
     useEffect(() => {
@@ -41,12 +44,22 @@ export default function TodayOrdersPage() {
     ];
 
     return (
-        <div className="w-full p-4">
+        <div
+            className={`w-full p-4 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}
+        >
             <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1
+                    className={`text-3xl font-bold ${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}
+                >
                     Today's Orders
                 </h1>
-                <Filter options={options} defaultOption={filter} />
+                <Filter
+                    options={options}
+                    defaultOption={filter}
+                    isDarkMode={isDarkMode}
+                />
             </div>
 
             {/* Render Based on Filter */}

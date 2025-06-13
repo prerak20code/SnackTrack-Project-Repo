@@ -6,6 +6,7 @@ import { Button, InputField } from '..';
 import { verifyExpression, getRollNo } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function EditStudentPopup() {
     const { targetStudent, setStudents } = useStudentContext();
@@ -22,6 +23,8 @@ export default function EditStudentPopup() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showContractorPassword, setShowContractorPassword] = useState(false);
+    const { isDarkMode } = useDarkMode();
+
     const navigate = useNavigate();
 
     async function handleChange(e) {
@@ -156,10 +159,18 @@ export default function EditStudentPopup() {
     );
 
     return (
-        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-5 flex flex-col items-center justify-center gap-3">
+        <div
+            className={`relative w-[350px] sm:w-[450px] transition-all duration-300 rounded-xl overflow-hidden p-5 flex flex-col items-center justify-center gap-3 ${
+                isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'
+            }`}
+        >
             <Button
                 btnText={
-                    <div className="size-[20px] stroke-black">
+                    <div
+                        className={`size-[20px] ${
+                            isDarkMode ? 'stroke-white' : 'stroke-black'
+                        }`}
+                    >
                         {icons.cross}
                     </div>
                 }
@@ -168,8 +179,18 @@ export default function EditStudentPopup() {
                 className="absolute top-2 right-2"
             />
 
-            <p className="text-2xl font-bold">Update Student Details</p>
-            <p className="text-[15px]">
+            <p
+                className={`text-2xl font-bold ${
+                    isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}
+            >
+                Update Student Details
+            </p>
+            <p
+                className={`text-[15px] ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}
+            >
                 <span className="font-medium">Roll No: </span>
                 {getRollNo(targetStudent.userName)}
             </p>
@@ -190,13 +211,25 @@ export default function EditStudentPopup() {
                     <div className="w-full">
                         <Button
                             type="submit"
-                            className="text-white rounded-md py-2 mt-4 h-[45px] flex items-center justify-center text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className={`text-white rounded-md py-2 mt-4 h-[45px] flex items-center justify-center text-lg w-full ${
+                                disabled
+                                    ? isDarkMode
+                                        ? 'bg-gray-700 cursor-not-allowed'
+                                        : 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-[#4977ec] hover:bg-[#3b62c2]'
+                            }`}
                             disabled={disabled}
                             onMouseOver={onMouseOver}
                             btnText={
                                 loading ? (
                                     <div className="flex items-center justify-center w-full">
-                                        <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
+                                        <div
+                                            className={`size-5 ${
+                                                isDarkMode
+                                                    ? 'fill-[#a2bdff]'
+                                                    : 'fill-[#4977ec]'
+                                            }`}
+                                        >
                                             {icons.loading}
                                         </div>
                                     </div>

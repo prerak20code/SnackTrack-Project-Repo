@@ -5,11 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import { Button, InputField } from '..';
 import { verifyExpression } from '../../Utils';
 import toast from 'react-hot-toast';
+import { useDarkMode } from '../../Contexts/DarkMode';
+
 import { icons } from '../../Assets/icons';
 
 export default function AddItemPopup() {
     const { setItems } = useSnackContext();
     const { setShowPopup, popupInfo } = usePopupContext();
+    const { isDarkMode } = useDarkMode();
+
     const [inputs, setInputs] = useState({
         category: popupInfo.target.category || '',
         password: '',
@@ -165,10 +169,18 @@ export default function AddItemPopup() {
     ));
 
     return (
-        <div className="overflow-hidden relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl text-black p-5 flex flex-col items-center justify-center gap-3">
+        <div
+            className={`relative w-[350px] sm:w-[450px] transition-all duration-300 rounded-xl overflow-hidden p-5 flex flex-col items-center justify-center gap-3 ${
+                isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'
+            }`}
+        >
             <Button
                 btnText={
-                    <div className="size-[20px] stroke-black">
+                    <div
+                        className={`size-[20px] ${
+                            isDarkMode ? 'stroke-white' : 'stroke-black'
+                        }`}
+                    >
                         {icons.cross}
                     </div>
                 }
@@ -177,7 +189,13 @@ export default function AddItemPopup() {
                 className="absolute top-2 right-2"
             />
 
-            <p className="text-2xl font-bold">Update Item</p>
+            <p
+                className={`text-2xl font-bold ${
+                    isDarkMode ? 'text-white' : 'text-black'
+                }`}
+            >
+                Update Item
+            </p>
 
             <div className="w-full flex flex-col items-center justify-center gap-3">
                 {error.root && (
@@ -222,7 +240,11 @@ export default function AddItemPopup() {
                                 <Button
                                     btnText="Add Variant"
                                     onClick={addVariant}
-                                    className="w-full bg-gray-200 mt-4 hover:border-gray-800 border-transparent border-[0.01rem] text-gray-800 py-2 rounded-md"
+                                    className={`w-full mt-4 hover:border-gray-800 border-transparent border-[0.01rem] py-2 rounded-md ${
+                                        isDarkMode
+                                            ? 'bg-gray-700 text-white hover:bg-gray-600'
+                                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                                    }`}
                                 />
                             </div>
                         )}

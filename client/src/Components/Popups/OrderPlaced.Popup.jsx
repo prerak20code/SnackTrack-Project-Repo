@@ -7,6 +7,7 @@ import { usePopupContext } from '../../Contexts';
 export default function OrderPlacedPopup() {
     const { setShowPopup, popupInfo } = usePopupContext();
     const navigate = useNavigate();
+    const { isDarkMode } = useDarkMode();
 
     const containerVariants = {
         hidden: { opacity: 0, scale: 0.95 },
@@ -30,7 +31,11 @@ export default function OrderPlacedPopup() {
     return (
         <AnimatePresence>
             <motion.div
-                className="relative w-[350px] sm:w-[450px] transition-all duration-300 overflow-hidden bg-white rounded-xl drop-shadow-md px-6"
+                className={`relative w-[350px] sm:w-[450px] transition-all duration-300 overflow-hidden rounded-xl drop-shadow-md px-6 ${
+                    isDarkMode
+                        ? 'bg-gray-800 text-white'
+                        : 'bg-white text-black'
+                }`}
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -127,7 +132,9 @@ export default function OrderPlacedPopup() {
                     </motion.div>
 
                     <motion.h2
-                        className="text-2xl font-bold text-gray-900"
+                        className={`text-2xl font-bold ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}
                         initial={{ y: 10, opacity: 0 }}
                         animate={{
                             y: 0,
@@ -139,7 +146,9 @@ export default function OrderPlacedPopup() {
                     </motion.h2>
 
                     <motion.p
-                        className="text-gray-600 z-10"
+                        className={`${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                        }`}
                         initial={{ y: 10, opacity: 0 }}
                         animate={{
                             y: 0,
@@ -152,7 +161,9 @@ export default function OrderPlacedPopup() {
                     </motion.p>
 
                     <motion.p
-                        className="text-center text-gray-600 mb-4 z-10"
+                        className={`text-center mb-4 z-10 ${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                        }`}
                         initial={{ y: 10, opacity: 0 }}
                         animate={{
                             y: 0,

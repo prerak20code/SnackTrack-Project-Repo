@@ -131,12 +131,13 @@ export default function LoginPage() {
                     inputs={inputs}
                     showPassword={showPassword}
                     setShowPassword={setShowPassword}
+                    className="bg-white border-gray-300" // Add border color
                 />
             )
     );
 
     return (
-        <div className="text-black flex flex-col items-center justify-center gap-5 min-h-screen">
+        <div className="flex flex-col items-center justify-center gap-5 min-h-screen bg-white">
             <Link
                 to={'/'}
                 className="w-fit flex items-center justify-center hover:brightness-95"
@@ -150,26 +151,34 @@ export default function LoginPage() {
                 </div>
             </Link>
             <div className="w-fit">
-                <p className="text-center px-3 text-[28px] font-medium">
+                <p className="text-center px-3 text-[28px] font-medium text-gray-900">
                     Login to Your Account
                 </p>
                 <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: '100%' }}
                     transition={{ duration: 0.3 }}
-                    className="h-[0.05rem] relative -top-1 bg-[#333333]"
+                    className="h-[0.05rem] relative -top-1 bg-gray-900"
                 />
             </div>
-            <div className="text-black max-w-[500px] min-w-[300px] mt-4 flex flex-col items-center gap-4">
-                <Dropdown options={roles} setValue={setRole} />
+            <div className="max-w-[500px] min-w-[300px] mt-4 flex flex-col items-center gap-4">
+                <Dropdown
+                    options={roles}
+                    setValue={setRole}
+                    className="bg-white border-gray-300 shadow-sm" // Add border and shadow
+                />
 
                 <form
                     onSubmit={handleSubmit}
-                    className="w-full flex flex-col gap-4"
+                    className="w-full flex flex-col gap-4 bg-white" // Add bg-white here
                 >
                     {role === 'student' && (
                         <div className="w-full flex justify-center mt-4">
-                            <Dropdown options={hostels} setValue={setHostel} />
+                            <Dropdown
+                                options={hostels}
+                                setValue={setHostel}
+                                className="bg-white border-gray-300 shadow-sm" // Add border and shadow
+                            />
                         </div>
                     )}
 
@@ -184,8 +193,13 @@ export default function LoginPage() {
                             type="submit"
                             btnText={
                                 loading ? (
-                                    <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
-                                        {icons.loading}
+                                    <div className="size-5">
+                                        <svg
+                                            className="animate-spin fill-white"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            {icons.loading}
+                                        </svg>
                                     </div>
                                 ) : (
                                     'Login'

@@ -6,6 +6,8 @@ import { Button, InputField } from '..';
 import { verifyExpression, fileRestrictions } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
+import { useDarkMode } from '../../Contexts/DarkMode';
+
 import {
     MAX_FILE_SIZE,
     SNACK_PLACEHOLDER_IMAGE,
@@ -16,6 +18,8 @@ export default function EditSnackPopup() {
     const { setShowPopup, popupInfo } = usePopupContext();
     const ref = useRef();
     const [imagePreview, setImagePreview] = useState(popupInfo.target.image);
+    const { isDarkMode } = useDarkMode();
+
     const [inputs, setInputs] = useState({
         name: popupInfo.target.name || '',
         password: '',
@@ -152,10 +156,18 @@ export default function EditSnackPopup() {
     );
 
     return (
-        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-5 flex flex-col items-center justify-center gap-3">
+        <div
+            className={`relative w-[350px] sm:w-[450px] transition-all duration-300 rounded-xl overflow-hidden p-5 flex flex-col items-center justify-center gap-3 ${
+                isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'
+            }`}
+        >
             <Button
                 btnText={
-                    <div className="size-[20px] stroke-black">
+                    <div
+                        className={`size-[20px] ${
+                            isDarkMode ? 'stroke-white' : 'stroke-black'
+                        }`}
+                    >
                         {icons.cross}
                     </div>
                 }
@@ -164,8 +176,19 @@ export default function EditSnackPopup() {
                 className="absolute top-2 right-2"
             />
 
-            <p className="text-2xl font-bold">Update Snack Details</p>
-            <p className="text-[15px]">
+            <p
+                className={`text-2xl font-bold ${
+                    isDarkMode ? 'text-white' : 'text-black'
+                }`}
+            >
+                Update Snack Details
+            </p>
+
+            <p
+                className={`text-[15px] ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}
+            >
                 <span className="font-medium">Name: </span>
                 {popupInfo.target.name}
             </p>

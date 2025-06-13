@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function SelectTablePopup({ onConfirm, onCancel }) {
     const [selectedTable, setSelectedTable] = useState('');
     const [isVisible, setIsVisible] = useState(false);
+    const { isDarkMode } = useDarkMode();
 
     useEffect(() => {
         setIsVisible(true);
@@ -169,21 +171,30 @@ export default function SelectTablePopup({ onConfirm, onCancel }) {
                     isVisible ? 'backdrop-enter' : 'backdrop-exit'
                 }`}
                 style={{
-                    background: 'rgba(0, 0, 0, 0.1)',
+                    background: isDarkMode
+                        ? 'rgba(0, 0, 0, 0.5)'
+                        : 'rgba(0, 0, 0, 0.1)',
                     backdropFilter: isVisible ? 'blur(8px)' : 'blur(0px)',
                 }}
             >
                 <div
-                    className={`relative w-full max-w-md glass-effect rounded-2xl overflow-hidden ${
+                    className={`relative w-full max-w-md rounded-2xl overflow-hidden ${
                         isVisible ? 'modal-enter' : 'modal-exit'
+                    } ${
+                        isDarkMode
+                            ? 'bg-gray-800 border border-gray-700'
+                            : 'glass-effect'
                     }`}
                 >
-                    {/* Header with close button */}
                     <div className="relative px-6 pt-6">
                         <Button
                             btnText={
                                 <svg
-                                    className="w-5 h-5"
+                                    className={`w-5 h-5 ${
+                                        isDarkMode
+                                            ? 'text-white'
+                                            : 'text-gray-600'
+                                    }`}
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -197,44 +208,58 @@ export default function SelectTablePopup({ onConfirm, onCancel }) {
                                 </svg>
                             }
                             onClick={handleClose}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                            className={`absolute top-4 right-4 p-2 rounded-full transition-colors duration-200 ${
+                                isDarkMode
+                                    ? 'hover:bg-gray-700'
+                                    : 'hover:bg-gray-100'
+                            }`}
                         />
                     </div>
 
-                    {/* Content */}
                     <div className="px-6 pb-6">
-                        {/* Icon */}
-                        <div className="flex justify-center mb-6">
-                            <div className="icon-pop w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-                                <svg
-                                    className="w-8 h-8 text-white"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2.5}
-                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                                    />
-                                </svg>
-                            </div>
+                        <div className="icon-pop w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <svg
+                                className="w-8 h-8 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2.5}
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                />
+                            </svg>
                         </div>
 
-                        {/* Title */}
                         <div className="text-center mb-6 content-1">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                            <h2
+                                className={`text-2xl font-bold mb-2 ${
+                                    isDarkMode ? 'text-white' : 'text-gray-900'
+                                }`}
+                            >
                                 Select Your Table
                             </h2>
-                            <p className="text-gray-600">
+                            <p
+                                className={
+                                    isDarkMode
+                                        ? 'text-gray-300'
+                                        : 'text-gray-600'
+                                }
+                            >
                                 Choose a table for your dining experience
                             </p>
                         </div>
 
-                        {/* Table Selection */}
                         <div className="mb-6 content-2">
-                            <label className="block text-sm font-semibold text-gray-700 mb-3">
+                            <label
+                                className={`block text-sm font-semibold mb-3 ${
+                                    isDarkMode
+                                        ? 'text-gray-200'
+                                        : 'text-gray-700'
+                                }`}
+                            >
                                 Available Tables
                             </label>
                             <select
@@ -242,27 +267,38 @@ export default function SelectTablePopup({ onConfirm, onCancel }) {
                                 onChange={(e) =>
                                     setSelectedTable(e.target.value)
                                 }
-                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-200 custom-select appearance-none bg-white text-gray-900 font-medium"
+                                className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all duration-200 custom-select appearance-none font-medium ${
+                                    isDarkMode
+                                        ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
+                                        : 'bg-white border-gray-200 text-gray-900 focus:border-blue-500'
+                                }`}
                             >
-                                <option value="" disabled>
+                                <option
+                                    value=""
+                                    disabled
+                                    className={
+                                        isDarkMode ? 'bg-gray-700' : 'bg-white'
+                                    }
+                                >
                                     Choose a table...
                                 </option>
                                 {tableOptions.map((table) => (
-                                    <option key={table} value={table}>
+                                    <option
+                                        key={table}
+                                        value={table}
+                                        className={
+                                            isDarkMode
+                                                ? 'bg-gray-700'
+                                                : 'bg-white'
+                                        }
+                                    >
                                         {table}
                                     </option>
                                 ))}
                             </select>
                         </div>
 
-                        {/* Action Buttons */}
                         <div className="flex gap-3 content-3">
-                            {/* <Button
-                                btnText="Cancel"
-                                onClick={handleClose}
-                                aria-label="Cancel table selection"
-                                className="flex-1 px-6 py-3 border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 button-hover"
-                            /> */}
                             <Button
                                 btnText="Place Order"
                                 onClick={handleConfirm}
@@ -270,7 +306,9 @@ export default function SelectTablePopup({ onConfirm, onCancel }) {
                                 className={`flex-1 px-6 py-3 font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl button-hover ${
                                     selectedTable
                                         ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700'
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        : isDarkMode
+                                          ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 }`}
                             />
                         </div>

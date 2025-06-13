@@ -15,20 +15,18 @@ import {
     OrderPlacedPopup,
 } from '..';
 import { usePopupContext } from '../../Contexts';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function Popup() {
+    const { isDarkMode } = useDarkMode();
     const { popupInfo, setShowPopup, showPopup } = usePopupContext();
     const ref = useRef();
-
-    function close(e) {
-        if (e.target === ref.current) setShowPopup(false);
-    }
 
     const Wrapper = ({ children }) => (
         <div
             className="fixed inset-0 z-[1000] backdrop-blur-sm flex items-center justify-center drop-shadow-md"
             ref={ref}
-            onClick={close}
+            onClick={(e) => e.target === ref.current && setShowPopup(false)}
         >
             {children}
         </div>

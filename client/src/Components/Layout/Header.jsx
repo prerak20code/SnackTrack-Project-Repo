@@ -5,6 +5,7 @@ import {
     useSideBarContext,
     usePopupContext,
 } from '../../Contexts';
+import { useDarkMode } from '../../Contexts/DarkMode';
 import { LOGO } from '../../Constants/constants';
 import { icons } from '../../Assets/icons';
 import { useState } from 'react';
@@ -15,32 +16,51 @@ export default function Header() {
     const navigate = useNavigate();
     const { setShowPopup, setPopupInfo } = usePopupContext();
     const [notifications, setNotifications] = useState([]);
+    const { isDarkMode, setIsDarkMode } = useDarkMode();
 
     return (
-        <header className="drop-shadow-sm fixed top-0 z-[10] w-full bg-[#f9f9f9] text-black h-[60px] px-4 font-medium flex items-center justify-between gap-4">
+        <header
+            className={`drop-shadow-sm fixed top-0 z-[10] w-full ${
+                isDarkMode
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-[#f9f9f9] text-black'
+            } h-[60px] px-4 font-medium flex items-center justify-between gap-4`}
+        >
+            {/* Left: Sidebar and Logo */}
             <div className="flex items-center justify-center gap-4">
-                {/* hamburgur menu btn */}
                 <Button
                     btnText={
-                        <div className="size-[20px] fill-[#434343] group-hover:fill-[#4977ec]">
+                        <div
+                            className={`size-[20px] ${
+                                isDarkMode
+                                    ? 'fill-white group-hover:fill-[#4977ec]'
+                                    : 'fill-[#434343] group-hover:fill-[#4977ec]'
+                            }`}
+                        >
                             {icons.hamburgur}
                         </div>
                     }
                     title="Show Sidebar"
                     onClick={() => setShowSideBar((prev) => !prev)}
-                    className="bg-[#ffffff] p-[9px] group rounded-full drop-shadow-sm w-fit"
+                    className={`${
+                        isDarkMode ? 'bg-gray-800' : 'bg-[#ffffff]'
+                    } p-[9px] group rounded-full drop-shadow-sm w-fit`}
                 />
-
-                {/* logo */}
                 <Link
-                    to={'/'}
+                    to="/"
                     className="flex items-center justify-center gap-3 text-nowrap font-medium text-xl"
                 >
-                    <div className="overflow-hidden rounded-full size-[38px] drop-shadow-sm hover:scale-110 transition-all duration-300">
+                    <div
+                        className={`overflow-hidden rounded-full size-[38px] drop-shadow-sm hover:scale-110 transition-all duration-300 ${
+                            isDarkMode ? 'bg-gray-800' : 'bg-white'
+                        }`}
+                    >
                         <img
                             src={LOGO}
                             alt="Snack Track Logo"
-                            className="object-cover size-full hover:brightness-95"
+                            className={`object-cover size-full hover:brightness-95 ${
+                                isDarkMode ? 'filter brightness-90' : ''
+                            }`}
                         />
                     </div>
                     <div className="hover:scale-110 transition-all duration-300">
@@ -49,46 +69,104 @@ export default function Header() {
                 </Link>
             </div>
 
-            {/* search bar */}
+            {/* Center: Searchbar */}
             <Searchbar />
 
-            <div className="flex gap-4 items-center">
-                {user.role === 'student' ? (
-                    <div className="flex items-center justify-center gap-4">
+            {/* Right: Actions */}
+            {user.role === 'student' ? (
+                <div className="flex gap-4 items-center">
+                    {/* Dark Mode Toggle */}
+                    <Button
+                        btnText={
+                            <div
+                                className={`size-[20px] ${
+                                    isDarkMode
+                                        ? 'fill-white group-hover:fill-[#4977ec]'
+                                        : 'fill-[#434343] group-hover:fill-[#4977ec]'
+                                }`}
+                            >
+                                {isDarkMode ? icons.sun : icons.moon}
+                            </div>
+                        }
+                        title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                        onClick={() => setIsDarkMode(!isDarkMode)}
+                        className={`${
+                            isDarkMode ? 'bg-gray-800' : 'bg-[#ffffff]'
+                        } p-[9px] group rounded-full drop-shadow-sm w-fit`}
+                    />
+
+                    {/* View Cart */}
+                    <Button
+                        btnText={
+                            <div
+                                className={`size-[20px] ${
+                                    isDarkMode
+                                        ? 'fill-white group-hover:fill-[#4977ec]'
+                                        : 'fill-[#434343] group-hover:fill-[#4977ec]'
+                                }`}
+                            >
+                                {icons.cart}
+                            </div>
+                        }
+                        title="View Cart"
+                        onClick={() => navigate('/cart')}
+                        className={`${
+                            isDarkMode ? 'bg-gray-800' : 'bg-[#ffffff]'
+                        } p-[9px] group rounded-full drop-shadow-sm w-fit`}
+                    />
+
+                    {/* Notifications */}
+                    <Button
+                        btnText={
+                            <div
+                                className={`size-[20px] ${
+                                    isDarkMode
+                                        ? 'fill-white group-hover:fill-[#4977ec]'
+                                        : 'fill-[#434343] group-hover:fill-[#4977ec]'
+                                }`}
+                            >
+                                {icons.bell}
+                            </div>
+                        }
+                        title="Notifications"
+                        onClick={() => {
+                            setShowPopup(true);
+                            setPopupInfo({ type: 'notifications' });
+                        }}
+                        className={`${
+                            isDarkMode ? 'bg-gray-800' : 'bg-[#ffffff]'
+                        } p-[9px] group rounded-full drop-shadow-sm w-fit`}
+                    />
+
+                    {/* Logout (student visible in small screens) */}
+                    <div className="hidden sm:block">
+                        <Logout />
+                    </div>
+                </div>
+            ) : (
+                <div className="flex items-center justify-center gap-4">
+                    <div className="flex gap-4 items-center">
+                        {/* Dark Mode Toggle */}
                         <Button
                             btnText={
-                                <div className="size-[20px] group-hover:fill-[#4977ec] fill-[#434343]">
-                                    {icons.cart}
+                                <div
+                                    className={`size-[20px] ${
+                                        isDarkMode
+                                            ? 'fill-white group-hover:fill-[#4977ec]'
+                                            : 'fill-[#434343] group-hover:fill-[#4977ec]'
+                                    }`}
+                                >
+                                    {isDarkMode ? icons.sun : icons.moon}
                                 </div>
                             }
-                            title="View Cart"
-                            onClick={() => navigate('/cart')}
-                            className="bg-[#ffffff] p-[9px] group rounded-full drop-shadow-sm w-fit"
+                            title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                            onClick={() => setIsDarkMode(!isDarkMode)}
+                            className={`${
+                                isDarkMode ? 'bg-gray-800' : 'bg-[#ffffff]'
+                            } p-[9px] group rounded-full drop-shadow-sm w-fit`}
                         />
-                        <div className="relative">
-                            <Button
-                                btnText={
-                                    <div className="size-[20px] group-hover:fill-[#4977ec] fill-[#434343]">
-                                        {icons.bell}
-                                    </div>
-                                }
-                                title="Notifications"
-                                onClick={() => {
-                                    setShowPopup(true);
-                                    setPopupInfo({ type: 'notifications' });
-                                }}
-                                className="bg-[#ffffff] p-[9px] group rounded-full drop-shadow-sm w-fit"
-                            />
-                            {/* notifications count */}
-                            {notifications.length > 0 && (
-                                <span className="text-[13px] flex items-center justify-center leading-3 text-white absolute -top-1 -right-1 size-5 bg-red-600 rounded-full">
-                                    {notifications.length}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                ) : (
-                    <div className="flex items-center justify-center gap-4">
+
+                        {/* Add Student Button */}
                         <Button
                             onClick={() => navigate('/register-student')}
                             btnText={
@@ -103,13 +181,13 @@ export default function Header() {
                             className="text-white rounded-md w-fit text-nowrap px-3 h-[35px] bg-[#4977ec] hover:bg-[#3b62c2]"
                         />
                     </div>
-                )}
-                <div
-                    className={`hidden ${user.role === 'student' ? 'sm:block' : 'md:block'}`}
-                >
-                    <Logout />
+
+                    {/* Logout (visible on medium screens for non-student) */}
+                    <div className="hidden md:block">
+                        <Logout />
+                    </div>
                 </div>
-            </div>
+            )}
         </header>
     );
 }

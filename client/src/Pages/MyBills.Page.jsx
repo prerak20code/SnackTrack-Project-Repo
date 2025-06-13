@@ -3,6 +3,7 @@ import { useUserContext } from '../Contexts';
 import { orderService } from '../Services';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion'; // ✅ Import Framer Motion
+import { useDarkMode } from '../Contexts/DarkMode';
 
 const BillsPage = () => {
     const [bills, setBills] = useState([]);
@@ -11,6 +12,7 @@ const BillsPage = () => {
     const [totalAmount, setTotalAmount] = useState(0);
     const { user } = useUserContext();
     const [countdown, setCountdown] = useState(2); // ✅ Timer for loading
+    const { isDarkMode } = useDarkMode();
 
     useEffect(() => {
         if (user) fetchBills();
@@ -56,23 +58,38 @@ const BillsPage = () => {
     };
 
     return (
-        <div className="max-w-5xl mx-auto p-6">
-            <h1 className="text-3xl font-bold text-orange-600 text-center mb-6">
+        <div
+            className={`max-w-5xl mx-auto p-6 ${
+                isDarkMode ? 'bg-gray-900' : 'bg-white'
+            }`}
+        >
+            <h1
+                className={`text-3xl font-bold text-center mb-6 ${
+                    isDarkMode ? 'text-[#4977ec]' : 'text-orange-600'
+                }`}
+            >
                 Monthly Bills
             </h1>
 
-            {/* Month Selector */}
             <div className="flex justify-center mb-6">
                 <input
                     type="month"
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
-                    className="border-2 border-orange-500 px-4 py-2 rounded-lg text-lg focus:ring-2 focus:ring-orange-500 focus:outline-none shadow-sm"
+                    className={`px-4 py-2 rounded-lg border-2 ${
+                        isDarkMode
+                            ? 'bg-gray-800 border-gray-700 text-white'
+                            : 'border-orange-500 text-gray-900'
+                    } focus:ring-2 focus:ring-[#4977ec] focus:outline-none shadow-sm`}
                 />
             </div>
 
             {loading ? (
-                <div className="text-center text-orange-500 text-lg py-6">
+                <div
+                    className={`text-center text-lg py-6 ${
+                        isDarkMode ? 'text-[#4977ec]' : 'text-orange-500'
+                    }`}
+                >
                     <motion.div
                         animate={{ opacity: [0.3, 1, 0.3] }}
                         transition={{ repeat: Infinity, duration: 1.2 }}
@@ -84,13 +101,18 @@ const BillsPage = () => {
             ) : (
                 <div className="overflow-x-auto">
                     <motion.table
-                        className="min-w-full border-4 border-orange-500 shadow-lg"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 1 }} // ✅ Slower fade-in effect
+                        className={`min-w-full border-4 shadow-lg ${
+                            isDarkMode
+                                ? 'border-gray-700 text-white'
+                                : 'border-orange-500 text-gray-800'
+                        }`}
                     >
                         <thead>
-                            <tr className="bg-orange-500 text-white text-lg font-semibold">
+                            <tr
+                                className={
+                                    isDarkMode ? 'bg-gray-800' : 'bg-orange-500'
+                                }
+                            >
                                 <th className="border-2 border-orange-700 px-6 py-3">
                                     Date
                                 </th>
@@ -107,7 +129,11 @@ const BillsPage = () => {
                                 bills.map((bill, billIndex) => (
                                     <motion.tr
                                         key={bill._id}
-                                        className="border-2 border-orange-500 text-gray-800 text-lg"
+                                        className={`border-2 text-lg ${
+                                            isDarkMode
+                                                ? 'border-gray-700 text-gray-300'
+                                                : 'border-orange-500 text-gray-800'
+                                        }`}
                                         initial={{ opacity: 0, y: 30 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{
@@ -154,7 +180,11 @@ const BillsPage = () => {
                                 <tr>
                                     <td
                                         colSpan={3}
-                                        className="text-center text-gray-600 p-6 text-lg"
+                                        className={`text-center p-6 text-lg ${
+                                            isDarkMode
+                                                ? 'text-gray-400'
+                                                : 'text-gray-600'
+                                        }`}
                                     >
                                         No bills found for this month.
                                     </td>
@@ -167,10 +197,11 @@ const BillsPage = () => {
 
             {/* Total Amount Display */}
             <motion.div
-                className="mt-6 p-4 bg-orange-500 text-white text-xl font-semibold text-center rounded-lg shadow-md"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.8 }}
+                className={`mt-6 p-4 text-xl font-semibold text-center rounded-lg shadow-md ${
+                    isDarkMode
+                        ? 'bg-gray-800 text-white'
+                        : 'bg-orange-500 text-white'
+                }`}
             >
                 Total Amount for {format(new Date(month), 'MMMM yyyy')}: ₹
                 {totalAmount.toFixed(2)}

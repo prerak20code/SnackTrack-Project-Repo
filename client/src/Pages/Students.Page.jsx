@@ -10,10 +10,13 @@ import {
 import { LIMIT } from '../Constants/constants';
 import { Button, StudentView } from '../Components';
 import { icons } from '../Assets/icons';
+import { useDarkMode } from '../Contexts/DarkMode';
 
 export default function StudentsPage() {
     const { students, setStudents } = useStudentContext();
     const { setPopupInfo, setShowPopup } = usePopupContext();
+    const { isDarkMode } = useDarkMode();
+
     const [studentsInfo, setStudentsInfo] = useState({});
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
@@ -78,7 +81,11 @@ export default function StudentsPage() {
     }
 
     return (
-        <div className="sm:p-8 pt-4 sm:pt-4">
+        <div
+            className={`sm:p-8 pt-4 sm:pt-4 ${
+                isDarkMode ? 'bg-gray-900' : 'bg-white'
+            }`}
+        >
             {studentElements.length > 0 && (
                 <div className="w-full">
                     <div className=" w-full flex justify-center mb-8">
@@ -107,7 +114,11 @@ export default function StudentsPage() {
 
             {loading ? (
                 page === 1 ? (
-                    <div className="w-full text-center">
+                    <div
+                        className={`w-full text-center ${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                        }`}
+                    >
                         loading first batch...
                         {/* pulses */}
                     </div>
@@ -119,7 +130,15 @@ export default function StudentsPage() {
                     </div>
                 )
             ) : (
-                studentElements.length === 0 && <div>No student found !!</div>
+                studentElements.length === 0 && (
+                    <div
+                        className={
+                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                        }
+                    >
+                        No student found !!
+                    </div>
+                )
             )}
         </div>
     );

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { CONTRIBUTORS, LOGO } from '../../Constants/constants';
 import toast from 'react-hot-toast';
 import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from 'react-icons/fa';
+import { useDarkMode } from '../../Contexts/DarkMode';
 const socialIcons = {
     github: <FaGithub />,
     linkedin: <FaLinkedin />,
@@ -13,6 +14,7 @@ const socialIcons = {
 };
 export default function Footer() {
     const [feedback, setFeedback] = useState({ content: '', email: '' });
+    const { isDarkMode } = useDarkMode(); // Add this line
 
     // Social media icons
     const socials = {
@@ -24,8 +26,15 @@ export default function Footer() {
 
     const socialElements = Object.entries(socials).map(([platform, url]) => (
         <a key={platform} href={url} target="_blank" rel="noopener noreferrer">
-            <div className="bg-white p-[6px] rounded-full drop-shadow-sm hover:bg-[#d4d4d4] transition-colors duration-300 w-fit">
-                <div className="size-[18px]">{socialIcons[platform]}</div>
+            <div
+                className={`p-[6px] rounded-full drop-shadow-sm transition-colors duration-300 w-fit
+            ${
+                isDarkMode
+                    ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                    : 'bg-white hover:bg-[#d4d4d4] text-black'
+            }`}
+            >
+                <div className="size-[16px]">{socialIcons[platform]}</div>
             </div>
         </a>
     ));
@@ -62,7 +71,13 @@ export default function Footer() {
     }
 
     return (
-        <footer className="p-6 bg-[#f9f9f9]">
+        <footer
+            className={`mt-auto w-full p-6 ${
+                isDarkMode
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-[#f9f9f9] text-black'
+            }`}
+        >
             <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 lg:gap-12">
                 {/* Logo and Tagline */}
                 <div className="flex flex-col gap-4">
@@ -74,18 +89,24 @@ export default function Footer() {
                                 className="object-cover size-full"
                             />
                         </div>
-                        <div className="text-black font-semibold text-xl">
+                        <div
+                            className={`font-semibold text-xl ${isDarkMode ? 'text-white' : 'text-black'}`}
+                        >
                             Snack Track
                         </div>
                     </Link>
-                    <p className="text-gray-600 text-sm max-w-[250px]">
+                    <p
+                        className={`text-sm max-w-[250px] ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+                    >
                         Generalized, Transparent & Secure.
                     </p>
                 </div>
 
                 {/* Quick Links */}
                 <div className="flex flex-col gap-4">
-                    <p className="text-center text-black font-semibold text-[18px] underline underline-offset-2">
+                    <p
+                        className={`text-center font-semibold text-[18px] underline underline-offset-2 ${isDarkMode ? 'text-white' : 'text-black'}`}
+                    >
                         Quick Links
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -98,7 +119,7 @@ export default function Footer() {
                     onSubmit={submitFeedback}
                     className="flex flex-col gap-4 max-w-[350px] w-full"
                 >
-                    <p className="text-black text-center font-semibold text-[18px] underline underline-offset-2">
+                    <p className="text-white text-center font-semibold text-[18px] underline underline-offset-2">
                         Provide Feedback
                     </p>
                     <div className="flex flex-col items-center w-full gap-2">
@@ -108,7 +129,11 @@ export default function Footer() {
                                 placeholder="Your Feedback..."
                                 value={feedback.content}
                                 onChange={handleChange}
-                                className="flex-1 bg-white shadow-sm border border-gray-300 rounded-lg px-3 h-[32px] text-sm focus:border-[#4977ec] focus:outline-none"
+                                className={`flex-1 shadow-sm border rounded-lg px-3 h-[32px] text-sm focus:outline-none ${
+                                    isDarkMode
+                                        ? 'bg-gray-800 border-gray-700 text-white focus:border-[#4977ec]'
+                                        : 'bg-white border-gray-300 text-black focus:border-[#4977ec]'
+                                }`}
                             />
                         </div>
                         <div>
@@ -117,7 +142,11 @@ export default function Footer() {
                                 placeholder="Your Email"
                                 value={feedback.email}
                                 onChange={handleChange}
-                                className="flex-1 bg-white shadow-sm border border-gray-300 rounded-lg px-3 h-[32px] text-sm focus:border-[#4977ec] focus:outline-none"
+                                className={`flex-1 shadow-sm border rounded-lg px-3 h-[32px] text-sm focus:outline-none ${
+                                    isDarkMode
+                                        ? 'bg-gray-800 border-gray-700 text-white focus:border-[#4977ec]'
+                                        : 'bg-white border-gray-300 text-black focus:border-[#4977ec]'
+                                }`}
                             />
                         </div>
                         <Button
@@ -130,11 +159,15 @@ export default function Footer() {
             </div>
 
             {/* Divider */}
-            <hr className="my-6 border-gray-300" />
+            <hr
+                className={`my-6 ${isDarkMode ? 'border-gray-700' : 'border-gray-300'}`}
+            />
 
             {/* Copyright and Social Links */}
             <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-gray-600 text-sm text-center">
+                <p
+                    className={`text-sm text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                >
                     &copy; 2024 Snack Track. All rights reserved.
                 </p>
                 <div className="flex items-center gap-4">{socialElements}</div>

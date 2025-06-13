@@ -23,9 +23,10 @@ export default function InputField({
         'confirmPassword',
         'contractorPassword',
     ];
+
     return (
         <div key={field.name} className={`w-full ${className}`}>
-            <div className="bg-white z-[1] ml-2 px-[5px] w-fit relative top-[10px] text-[15px] font-medium">
+            <div className="z-[1] ml-2 px-[5px] w-fit relative top-[10px] text-[15px] font-medium bg-white text-gray-900">
                 <label htmlFor={field.name}>
                     {field.required && <span className="text-red-500">* </span>}
                     {field.label} :
@@ -40,12 +41,12 @@ export default function InputField({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder={field.placeholder}
-                    className="overflow-x-scroll shadow-sm py-2 rounded-md px-3 w-full border-[0.01rem] border-gray-500 bg-transparent placeholder:text-[15px]"
+                    className="overflow-x-scroll shadow-sm py-2 rounded-md px-3 w-full border-[0.01rem] placeholder:text-[15px] bg-white text-gray-900 placeholder:text-gray-500 border-gray-300"
                 />
                 {passwordVariants.includes(field.name) && (
                     <div
                         onClick={() => setShowPassword((prev) => !prev)}
-                        className="size-[16px] absolute right-0 top-[50%] transform translate-y-[-50%] mr-4 cursor-pointer fill-[#474747]"
+                        className="size-[16px] absolute right-0 top-[50%] transform translate-y-[-50%] mr-4 cursor-pointer fill-gray-600"
                     >
                         {showPassword ? icons.eyeOff : icons.eye}
                     </div>

@@ -9,6 +9,8 @@ import { LIMIT } from '../Constants/constants';
 import { useSocket } from '../customhooks/socket';
 import toast from 'react-hot-toast';
 import { sendNotification } from '../Utils/notification';
+import { useNotifications } from '../Contexts/notifications.context';
+import { useDarkMode } from '../Contexts/DarkMode';
 
 export default function MyOrdersPage() {
     const [orders, setOrders] = useState([]);
@@ -16,6 +18,8 @@ export default function MyOrdersPage() {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [fetchingNext, setFetchingNext] = useState(false);
+    const { addNotification } = useNotifications();
+    const { isDarkMode } = useDarkMode();
 
     const navigate = useNavigate();
     const { user } = useUserContext();
@@ -89,6 +93,12 @@ export default function MyOrdersPage() {
                 icon: '/prepared-icon.png',
             });
             updateOrderInUI(order._id, 'Prepared');
+            addNotification({
+                title: 'Order Prepared',
+                message: 'Your order is ready to be picked up.',
+                type: 'success',
+                orderId: order._id,
+            });
         });
 
         socket.on('orderRejected', (order) => {
@@ -98,6 +108,12 @@ export default function MyOrdersPage() {
                 icon: '/rejected-icon.png',
             });
             updateOrderInUI(order._id, 'Rejected');
+            addNotification({
+                title: 'Order Rejected',
+                message: 'Your order was rejected by the canteen.',
+                type: 'error',
+                orderId: order._id,
+            });
         });
 
         socket.on('orderPickedUp', (order) => {
@@ -107,6 +123,12 @@ export default function MyOrdersPage() {
                 icon: '/pickedup-icon.png',
             });
             updateOrderInUI(order._id, 'PickedUp');
+            addNotification({
+                title: 'Order Picked Up',
+                message: 'You have picked up your order.',
+                type: 'success',
+                orderId: order._id,
+            });
         });
 
         return () => {
@@ -114,12 +136,20 @@ export default function MyOrdersPage() {
             socket.off('orderRejected');
             socket.off('orderPickedUp');
         };
-    }, [socket]);
+    }, [socket, addNotification]);
 
     return (
-        <div className="w-full p-4">
+        <div
+            className={`w-full p-4 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}
+        >
             <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
+                <h1
+                    className={`text-3xl font-bold mb-8 ${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}
+                >
+                    My Orders
+                </h1>
                 {orders.length > 0 && (
                     <Button
                         btnText={

@@ -4,6 +4,8 @@ import { icons } from '../../Assets/icons';
 import { usePopupContext } from '../../Contexts';
 import { useNavigate } from 'react-router-dom';
 import { contractorService } from '../../Services';
+import { useDarkMode } from '../../Contexts/DarkMode';
+
 import toast from 'react-hot-toast';
 
 export default function EmailVerificationPopup() {
@@ -16,6 +18,7 @@ export default function EmailVerificationPopup() {
     const inputRefs = useRef([]); // Refs for each input box
     const [timeLeft, setTimeLeft] = useState(60);
     const [canResend, setCanResend] = useState(false);
+    const { isDarkMode } = useDarkMode();
 
     const handleChange = (index, value) => {
         const newCode = [...code];
@@ -85,10 +88,18 @@ export default function EmailVerificationPopup() {
     }, [timeLeft]);
 
     return (
-        <div className="relative w-[350px] sm:w-[450px] transition-all duration-300 bg-white rounded-xl overflow-hidden text-black p-5 flex flex-col items-center justify-center gap-4">
+        <div
+            className={`relative w-[350px] sm:w-[450px] transition-all duration-300 rounded-xl overflow-hidden p-5 flex flex-col items-center justify-center gap-4 ${
+                isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'
+            }`}
+        >
             <Button
                 btnText={
-                    <div className="size-[20px] stroke-black">
+                    <div
+                        className={`size-[20px] ${
+                            isDarkMode ? 'stroke-white' : 'stroke-black'
+                        }`}
+                    >
                         {icons.cross}
                     </div>
                 }
@@ -98,8 +109,18 @@ export default function EmailVerificationPopup() {
             />
 
             <div className="flex flex-col gap-3">
-                <p className="text-2xl font-bold text-center">Verify Email</p>
-                <p className="text-[15px] text-center">
+                <p
+                    className={`text-2xl font-bold text-center ${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}
+                >
+                    Verify Email
+                </p>
+                <p
+                    className={`text-[15px] text-center ${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                    }`}
+                >
                     Enter the 6-digit code sent to your email
                 </p>
 
@@ -116,7 +137,11 @@ export default function EmailVerificationPopup() {
                             }
                             onKeyDown={(e) => handleKeyDown(index, e)}
                             ref={(el) => (inputRefs.current[index] = el)}
-                            className="size-10 text-2xl text-center border-2 border-gray-300 rounded-lg focus:border-[#4977ec] focus:outline-none"
+                            className={`size-10 text-2xl text-center border-2 rounded-lg focus:border-[#4977ec] focus:outline-none ${
+                                isDarkMode
+                                    ? 'bg-gray-700 border-gray-600 text-white'
+                                    : 'bg-white border-gray-300 text-black'
+                            }`}
                             autoFocus={index === 0}
                         />
                     ))}
@@ -125,7 +150,11 @@ export default function EmailVerificationPopup() {
                 {/* Timer and Resend Button */}
                 <div className="text-center">
                     {timeLeft > 0 ? (
-                        <p className="text-sm text-gray-600">
+                        <p
+                            className={`text-sm ${
+                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}
+                        >
                             Resend code in {timeLeft} seconds
                         </p>
                     ) : (
@@ -135,7 +164,13 @@ export default function EmailVerificationPopup() {
                             }
                             onClick={resendCode}
                             disabled={!canResend}
-                            className="text-sm text-[#4977ec] hover:underline"
+                            className={`text-sm ${
+                                canResend
+                                    ? 'text-[#4977ec] hover:underline'
+                                    : isDarkMode
+                                      ? 'text-gray-500'
+                                      : 'text-gray-400'
+                            }`}
                         />
                     )}
                 </div>
@@ -144,7 +179,13 @@ export default function EmailVerificationPopup() {
                     btnText={
                         loading ? (
                             <div className="flex items-center justify-center w-full">
-                                <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
+                                <div
+                                    className={`size-5 ${
+                                        isDarkMode
+                                            ? 'fill-[#a2bdff]'
+                                            : 'fill-[#4977ec]'
+                                    }`}
+                                >
                                     {icons.loading}
                                 </div>
                             </div>
@@ -154,7 +195,13 @@ export default function EmailVerificationPopup() {
                     }
                     onClick={verifyEmail}
                     disabled={disabled}
-                    className="text-white rounded-md py-2 h-[40px] flex items-center justify-center text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                    className={`text-white rounded-md py-2 h-[40px] flex items-center justify-center text-lg w-full ${
+                        disabled
+                            ? isDarkMode
+                                ? 'bg-gray-700 cursor-not-allowed'
+                                : 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-[#4977ec] hover:bg-[#3b62c2]'
+                    }`}
                 />
             </div>
         </div>

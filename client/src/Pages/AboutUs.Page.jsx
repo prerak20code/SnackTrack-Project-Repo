@@ -1,35 +1,89 @@
 import { CONTRIBUTORS } from '../Constants/constants';
 import { Link } from 'react-router-dom';
+import { useDarkMode } from '../Contexts/DarkMode';
 
 function FeatureCard({ title, description }) {
+    const { isDarkMode } = useDarkMode();
     return (
-        <div className="bg-white shadow-md rounded-xl p-6 text-center">
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            <p className="text-gray-700 mt-2">{description}</p>
+        <div
+            className={`shadow-md rounded-xl p-6 text-center ${
+                isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}
+        >
+            <h3
+                className={`text-lg font-semibold ${
+                    isDarkMode ? 'text-gray-200' : 'text-gray-900'
+                }`}
+            >
+                {title}
+            </h3>
+            <p
+                className={`mt-2 ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-700'
+                }`}
+            >
+                {description}
+            </p>
         </div>
     );
 }
 
 function PrivacyCard({ title, description }) {
+    const { isDarkMode } = useDarkMode();
     return (
-        <div className="bg-white shadow-md rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            <p className="text-gray-700 mt-2">{description}</p>
+        <div
+            className={`shadow-md rounded-xl p-6 ${
+                isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}
+        >
+            <h3
+                className={`text-lg font-semibold ${
+                    isDarkMode ? 'text-gray-200' : 'text-gray-900'
+                }`}
+            >
+                {title}
+            </h3>
+            <p
+                className={`mt-2 ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-700'
+                }`}
+            >
+                {description}
+            </p>
         </div>
     );
 }
+
 export default function AboutUsPage() {
+    const { isDarkMode } = useDarkMode();
+
     return (
-        <div className="w-full min-h-screen">
+        <div
+            className={`w-full min-h-screen ${
+                isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
+            }`}
+        >
             {/* Hero Section */}
-            <section className="w-full bg-white shadow-md rounded-xl py-10 px-8 md:px-16">
-                <h1 className="text-4xl font-bold text-gray-900">About Us</h1>
-                <p className="mt-4 text-lg text-gray-700 max-w-3xl">
+            <section
+                className={`w-full shadow-md rounded-xl py-10 px-8 md:px-16 ${
+                    isDarkMode ? 'bg-gray-800' : 'bg-white'
+                }`}
+            >
+                <h1
+                    className={`text-4xl font-bold ${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}
+                >
+                    About Us
+                </h1>
+                <p
+                    className={`mt-4 text-lg max-w-3xl ${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}
+                >
                     Welcome to <strong>Hostel Canteen Management</strong>, a
                     platform designed to enhance transparency, efficiency, and
-                    security in hostel dining services. Our goal is to provide
-                    real-time meal tracking, structured billing, and a seamless
-                    feedback system.
+                    security in hostel dining services...
                 </p>
             </section>
 
@@ -37,10 +91,18 @@ export default function AboutUsPage() {
             <div className="w-full px-8 md:px-16 py-10 grid grid-cols-1 md:grid-cols-2 gap-12">
                 {/* Mission */}
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">
+                    <h2
+                        className={`text-2xl font-bold ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}
+                    >
                         Our Mission
                     </h2>
-                    <p className="text-gray-700 mt-3">
+                    <p
+                        className={`mt-3 ${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                    >
                         We aim to eliminate manual discrepancies, enhance food
                         quality monitoring, and ensure a fair billing system in
                         hostel canteens. Our platform provides students with
@@ -51,10 +113,19 @@ export default function AboutUsPage() {
 
                 {/* Why We Started */}
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">
-                        Why We Started
+                    <h2
+                        className={`text-2xl font-bold ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}
+                    >
+                        Why we started
                     </h2>
-                    <p className="text-gray-700 mt-3">
+                    <p
+                        className={`mt-3 ${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                    >
+                        {' '}
                         Many hostel residents face challenges such as inaccurate
                         meal deductions and lack of transparency. Our system
                         centralizes meal tracking, payment management, and
@@ -65,8 +136,16 @@ export default function AboutUsPage() {
             </div>
 
             {/* Features Section */}
-            <section className="w-full px-8 md:px-16 py-10 bg-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 text-center">
+            <section
+                className={`w-full px-8 md:px-16 py-10 ${
+                    isDarkMode ? 'bg-gray-800/50' : 'bg-gray-100'
+                }`}
+            >
+                <h2
+                    className={`text-2xl font-bold ${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}
+                >
                     Key Features
                 </h2>
 
@@ -95,11 +174,23 @@ export default function AboutUsPage() {
             </section>
 
             {/* Meet the Team */}
-            <section className="w-full px-8 md:px-16 py-12 text-center">
-                <h2 className="text-2xl font-bold text-gray-900">
+            <section
+                className={`w-full px-8 md:px-16 py-12 text-center ${
+                    isDarkMode ? 'bg-gray-900' : 'bg-white'
+                }`}
+            >
+                <h2
+                    className={`text-2xl font-bold ${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}
+                >
                     Meet the Team
                 </h2>
-                <p className="text-gray-700 mt-3">
+                <p
+                    className={`mt-3 ${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}
+                >
                     Our team of developers and canteen administrators work
                     together to ensure smooth operations and a transparent
                     dining experience.
@@ -119,7 +210,13 @@ export default function AboutUsPage() {
                                         loading="lazy"
                                     />
                                 </div>
-                                <p className="mt-2 font-semibold text-gray-800">
+                                <p
+                                    className={`mt-3 ${
+                                        isDarkMode
+                                            ? 'text-gray-300'
+                                            : 'text-gray-700'
+                                    }`}
+                                >
                                     {contributor.name}
                                 </p>
                             </div>
@@ -129,8 +226,16 @@ export default function AboutUsPage() {
             </section>
 
             {/* Privacy & Security */}
-            <section className="w-full px-8 md:px-16 py-12 bg-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 text-center">
+            <section
+                className={`w-full px-8 md:px-16 py-12 ${
+                    isDarkMode ? 'bg-gray-800/50' : 'bg-gray-100'
+                }`}
+            >
+                <h2
+                    className={`text-2xl font-bold ${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}
+                >
                     Privacy & Security
                 </h2>
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -154,9 +259,24 @@ export default function AboutUsPage() {
             </section>
 
             {/* Contact Section */}
-            <section className="w-full px-8 md:px-16 py-12 text-center">
-                <h2 className="text-2xl font-bold text-gray-900">Contact Us</h2>
-                <p className="text-md text-gray-700 mt-3">
+            <section
+                className={`w-full px-8 md:px-16 py-12 ${
+                    isDarkMode ? 'bg-gray-800/50' : 'bg-gray-100'
+                }`}
+            >
+                <h2
+                    className={`text-2xl font-bold ${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}
+                >
+                    Contact Us
+                </h2>
+                <p
+                    className={`mt-3 ${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}
+                >
+                    {' '}
                     For inquiries or assistance, reach out to our support team
                     via{' '}
                     <Link

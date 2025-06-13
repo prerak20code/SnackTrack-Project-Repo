@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { icons } from '../Assets/icons';
+import { useDarkMode } from '../Contexts/DarkMode';
 
 export default function FAQpage() {
     const [expanded, setExpanded] = useState(null);
+    const { isDarkMode } = useDarkMode();
 
     const toggleExpand = (index) => {
         setExpanded(expanded === index ? null : index);
@@ -59,7 +61,9 @@ export default function FAQpage() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="text-4xl font-bold text-gray-900 text-center"
+                className={`text-4xl font-bold text-center ${
+                    isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}
             >
                 Frequently Asked Questions
             </motion.h1>
@@ -68,7 +72,9 @@ export default function FAQpage() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
-                className="text-lg text-gray-600 text-center mt-2 max-w-2xl"
+                className={`text-lg text-center mt-2 max-w-2xl ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}
             >
                 Find answers to the most commonly asked questions about our
                 services.
@@ -79,14 +85,22 @@ export default function FAQpage() {
                 {faqs.map((faq, index) => (
                     <motion.div
                         key={index}
-                        className="bg-white/50 backdrop-blur-lg border border-gray-200 shadow-lg p-5 rounded-lg cursor-pointer transition-transform hover:scale-[1.02]"
+                        className={`backdrop-blur-lg border shadow-lg p-5 rounded-lg cursor-pointer transition-transform hover:scale-[1.02] ${
+                            isDarkMode
+                                ? 'bg-gray-800/50 border-gray-700'
+                                : 'bg-white/50 border-gray-200'
+                        }`}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.1 }}
                         onClick={() => toggleExpand(index)}
                     >
                         <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-semibold text-gray-900">
+                            <h2
+                                className={`text-lg font-semibold ${
+                                    isDarkMode ? 'text-white' : 'text-gray-900'
+                                }`}
+                            >
                                 {faq.question}
                             </h2>
 
@@ -95,16 +109,30 @@ export default function FAQpage() {
                                     rotate: expanded === index ? -45 : 0,
                                 }}
                                 transition={{ duration: 0.1 }}
-                                className="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition"
+                                className={`p-2 rounded-full transition ${
+                                    isDarkMode
+                                        ? 'bg-gray-700 hover:bg-gray-600'
+                                        : 'bg-gray-200 hover:bg-gray-300'
+                                }`}
                             >
-                                <div className="size-[16px]">{icons.plus}</div>
+                                <div
+                                    className={`size-[16px] ${
+                                        isDarkMode ? 'fill-white' : ''
+                                    }`}
+                                >
+                                    {icons.plus}
+                                </div>
                             </motion.div>
                         </div>
 
                         <AnimatePresence>
                             {expanded === index && (
                                 <motion.div
-                                    className="mt-2 text-gray-600 overflow-hidden"
+                                    className={`mt-2 overflow-hidden ${
+                                        isDarkMode
+                                            ? 'text-gray-300'
+                                            : 'text-gray-600'
+                                    }`}
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                     exit={{ opacity: 0, height: 0 }}

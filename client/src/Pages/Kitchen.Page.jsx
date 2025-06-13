@@ -6,6 +6,7 @@ import { icons } from '../Assets/icons';
 import toast from 'react-hot-toast';
 import { getRollNo } from '../Utils';
 import { io } from 'socket.io-client';
+// import { useDarkMode } from '../Contexts/DarkMode';
 
 export default function KitchenPage() {
     const [orders, setOrders] = useState([]);
@@ -15,6 +16,8 @@ export default function KitchenPage() {
     const [key, setKey] = useState('');
     const [verifying, setVerifying] = useState(false);
     const [showKey, setShowKey] = useState(false);
+    // const { isDarkMode } = useDarkMode();
+
     const [hostel, setHostel] = useState({});
     const [hostels, setHostels] = useState([
         { value: '', label: 'Select Hostel' },
@@ -199,6 +202,16 @@ export default function KitchenPage() {
 
     const { groupedOrders, itemSummary } = processOrders();
 
+    //     return loading ? (
+    //     <div className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>loading...</div>
+    // ) : error ? (
+    //     <div className={`w-full h-full flex items-center justify-center ${
+    //         isDarkMode ? 'bg-gray-900' : 'bg-gray-100'
+    //     }`}>
+    //         <div className={`sm:px-8 drop-shadow-md relative w-[350px] sm:w-[450px] transition-all duration-300 rounded-xl overflow-hidden p-5 flex flex-col items-center justify-center gap-4 ${
+    //             isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'
+    //         }`}></div>
+
     return loading ? (
         <div>loading...</div>
     ) : error ? (
@@ -250,6 +263,9 @@ export default function KitchenPage() {
             </div>
         </div>
     ) : (
+        //         <div className={`min-h-screen p-4 md:p-6 ${
+        //     isDarkMode ? 'bg-gray-900' : 'bg-gray-100'
+        // }`}></div>
         <div className="min-h-screen bg-gray-100 p-4 md:p-6">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-6">

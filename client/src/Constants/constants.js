@@ -11,19 +11,19 @@ const SERVER_ERROR = 500;
 const BAD_REQUEST = 400;
 
 const CONTRIBUTORS = [
-    {
-        image: SANIAIMAGE,
-        role: 'Full Stack Developer',
-        bio: 'Full-stack developer passionate about creating beautiful, scalable applications',
-        name: 'Sania Singla',
-        socials: {
-            linkedIn: 'https://www.linkedin.com/in/sania-singla',
-            discord: 'https://discord.com/channels/@sania_singla',
-            gitHub: 'https://github.com/Sania-Singla',
-            threads: 'https://x.com/sania_singla',
-            instagram: 'https://www.instagram.com/sania__singla',
-        },
-    },
+    // {
+    //     image: SANIAIMAGE,
+    //     role: 'Full Stack Developer',
+    //     bio: 'Full-stack developer passionate about creating beautiful, scalable applications',
+    //     name: 'Sania Singla',
+    //     socials: {
+    //         linkedIn: 'https://www.linkedin.com/in/sania-singla',
+    //         discord: 'https://discord.com/channels/@sania_singla',
+    //         gitHub: 'https://github.com/Sania-Singla',
+    //         threads: 'https://x.com/sania_singla',
+    //         instagram: 'https://www.instagram.com/sania__singla',
+    //     },
+    // },
     {
         image: USER_PLACEHOLDER_IMAGE,
         role: 'Full Stack Developer',
@@ -31,9 +31,7 @@ const CONTRIBUTORS = [
         name: 'Kartik',
         socials: {
             linkedIn: '',
-            discord: '',
-            gitHub: '',
-            threads: '',
+            gitHub: 'https://github.com/mrkartik00',
             instagram: '',
         },
     },
@@ -41,12 +39,10 @@ const CONTRIBUTORS = [
         image: USER_PLACEHOLDER_IMAGE,
         role: 'Full Stack Developer',
         bio: 'Full-stack developer passionate about creating beautiful, scalable applications',
-        name: 'Pal ji',
+        name: 'Karan',
         socials: {
             linkedIn: '',
-            discord: '',
-            gitHub: '',
-            threads: '',
+            gitHub: 'https://github.com/Karan20991',
             instagram: '',
         },
     },
@@ -54,12 +50,10 @@ const CONTRIBUTORS = [
         image: USER_PLACEHOLDER_IMAGE,
         role: 'Full Stack Developer',
         bio: 'Full-stack developer passionate about creating beautiful, scalable applications',
-        name: 'Nag Pal ji',
+        name: 'Prerak',
         socials: {
             linkedIn: '',
-            discord: '',
             gitHub: '',
-            threads: '',
             instagram: '',
         },
     },

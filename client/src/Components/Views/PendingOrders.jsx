@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { ContractorOrderCard } from '..';
 import { useSocket } from '../../customhooks/socket';
 import toast from 'react-hot-toast';
+import { useDarkMode } from '../../Contexts/DarkMode';
 import { sendNotification } from '../../Utils/notification';
 export default function PendingOrders({ socket }) {
     const [orders, setOrders] = useState(() => []); // ✅ Always initialize as an array
@@ -15,6 +16,8 @@ export default function PendingOrders({ socket }) {
     const [trigger, setTrigger] = useState(0); // ✅ Force rerender when updated
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
+    const { isDarkMode } = useDarkMode();
+
     // const socket = useSocket(true);
 
     const paginateRef = paginate(ordersInfo?.hasNextPage, loading, setPage);
@@ -80,10 +83,15 @@ export default function PendingOrders({ socket }) {
     }, [socket]);
 
     return loading ? (
-        <div>Loading...</div>
+        <div
+            className={`text-center py-8 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}
+        >
+            loading...
+        </div>
     ) : orders.length > 0 ? (
         <motion.div
-            key={trigger} // ✅ Ensures UI updates
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -113,6 +121,12 @@ export default function PendingOrders({ socket }) {
             ))}
         </motion.div>
     ) : (
-        <div>No orders found</div>
+        <div
+            className={`text-center py-8 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}
+        >
+            No orders found
+        </div>
     );
 }

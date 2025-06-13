@@ -5,6 +5,7 @@ import { paginate } from '../../Utils';
 import { orderService } from '../../Services';
 import { motion } from 'framer-motion';
 import { ContractorOrderCard } from '..';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function CompletedOrders() {
     const [orders, setOrders] = useState([]);
@@ -12,6 +13,7 @@ export default function CompletedOrders() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
+    const { isDarkMode } = useDarkMode();
 
     const paginateRef = paginate(ordersInfo?.hasNextPage, loading, setPage);
 
@@ -43,7 +45,11 @@ export default function CompletedOrders() {
     }, [page, navigate]);
 
     return loading ? (
-        <div>loading...</div>
+        <div
+            className={`text-center py-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+        >
+            loading...
+        </div>
     ) : orders.length > 0 ? (
         <motion.div
             initial={{ opacity: 0 }}
@@ -69,6 +75,10 @@ export default function CompletedOrders() {
             ))}
         </motion.div>
     ) : (
-        <div>No orders found</div>
+        <div
+            className={`text-center py-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+        >
+            No orders found
+        </div>
     );
 }

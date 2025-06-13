@@ -4,10 +4,12 @@ import { icons } from '../../Assets/icons';
 import { Button, Logout } from '..';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRef } from 'react';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function Sidebar() {
     const { user } = useUserContext();
     const { showSideBar, setShowSideBar } = useSideBarContext();
+    const { isDarkMode } = useDarkMode();
     const items = [
         { path: '/', name: 'Home', icon: icons.home, show: true },
         {
@@ -61,12 +63,16 @@ export default function Sidebar() {
                 <NavLink
                     key={item.name}
                     className={({ isActive }) =>
-                        `${isActive && 'backdrop-brightness-90'} w-full py-2 px-[10px] rounded-md hover:backdrop-brightness-90`
+                        `${isActive && (isDarkMode ? 'bg-gray-800' : 'backdrop-brightness-90')} 
+                        w-full py-2 px-[10px] rounded-md 
+                        ${isDarkMode ? 'hover:bg-gray-800' : 'hover:backdrop-brightness-90'}`
                     }
                     to={item.path}
                 >
                     <div className="flex items-center justify-start gap-4">
-                        <div className="size-[19px] fill-[#2a2a2a]">
+                        <div
+                            className={`size-[19px] ${isDarkMode ? 'fill-gray-300' : 'fill-[#2a2a2a]'}`}
+                        >
                             {item.icon}
                         </div>
                         <div>{item.name}</div>
@@ -80,11 +86,17 @@ export default function Sidebar() {
             key={item.name}
             to={item.path}
             className={({ isActive }) =>
-                `${isActive && 'backdrop-brightness-90'} w-full py-2 px-[10px] rounded-md hover:backdrop-brightness-90`
+                `${isActive && (isDarkMode ? 'bg-gray-800' : 'backdrop-brightness-90')} 
+                w-full py-2 px-[10px] rounded-md 
+                ${isDarkMode ? 'hover:bg-gray-800' : 'hover:backdrop-brightness-90'}`
             }
         >
             <div className="flex items-center justify-start gap-4">
-                <div className="size-[19px] fill-[#202020]">{item.icon}</div>
+                <div
+                    className={`size-[19px] ${isDarkMode ? 'fill-gray-300' : 'fill-[#202020]'}`}
+                >
+                    {item.icon}
+                </div>
                 <div>{item.name}</div>
             </div>
         </NavLink>
@@ -152,12 +164,23 @@ export default function Sidebar() {
                         exit="exit"
                         className="h-full w-[265px] flex justify-start"
                     >
-                        <div className="w-full px-3 bg-[#f9f9f9] drop-shadow-sm flex flex-col items-start justify-start h-full">
+                        <div
+                            className={`w-full px-3 ${
+                                isDarkMode
+                                    ? 'bg-gray-900 text-white'
+                                    : 'bg-[#f9f9f9] text-black'
+                            } drop-shadow-sm flex flex-col items-start justify-start h-full`}
+                        >
                             <div className="h-[60px] gap-5 px-1 w-full flex items-center justify-between">
-                                {/* hamburgur menu btn */}
                                 <Button
                                     btnText={
-                                        <div className="size-[20px] fill-[#434343] group-hover:fill-[#4977ec]">
+                                        <div
+                                            className={`size-[20px] ${
+                                                isDarkMode
+                                                    ? 'fill-white group-hover:fill-[#4977ec]'
+                                                    : 'fill-[#434343] group-hover:fill-[#4977ec]'
+                                            }`}
+                                        >
                                             {icons.hamburgur}
                                         </div>
                                     }
@@ -165,7 +188,11 @@ export default function Sidebar() {
                                         setShowSideBar((prev) => !prev)
                                     }
                                     title="Close Sidebar"
-                                    className="bg-[#ffffff] p-[10px] group rounded-full drop-shadow-sm w-fit"
+                                    className={`${
+                                        isDarkMode
+                                            ? 'bg-gray-800'
+                                            : 'bg-[#ffffff]'
+                                    } p-[10px] group rounded-full drop-shadow-sm w-fit`}
                                 />
 
                                 <div className="flex gap-4 items-center">
@@ -185,14 +212,22 @@ export default function Sidebar() {
                                 </div>
                             </div>
 
-                            <hr className="w-full border-gray-300" />
+                            <hr
+                                className={`w-full ${isDarkMode ? 'border-gray-700' : 'border-gray-300'}`}
+                            />
 
-                            <div className="overflow-y-scroll text-[17px] text-black w-full h-[calc(100%-60px)] py-3 flex flex-col items-start justify-between">
+                            <div
+                                className={`overflow-y-scroll text-[17px] w-full h-[calc(100%-60px)] py-3 flex flex-col items-start justify-between ${
+                                    isDarkMode ? 'text-white' : 'text-black'
+                                }`}
+                            >
                                 <div className="w-full flex flex-col gap-1 mb-1 items-start justify-start">
                                     {itemElements}
                                 </div>
                                 <div className="w-full flex flex-col gap-1 items-start justify-start">
-                                    <hr className="w-full border-gray-300" />
+                                    <hr
+                                        className={`w-full ${isDarkMode ? 'border-gray-700' : 'border-gray-300'}`}
+                                    />
                                     {systemItemElements}
                                 </div>
                             </div>

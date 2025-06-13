@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { icons } from '../../Assets/icons';
 import { useSearchContext } from '../../Contexts';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function Searchbar() {
     const { search, setSearch } = useSearchContext();
@@ -10,6 +11,7 @@ export default function Searchbar() {
     const typingIntervalRef = useRef(null);
     const location = useLocation();
     const [searchParams, setSearchParams] = useSearchParams();
+    const { isDarkMode } = useDarkMode();
 
     const snackNames = [
         'Search "Chips"',
@@ -109,9 +111,17 @@ export default function Searchbar() {
                 onChange={(e) => setSearch(e.target.value)}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
-                className="w-full bg-white border-transparent border-[0.1rem] indent-8 rounded-full p-[5px] text-black text-[16px] font-normal placeholder:text-[#525252] outline-none focus:border-[#4977ec] transition-all duration-200"
+                className={`w-full border-[0.1rem] indent-8 rounded-full p-[5px] text-[16px] font-normal outline-none focus:border-[#4977ec] transition-all duration-200 ${
+                    isDarkMode
+                        ? 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-400'
+                        : 'bg-white border-transparent text-black placeholder:text-[#525252]'
+                }`}
             />
-            <div className="size-[16px] fill-gray-800 group-focus-within:fill-[#4977ec] absolute top-[50%] translate-y-[-50%] left-3">
+            <div
+                className={`size-[16px] group-focus-within:fill-[#4977ec] absolute top-[50%] translate-y-[-50%] left-3 ${
+                    isDarkMode ? 'fill-gray-400' : 'fill-gray-800'
+                }`}
+            >
                 {icons.search}
             </div>
             {search && (
@@ -120,9 +130,15 @@ export default function Searchbar() {
                         setSearch('');
                         setTimeout(() => setIsTyping(true), 1000);
                     }}
-                    className="hover:bg-gray-100 rounded-full absolute right-2 p-[5px] cursor-pointer top-[50%] translate-y-[-50%]"
+                    className={`rounded-full absolute right-2 p-[5px] cursor-pointer top-[50%] translate-y-[-50%] ${
+                        isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
+                    }`}
                 >
-                    <div className="size-[18px] stroke-gray-800">
+                    <div
+                        className={`size-[18px] ${
+                            isDarkMode ? 'stroke-gray-400' : 'stroke-gray-800'
+                        }`}
+                    >
                         {icons.cross}
                     </div>
                 </div>

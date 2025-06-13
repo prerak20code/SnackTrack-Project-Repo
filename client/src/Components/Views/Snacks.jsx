@@ -5,6 +5,7 @@ import {
     usePopupContext,
     useUserContext,
 } from '../../Contexts';
+import { useDarkMode } from '../../Contexts/DarkMode'; // Add this import
 import { icons } from '../../Assets/icons';
 
 export default function Snacks() {
@@ -12,6 +13,7 @@ export default function Snacks() {
     const { search } = useSearchContext();
     const { user } = useUserContext();
     const { setShowPopup, setPopupInfo } = usePopupContext();
+    const { isDarkMode } = useDarkMode(); // Add this line
 
     const snackElements = snacks
         ?.filter(
@@ -44,12 +46,20 @@ export default function Snacks() {
                 />
             )}
             <div
-                className={`grid gap-5 ${snackElements.length <= 2 ? 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(250px,350px))]' : 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))]'}`}
+                className={`grid gap-5 ${
+                    snackElements.length <= 2
+                        ? 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(250px,350px))]'
+                        : 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))]'
+                }`}
             >
                 {snackElements}
             </div>
         </div>
     ) : (
-        <div>No Snacks Found !!</div>
+        <div
+            className={`text-center py-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+        >
+            No Snacks Found !!
+        </div>
     );
 }

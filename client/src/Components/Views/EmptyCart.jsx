@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion';
 import { Button } from '..';
 import { useNavigate } from 'react-router-dom';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function EmptyCart() {
+    const { isDarkMode } = useDarkMode();
+
     // variants
     const textAnimation = {
         initial: { y: 20, opacity: 0 },
@@ -26,7 +29,11 @@ export default function EmptyCart() {
     const navigate = useNavigate();
 
     return (
-        <div className="flex items-center justify-center h-[calc(100vh-92px)]">
+        <div
+            className={`flex items-center justify-center h-[calc(100vh-92px)] ${
+                isDarkMode ? 'bg-gray-900' : 'bg-white'
+            }`}
+        >
             <div className="text-center flex flex-col items-center max-w-[400px]">
                 {/* Bag Icon */}
                 <motion.div
@@ -85,7 +92,9 @@ export default function EmptyCart() {
                     variants={textAnimation}
                     initial="initial"
                     animate="animate"
-                    className="text-2xl font-bold text-gray-900 mb-3"
+                    className={`text-2xl font-bold mb-3 ${
+                        isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}
                 >
                     Your Cart is Empty
                 </motion.h1>
@@ -94,7 +103,9 @@ export default function EmptyCart() {
                     variants={textAnimation}
                     initial="initial"
                     animate="animate"
-                    className="text-gray-600 mb-8"
+                    className={`mb-8 ${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                    }`}
                 >
                     Looks like you haven't added anything to your cart yet.
                 </motion.p>

@@ -7,6 +7,7 @@ import { orderService } from '../Services';
 import { usePopupContext } from '../Contexts';
 import { useSocket } from '../customhooks/socket';
 import SelectTablePopup from '../Components/Popups/SelectTablePopup';
+import { useDarkMode } from '../Contexts/DarkMode';
 
 export default function CartPage() {
     const [ordering, setOrdering] = useState(false);
@@ -14,6 +15,8 @@ export default function CartPage() {
     const navigate = useNavigate();
     const { setShowPopup, setPopupInfo } = usePopupContext();
     const socket = useSocket(false);
+    const { isDarkMode } = useDarkMode();
+
     const [showTablePopup, setShowTablePopup] = useState(false);
     const [cartItems, setCartItems] = useState(
         JSON.parse(localStorage.getItem('cartItems')) || []
@@ -85,11 +88,19 @@ export default function CartPage() {
         ({ price, _id, name, category, type, image, quantity }) => (
             <div
                 key={`${_id}-${price}`}
-                className="w-full flex flex-col sm:flex-row items-end sm:items-center justify-between border-b border-gray-200 py-4"
+                className={`w-full flex flex-col sm:flex-row items-end sm:items-center justify-between border-b py-4 ${
+                    isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                }`}
             >
                 <div className="w-full flex items-center gap-4 justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="size-[50px] overflow-hidden border rounded-lg flex items-center justify-center">
+                        <div
+                            className={`size-[50px] overflow-hidden border rounded-lg flex items-center justify-center ${
+                                isDarkMode
+                                    ? 'border-gray-700'
+                                    : 'border-gray-300'
+                            }`}
+                        >
                             <img
                                 src={image || SNACK_PLACEHOLDER_IMAGE}
                                 alt={`${name || category} image`}
@@ -97,18 +108,36 @@ export default function CartPage() {
                             />
                         </div>
                         <div>
-                            <h3 className="text-lg font-medium text-gray-900">
+                            <h3
+                                className={`text-lg font-medium ${
+                                    isDarkMode
+                                        ? 'text-gray-200'
+                                        : 'text-gray-900'
+                                }`}
+                            >
                                 {name || category}
                             </h3>
-                            <p className="text-sm text-gray-500">
+                            <p
+                                className={`${
+                                    isDarkMode
+                                        ? 'text-gray-200'
+                                        : 'text-gray-900'
+                                }`}
+                            >
                                 ₹{price.toFixed(2)}
                             </p>
                         </div>
                     </div>
 
-                    <div className="sm:hidden flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                    <div
+                        className={`sm:hidden flex items-center border rounded-lg overflow-hidden ${
+                            isDarkMode ? 'border-gray-700' : 'border-gray-300'
+                        }`}
+                    >
                         <Button
-                            className="px-3 py-1 text-gray-500 hover:bg-gray-100"
+                            className={`px-3 py-1 ${
+                                isDarkMode ? 'text-gray-200' : 'text-gray-900'
+                            }`}
                             onClick={() =>
                                 quantity === 1
                                     ? removeFromCart(_id, price, type)
@@ -116,11 +145,19 @@ export default function CartPage() {
                             }
                             btnText="-"
                         />
-                        <span className="px-3 py-1 text-gray-900">
+                        <span
+                            className={
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                            }
+                        >
                             {quantity}
                         </span>
                         <Button
-                            className="px-3 py-1 text-gray-500 hover:bg-gray-100"
+                            className={`px-3 py-1 ${
+                                isDarkMode
+                                    ? 'text-gray-400 hover:bg-gray-700'
+                                    : 'text-gray-500 hover:bg-gray-100'
+                            }`}
                             onClick={() =>
                                 updateQuantity(_id, price, quantity + 1)
                             }
@@ -140,7 +177,11 @@ export default function CartPage() {
                             }
                             btnText="-"
                         />
-                        <span className="px-3 py-1 text-gray-900">
+                        <span
+                            className={`px-3 py-1 ${
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                            }`}
+                        >
                             {quantity}
                         </span>
                         <Button
@@ -152,7 +193,11 @@ export default function CartPage() {
                         />
                     </div>
                     <div className="flex items-center gap-1">
-                        <p className="text-lg font-semibold mr-1 text-gray-900">
+                        <p
+                            className={
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                            }
+                        >
                             ₹{(price * quantity).toFixed(2)}
                         </p>
                         <Button
@@ -164,7 +209,7 @@ export default function CartPage() {
                             className="hover:bg-gray-100 p-2 rounded-full"
                             onClick={() => removeFromCart(_id, price, type)}
                         />
-                        <Button
+                        {/* <Button
                             btnText={
                                 <div className="size-[18px] fill-[#4977ec]">
                                     {icons.edit}
@@ -172,7 +217,7 @@ export default function CartPage() {
                             }
                             className="hover:bg-gray-100 p-2 rounded-full"
                             onClick={() => editItem(_id, price, type)}
-                        />
+                        /> */}
                     </div>
                 </div>
             </div>
@@ -180,12 +225,30 @@ export default function CartPage() {
     );
 
     return cartItems.length > 0 ? (
-        <div className="bg-gray-100 rounded-xl drop-shadow-sm w-full py-10 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">Your Cart</h1>
+        <div
+            className={`rounded-xl drop-shadow-sm w-full py-10 px-4 sm:px-6 lg:px-8 ${
+                isDarkMode ? 'bg-gray-900' : 'bg-gray-100'
+            }`}
+        >
+            <h1
+                className={`text-3xl font-bold mb-8 ${
+                    isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}
+            >
+                Your Cart
+            </h1>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Cart Items Section */}
-                <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <div
+                    className={`lg:col-span-2 rounded-lg shadow-md p-6 ${
+                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}
+                >
+                    <h2
+                        className={`text-xl font-semibold mb-4 ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}
+                    >
                         Cart Items
                     </h2>
                     {cartItemElements}
@@ -195,7 +258,11 @@ export default function CartPage() {
                         <div className="mt-6">
                             <label
                                 htmlFor="specialInstructions"
-                                className="block text-gray-700 font-medium mb-1"
+                                className={`block font-medium mb-1 ${
+                                    isDarkMode
+                                        ? 'text-gray-300'
+                                        : 'text-gray-700'
+                                }`}
                             >
                                 Special Instructions (optional)
                             </label>
@@ -207,34 +274,90 @@ export default function CartPage() {
                                 }
                                 rows={3}
                                 placeholder="E.g., Make it extra spicy, no onions, etc."
-                                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#4977ec] focus:outline-none resize-none"
+                                className={`w-full p-2 rounded-md shadow-sm focus:ring-2 focus:ring-[#4977ec] focus:outline-none resize-none ${
+                                    isDarkMode
+                                        ? 'bg-gray-700 border-gray-600 text-white placeholder:text-gray-400'
+                                        : 'bg-white border-gray-300 text-black placeholder:text-gray-500'
+                                }`}
                             />
                         </div>
                     )}
                 </div>
 
                 {/* Order Summary Section */}
-                <div className="bg-white rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                <div
+                    className={`rounded-lg shadow-md p-6 ${
+                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}
+                >
+                    <h2
+                        className={`text-xl font-semibold mb-6 ${
+                            isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}
+                    >
                         Order Summary
                     </h2>
                     <div className="space-y-4">
                         <div className="flex justify-between">
-                            <p className="text-gray-600">Subtotal</p>
-                            <p className="text-gray-900">
+                            <p
+                                className={
+                                    isDarkMode
+                                        ? 'text-gray-300'
+                                        : 'text-gray-600'
+                                }
+                            >
+                                Subtotal
+                            </p>
+                            <p
+                                className={
+                                    isDarkMode ? 'text-white' : 'text-gray-900'
+                                }
+                            >
                                 ₹{subtotal.toFixed(2)}
                             </p>
                         </div>
                         <div className="flex justify-between">
-                            <p className="text-gray-600">Tax (5%)</p>
-                            <p className="text-gray-900">₹{tax.toFixed(2)}</p>
+                            <p
+                                className={
+                                    isDarkMode
+                                        ? 'text-gray-300'
+                                        : 'text-gray-600'
+                                }
+                            >
+                                Tax (5%)
+                            </p>
+                            <p
+                                className={
+                                    isDarkMode ? 'text-white' : 'text-gray-900'
+                                }
+                            >
+                                ₹{tax.toFixed(2)}
+                            </p>
                         </div>
-                        <div className="border-t border-gray-200 pt-4">
+                        <div
+                            className={`border-t pt-4 ${
+                                isDarkMode
+                                    ? 'border-gray-700'
+                                    : 'border-gray-200'
+                            }`}
+                        >
                             <div className="flex justify-between">
-                                <p className="text-lg font-semibold text-gray-900">
+                                <p
+                                    className={`text-lg font-semibold ${
+                                        isDarkMode
+                                            ? 'text-white'
+                                            : 'text-gray-900'
+                                    }`}
+                                >
                                     Total
                                 </p>
-                                <p className="text-lg font-semibold text-gray-900">
+                                <p
+                                    className={`text-lg font-semibold ${
+                                        isDarkMode
+                                            ? 'text-white'
+                                            : 'text-gray-900'
+                                    }`}
+                                >
                                     ₹{total.toFixed(2)}
                                 </p>
                             </div>
@@ -245,7 +368,7 @@ export default function CartPage() {
                         className="text-white rounded-md py-2 mt-4 h-[40px] flex items-center justify-center w-full bg-[#4977ec] hover:bg-[#3b62c2]"
                         btnText={
                             ordering ? (
-                                <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
+                                <div className="size-5 fill-white">
                                     {icons.loading}
                                 </div>
                             ) : (
@@ -254,7 +377,11 @@ export default function CartPage() {
                         }
                     />
                     <Button
-                        className="text-black rounded-md py-2 mt-4 h-[40px] flex items-center justify-center w-full bg-gray-100 border-[0.01rem] border-transparent hover:border-black hover:bg-gray-200"
+                        className={`rounded-md py-2 mt-4 h-[40px] flex items-center justify-center w-full border-[0.01rem] border-transparent ${
+                            isDarkMode
+                                ? 'bg-gray-700 text-white hover:bg-gray-600 hover:border-gray-500'
+                                : 'bg-gray-100 text-black hover:bg-gray-200 hover:border-black'
+                        }`}
                         btnText="Continue Shopping"
                         onClick={() => navigate('/')}
                     />

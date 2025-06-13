@@ -6,8 +6,7 @@ async function generateTransporter() {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             secure: true,
-            port: 587,
-            secure: false,
+            port: 2525,
             auth: {
                 user: process.env.MAIL_SENDER_EMAIL,
                 pass: process.env.MAIL_SENDER_PASSWORD,

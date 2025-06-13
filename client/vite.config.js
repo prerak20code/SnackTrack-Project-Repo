@@ -11,9 +11,9 @@ export default defineConfig(({ mode }) => {
     return {
         plugins: [react(), tailwindcss()],
         server: {
-            host: '0.0.0.0', 
-            port: 5173, 
-            allowedHosts: ['snacktrack.me', 'www.snacktrack.me'], 
+            host: '0.0.0.0',
+            port: 5173,
+            allowedHosts: ['snacktrack.me', 'www.snacktrack.me'],
             proxy: {
                 '/api': {
                     target: env.VITE_BACKEND_URL,

@@ -1,45 +1,51 @@
 import nodemailer from 'nodemailer';
-import { transporter } from './server.js';
+
+console.log('📧 Using MAIL_SENDER_EMAIL:', process.env.MAIL_SENDER_EMAIL);
+console.log(
+    '🔑 MAIL_SENDER_PASSWORD starts with:',
+    process.env.MAIL_SENDER_PASSWORD?.slice(0, 5)
+);
+
+let transporter = null;
 
 async function generateTransporter() {
+    if (transporter) return transporter;
+
     try {
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            secure: true,
+        transporter = nodemailer.createTransport({
+            host: 'smtp-relay.brevo.com',
             port: 587,
+            secure: false,
             auth: {
                 user: process.env.MAIL_SENDER_EMAIL,
                 pass: process.env.MAIL_SENDER_PASSWORD,
             },
         });
 
-        // Test transporter
         await transporter.verify();
         console.log('✅ Mail transporter ready.');
         return transporter;
     } catch (err) {
         console.error(`❌ Error generating mail transporter: ${err.message}`);
+        transporter = null;
+        throw err;
     }
 }
 
-async function sendMail({
-    to = '',
-    subject = 'No particular subject', // to avoid spam mails
-    text = '',
-    html = '',
-}) {
+async function sendMail({ to, subject, text, html }) {
     if (!transporter) throw new Error('❌ Transporter not initialized.');
 
     try {
         return await transporter.sendMail({
-            from: `Snack Track <${process.env.MAIL_SENDER_EMAIL}>`,
+            from: `Snack Track <no-reply@snacktrack.me>`,
             to,
-            subject,
+            subject: subject || 'No particular subject',
             text,
             html,
         });
     } catch (err) {
-        throw new Error(`❌ Error sending mail: ${err.message}`);
+        console.error(`❌ Error sending mail: ${err.message}`);
+        throw err;
     }
 }
 

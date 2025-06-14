@@ -18,7 +18,7 @@ export default function NewUserPage() {
                     >
                         Login
                     </Link>{' '}
-                    if you have an account or visit your nearest POC for
+                    if you have an account or visit your canteen contractor for
                     registration.
                 </p>
 

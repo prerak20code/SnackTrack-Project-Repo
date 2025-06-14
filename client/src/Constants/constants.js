@@ -1,5 +1,5 @@
 const LIMIT = 20;
-import SANIAIMAGE from '../Assets/images/sania.jpg';
+
 import LOGO from '../Assets/images/logo.png';
 import SNACK_PLACEHOLDER_IMAGE from '../Assets/images/snack.png';
 import USER_PLACEHOLDER_IMAGE from '../Assets/images/user.png';
@@ -11,19 +11,6 @@ const SERVER_ERROR = 500;
 const BAD_REQUEST = 400;
 
 const CONTRIBUTORS = [
-    // {
-    //     image: SANIAIMAGE,
-    //     role: 'Full Stack Developer',
-    //     bio: 'Full-stack developer passionate about creating beautiful, scalable applications',
-    //     name: 'Sania Singla',
-    //     socials: {
-    //         linkedIn: 'https://www.linkedin.com/in/sania-singla',
-    //         discord: 'https://discord.com/channels/@sania_singla',
-    //         gitHub: 'https://github.com/Sania-Singla',
-    //         threads: 'https://x.com/sania_singla',
-    //         instagram: 'https://www.instagram.com/sania__singla',
-    //     },
-    // },
     {
         image: USER_PLACEHOLDER_IMAGE,
         role: 'Full Stack Developer',
@@ -50,7 +37,7 @@ const CONTRIBUTORS = [
         image: USER_PLACEHOLDER_IMAGE,
         role: 'Full Stack Developer',
         bio: 'Full-stack developer passionate about creating beautiful, scalable applications',
-        name: 'Prerak',
+        name: 'Prerak ji',
         socials: {
             linkedIn: '',
             gitHub: '',

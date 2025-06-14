@@ -5,7 +5,18 @@ import { CORS_OPTIONS } from './Constants/options.js';
 import { getSocketId, deleteSocketId, setSocketId } from './Utils/index.js';
 
 const http = createServer(app);
-const io = new Server(http, { cors: CORS_OPTIONS });
+const io = new Server(http, {
+  cors: {
+    origin: [
+      'http://localhost:5173',
+      'https://localhost:5173',
+      'http://snacktrack.me',
+      'https://snacktrack.me',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true,
+  },
+});
 
 io.on('connection', async (socket) => {
     const userId = socket.handshake.auth.userId;

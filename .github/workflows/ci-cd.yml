@@ -27,10 +27,18 @@ jobs:
             git reset --hard
             git pull origin main
 
-            # Install dependencies in root (optional)
+            # Install root-level dependencies (optional)
             npm install || true
 
-            # Install backend dependencies
+            ##### 🔧 Kill any process on port 3000 (backend) or 5173 (frontend)
+            fuser -k 3000/tcp || true
+            fuser -k 5173/tcp || true
+
+            ##### 🔧 Also kill leftover PM2/node processes just in case
+            pkill -f "node.*src/server.js" || true
+            pkill -f "vite" || true
+
+            # Backend setup
             cd server
             npm install
 
@@ -38,7 +46,7 @@ jobs:
             pm2 delete snacktrack-backend || true
             pm2 start "npm run dev -- --host" --name snacktrack-backend
 
-            # Install frontend dependencies
+            # Frontend setup
             cd ../client
             npm install
 

@@ -16,11 +16,13 @@ export const useSocket = (canteen) => {
             console.log('Connecting to socket with student ID:', user._id);
         }
 
-        const newSocket = io('https://snacktrack.me', {
-            auth: { userId: userId },
-            reconnection: true,
-            transports: ['websocket'],
-        });
+       const newSocket = io('https://snacktrack.me', {
+  auth: { userId: userId },
+  reconnection: true,
+  reconnectionAttempts: 5,
+  timeout: 10000,
+  transports: ['websocket'],
+});
 
         setSocket(newSocket);
 

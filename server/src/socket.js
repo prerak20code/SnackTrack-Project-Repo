@@ -50,15 +50,18 @@ io.on('connection', async (socket) => {
                 console.warn(
                     `⚠️ No active socket for canteen ${order.canteenId}. Order notification cannot be sent.`
                 );
-                return;
+                if (!socketId2) {
+                    console.warn(
+                        `No active socket for canteen ${order.contractorId}.Order notification cannot be sent to the kitchen and contractor`
+                    );
+                    return;
+                }
             }
             if (!socketId2) {
                 console.warn(
                     `⚠️ No active socket for contractor ${order.contractorId}. Order notification cannot be sent.`
                 );
-                return;
             }
-
             // Ensure the order object is properly structured before emitting
             const orderToSend = {
                 ...order,

@@ -70,7 +70,7 @@ export default function KitchenPage() {
 
     useEffect(() => {
         if (!canteen._id) return;
-        const socket = io(import.meta.env.VITE_BACKEND_URL, {
+        const socket = io('https://snacktrack.me', {
             transports: ['websocket'],
             auth: {
                 userId: canteen._id,

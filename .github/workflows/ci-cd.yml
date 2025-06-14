@@ -30,11 +30,11 @@ jobs:
             # Install root-level dependencies (optional)
             npm install || true
 
-            ##### 🔧 Kill any process on port 3000 (backend) or 5173 (frontend)
+            # Kill existing apps on backend/frontend ports (just in case)
             fuser -k 3000/tcp || true
             fuser -k 5173/tcp || true
 
-            ##### 🔧 Also kill leftover PM2/node processes just in case
+            # Kill leftover processes
             pkill -f "node.*src/server.js" || true
             pkill -f "vite" || true
 
@@ -44,15 +44,18 @@ jobs:
 
             # Restart backend with PM2
             pm2 delete snacktrack-backend || true
-            pm2 start "npm run dev -- --host" --name snacktrack-backend
+            pm2 start "npm run dev -- --host --port 3000" --name snacktrack-backend
 
             # Frontend setup
             cd ../client
             npm install
 
-            # Restart frontend with PM2 (Vite)
+            # Restart frontend (Vite) with PM2
             pm2 delete snacktrack-frontend || true
             pm2 start "npm run dev -- --host --port 5173" --name snacktrack-frontend
 
-            # Save PM2 process list
+            # Save PM2 state
             pm2 save
+
+            # Exit safely
+            exit 0

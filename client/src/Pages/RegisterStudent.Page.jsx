@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { contractorService } from '../Services';
 import { useNavigate, Link } from 'react-router-dom';
-import { Button, InputField } from '../Components';
+import { Button, InputField1 } from '../Components'; // Change InputField to InputField1
 import { verifyExpression } from '../Utils';
 import { LOGO } from '../Constants/constants';
 import { motion } from 'framer-motion';
 import { icons } from '../Assets/icons';
+import { useDarkMode } from '../Contexts/DarkMode';
+
 import toast from 'react-hot-toast';
 
 export default function RegisterStudentPage() {
@@ -22,6 +24,7 @@ export default function RegisterStudentPage() {
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { isDarkMode } = useDarkMode();
 
     async function handleChange(e) {
         const { value, name } = e.target;
@@ -104,16 +107,49 @@ export default function RegisterStudentPage() {
         },
     ];
 
+    // const inputElements = inputFields.map((field) => (
+    //     <div className="w-full" key={field.name}>
+    //         <div
+    //             className={`w-full ${
+    //                 isDarkMode
+    //                     ? 'bg-gray-800 text-white'
+    //                     : 'bg-white text-black'
+    //             }`}
+    //         >
+    //             <InputField
+    //                 field={field}
+    //                 handleBlur={handleBlur}
+    //                 handleChange={handleChange}
+    //                 inputs={inputs}
+    //                 showPassword={showPassword}
+    //                 setShowPassword={setShowPassword}
+    //                 className={
+    //                     isDarkMode
+    //                         ? 'text-white bg-gray-800 border-gray-600 placeholder:text-gray-400'
+    //                         : ''
+    //                 }
+    //             />
+    //         </div>
+    //         {field.name !== 'password' && error[field.name] && (
+    //             <div className="text-red-500 text-xs font-medium">
+    //                 {error[field.name]}
+    //             </div>
+    //         )}
+    //     </div>
+    // ));
+
     const inputElements = inputFields.map((field) => (
         <div className="w-full" key={field.name}>
-            <InputField
-                field={field}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-                inputs={inputs}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
-            />
+            <div className={`w-full`}>
+                <InputField1
+                    field={field}
+                    handleBlur={handleBlur}
+                    handleChange={handleChange}
+                    inputs={inputs}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                />
+            </div>
             {field.name !== 'password' && error[field.name] && (
                 <div className="text-red-500 text-xs font-medium">
                     {error[field.name]}
@@ -123,16 +159,26 @@ export default function RegisterStudentPage() {
     ));
 
     return (
-        <div className="py-10 text-black flex flex-col items-center justify-center gap-4 min-h-screen">
+        <div
+            className={`py-10 flex flex-col items-center justify-center gap-4 min-h-screen ${
+                isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'
+            }`}
+        >
             <Link
                 to={'/'}
                 className="w-fit flex items-center justify-center hover:brightness-95"
             >
-                <div className="overflow-hidden rounded-full size-[90px] drop-shadow-md">
+                <div
+                    className={`overflow-hidden rounded-full size-[90px] drop-shadow-md ${
+                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}
+                >
                     <img
                         src={LOGO}
                         alt="peer connect logo"
-                        className="object-cover size-full"
+                        className={`object-cover size-full ${
+                            isDarkMode ? 'filter brightness-90' : ''
+                        }`}
                     />
                 </div>
             </Link>
@@ -144,11 +190,17 @@ export default function RegisterStudentPage() {
                     initial={{ width: 0 }}
                     animate={{ width: '100%' }}
                     transition={{ duration: 0.3 }}
-                    className="relative -top-1 h-[0.1rem] bg-[#333333]"
+                    className={`relative -top-1 h-[0.1rem] ${
+                        isDarkMode ? 'bg-gray-600' : 'bg-[#333333]'
+                    }`}
                 />
             </div>
 
-            <div className="max-w-[500px] min-w-[300px] flex flex-col items-center justify-center gap-3">
+            <div
+                className={`max-w-[500px] min-w-[300px] flex flex-col items-center justify-center gap-3 p-6 rounded-lg ${
+                    isDarkMode ? 'bg-gray-800' : 'bg-white'
+                }`}
+            >
                 {error.root && (
                     <div className="text-red-500 w-full text-center">
                         {error.root}
@@ -166,12 +218,24 @@ export default function RegisterStudentPage() {
                     <div className="w-full">
                         <Button
                             type="submit"
-                            className="text-white rounded-md py-2 mt-2 h-[40px] flex items-center justify-center text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
+                            className={`rounded-md py-2 mt-2 h-[40px] flex items-center justify-center text-lg w-full ${
+                                loading
+                                    ? isDarkMode
+                                        ? 'bg-gray-700 cursor-not-allowed'
+                                        : 'bg-gray-200 cursor-not-allowed'
+                                    : 'bg-[#4977ec] hover:bg-[#3b62c2] text-white'
+                            }`}
                             disabled={disabled}
                             onMouseOver={onMouseOver}
                             btnText={
                                 loading ? (
-                                    <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
+                                    <div
+                                        className={`size-5 ${
+                                            isDarkMode
+                                                ? 'fill-[#a2bdff]'
+                                                : 'fill-[#4977ec]'
+                                        }`}
+                                    >
                                         {icons.loading}
                                     </div>
                                 ) : (

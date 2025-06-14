@@ -7,6 +7,7 @@ import Filter from './General/Filter';
 import Dropdown from './General/Dropdown';
 import Button from './General/Button';
 import InputField from './General/InputField';
+import InputField1 from './General/InputField1';
 import ContributorCard from './General/ContributorCard';
 import Popup from './Popups/popup';
 import Logout from './User/Logout';
@@ -50,6 +51,7 @@ export {
     Button,
     Searchbar,
     InputField,
+    InputField1,
     OrderDropdown,
     ContributorCard,
     UpdateAccountDetails,

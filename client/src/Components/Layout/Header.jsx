@@ -26,8 +26,8 @@ export default function Header() {
                     : 'bg-[#f9f9f9] text-black'
             } h-[60px] px-4 font-medium flex items-center justify-between gap-4`}
         >
-            {/* Left: Sidebar and Logo */}
-            <div className="flex items-center justify-center gap-4">
+            {/* Left Section: Sidebar, Search/Logo */}
+            <div className="flex items-center justify-center gap-4 md:flex-initial">
                 <Button
                     btnText={
                         <div
@@ -44,33 +44,44 @@ export default function Header() {
                     onClick={() => setShowSideBar((prev) => !prev)}
                     className={`${
                         isDarkMode ? 'bg-gray-800' : 'bg-[#ffffff]'
-                    } p-[9px] group rounded-full drop-shadow-sm w-fit`}
+                    } p-[9px] group rounded-full drop-shadow-sm w-fit shrink-0`}
                 />
-                <Link
-                    to="/"
-                    className="flex items-center justify-center gap-3 text-nowrap font-medium text-xl"
-                >
-                    <div
-                        className={`overflow-hidden rounded-full size-[38px] drop-shadow-sm hover:scale-110 transition-all duration-300 ${
-                            isDarkMode ? 'bg-gray-800' : 'bg-white'
-                        }`}
+
+                {/* Mobile Search */}
+                <div className="block md:hidden flex-1">
+                    <Searchbar mobile={true} />
+                </div>
+
+                {/* Desktop Logo */}
+                <div className="hidden md:block">
+                    <Link
+                        to="/"
+                        className="flex items-center justify-center gap-3 text-nowrap font-medium text-xl"
                     >
-                        <img
-                            src={LOGO}
-                            alt="Snack Track Logo"
-                            className={`object-cover size-full hover:brightness-95 ${
-                                isDarkMode ? 'filter brightness-90' : ''
+                        <div
+                            className={`overflow-hidden rounded-full size-[38px] drop-shadow-sm hover:scale-110 transition-all duration-300 ${
+                                isDarkMode ? 'bg-gray-800' : 'bg-white'
                             }`}
-                        />
-                    </div>
-                    <div className="hover:scale-110 transition-all duration-300">
-                        SnackTrack
-                    </div>
-                </Link>
+                        >
+                            <img
+                                src={LOGO}
+                                alt="Snack Track Logo"
+                                className={`object-cover size-full hover:brightness-95 ${
+                                    isDarkMode ? 'filter brightness-90' : ''
+                                }`}
+                            />
+                        </div>
+                        <div className="hover:scale-110 transition-all duration-300">
+                            SnackTrack
+                        </div>
+                    </Link>
+                </div>
             </div>
 
-            {/* Center: Searchbar */}
-            <Searchbar />
+            {/* Center: Desktop Search */}
+            <div className="hidden md:block flex-1 max-w-[550px]">
+                <Searchbar mobile={false} />
+            </div>
 
             {/* Right: Actions */}
             {user.role === 'student' ? (
@@ -138,7 +149,7 @@ export default function Header() {
                         } p-[9px] group rounded-full drop-shadow-sm w-fit`}
                     />
 
-                    {/* Logout (student visible in small screens) */}
+                    {/* Logout */}
                     <div className="hidden sm:block">
                         <Logout />
                     </div>
@@ -182,7 +193,7 @@ export default function Header() {
                         />
                     </div>
 
-                    {/* Logout (visible on medium screens for non-student) */}
+                    {/* Logout */}
                     <div className="hidden md:block">
                         <Logout />
                     </div>

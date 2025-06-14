@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '..';
 import { icons } from '../../Assets/icons';
 import { usePopupContext } from '../../Contexts';
+import { useDarkMode } from '../../Contexts/DarkMode';
 
 export default function OrderPlacedPopup() {
     const { setShowPopup, popupInfo } = usePopupContext();

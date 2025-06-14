@@ -4,7 +4,7 @@ import { useSearchContext } from '../../Contexts';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useDarkMode } from '../../Contexts/DarkMode';
 
-export default function Searchbar() {
+export default function Searchbar(mobile) {
     const { search, setSearch } = useSearchContext();
     const [placeholder, setPlaceholder] = useState('');
     const [isTyping, setIsTyping] = useState(true);
@@ -103,7 +103,11 @@ export default function Searchbar() {
     };
 
     return (
-        <div className="w-full max-w-[500px] hidden sm:block group drop-shadow-sm relative">
+        <div
+            className={`${
+                mobile ? 'w-full' : 'w-full'
+            } group drop-shadow-sm relative`}
+        >
             <input
                 type="text"
                 placeholder={placeholder || ''}
@@ -111,11 +115,11 @@ export default function Searchbar() {
                 onChange={(e) => setSearch(e.target.value)}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
-                className={`w-full border-[0.1rem] indent-8 rounded-full p-[5px] text-[16px] font-normal outline-none focus:border-[#4977ec] transition-all duration-200 ${
+                className={`w-full border-[0.1rem] indent-8 rounded-full text-[16px] font-normal outline-none focus:border-[#4977ec] transition-all duration-200 ${
                     isDarkMode
                         ? 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-400'
                         : 'bg-white border-transparent text-black placeholder:text-[#525252]'
-                }`}
+                } ${mobile ? 'h-[35px] py-1.5' : 'h-[38px] py-2'}`}
             />
             <div
                 className={`size-[16px] group-focus-within:fill-[#4977ec] absolute top-[50%] translate-y-[-50%] left-3 ${

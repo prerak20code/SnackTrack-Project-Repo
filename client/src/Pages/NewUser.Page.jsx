@@ -18,8 +18,8 @@ export default function NewUserPage() {
                     >
                         Login
                     </Link>{' '}
-                    if you have an account or visit your nearest POC for
-                    registration.
+                    if you have an account or visit your canteen contractor for
+                    registration in snack track.
                 </p>
 
                 {/* Animated Icon */}

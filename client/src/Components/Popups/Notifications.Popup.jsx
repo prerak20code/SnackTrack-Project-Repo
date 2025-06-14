@@ -1,4 +1,4 @@
-import { useNotifications } from '../../Contexts/notifications.context';
+import { useNotifications } from '../../Contexts/notifications.Context';
 import { format } from 'date-fns';
 import { useDarkMode } from '../../Contexts/DarkMode';
 

@@ -1,46 +1,37 @@
-import nodemailer from 'nodemailer';
-import { transporter } from './server.js';
+import axios from 'axios';
 
-async function generateTransporter() {
+async function sendMail({ to, subject, text, html }) {
+    if (!process.env.BREVO_API_KEY) {
+        throw new Error('❌ BREVO_API_KEY not set in environment variables');
+    }
+
     try {
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            secure: true,
-            port: 587,
-            auth: {
-                user: process.env.MAIL_SENDER_EMAIL,
-                pass: process.env.MAIL_SENDER_PASSWORD,
+        const response = await axios.post(
+            'https://api.sendinblue.com/v3/smtp/email',
+            {
+                sender: {
+                    name: 'Snack Track',
+                    email: 'no-reply@snacktrack.me',
+                },
+                to: [{ email: to }],
+                subject: subject || 'No particular subject',
+                textContent: text,
+                htmlContent: html,
             },
-        });
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'api-key': process.env.BREVO_API_KEY,
+                },
+            }
+        );
 
-        // Test transporter
-        await transporter.verify();
-        console.log('✅ Mail transporter ready.');
-        return transporter;
+        return response.data;
     } catch (err) {
-        console.error(`❌ Error generating mail transporter: ${err.message}`);
+        throw new Error(
+            `❌ Error sending Brevo email: ${err.response?.data?.message || err.message}`
+        );
     }
 }
 
-async function sendMail({
-    to = '',
-    subject = 'No particular subject', // to avoid spam mails
-    text = '',
-    html = '',
-}) {
-    if (!transporter) throw new Error('❌ Transporter not initialized.');
-
-    try {
-        return await transporter.sendMail({
-            from: `Snack Track <${process.env.MAIL_SENDER_EMAIL}>`,
-            to,
-            subject,
-            text,
-            html,
-        });
-    } catch (err) {
-        throw new Error(`❌ Error sending mail: ${err.message}`);
-    }
-}
-
-export { generateTransporter, sendMail };
+export { sendMail };

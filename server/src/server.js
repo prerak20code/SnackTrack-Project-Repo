@@ -4,7 +4,7 @@ import { http } from './socket.js';
 import { connectRedis } from './DB/connectRedis.js';
 // import { seedDatabase } from './seeder.js';
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
 // Initialize redisClient to export later
 let redisClient;

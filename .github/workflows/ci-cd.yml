@@ -27,24 +27,24 @@ jobs:
             git reset --hard
             git pull origin main
 
-            # Install root-level dependencies (optional)
+            # Install dependencies in root (optional)
             npm install || true
 
-            # Backend setup
+            # Install backend dependencies
             cd server
             npm install
 
             # Restart backend with PM2
             pm2 delete snacktrack-backend || true
-            pm2 start src/server.js --name snacktrack-backend
+            pm2 start "npm run dev -- --host" --name snacktrack-backend
 
-            # Frontend setup
+            # Install frontend dependencies
             cd ../client
             npm install
 
-            # Restart Vite frontend with PM2
-            pm2 delete vite || true
-            pm2 start "npm run dev -- --host --port 5173" --name vite
+            # Restart frontend with PM2 (Vite)
+            pm2 delete snacktrack-frontend || true
+            pm2 start "npm run dev -- --host --port 5173" --name snacktrack-frontend
 
-            # Save PM2 process list for reboot
+            # Save PM2 process list
             pm2 save

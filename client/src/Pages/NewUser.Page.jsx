@@ -19,7 +19,7 @@ export default function NewUserPage() {
                         Login
                     </Link>{' '}
                     if you have an account or visit your canteen contractor for
-                    registration Thank you.
+                    registration in snack track.
                 </p>
 
                 {/* Animated Icon */}

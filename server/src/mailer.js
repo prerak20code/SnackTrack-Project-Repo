@@ -1,52 +1,37 @@
-import nodemailer from 'nodemailer';
-
-console.log('📧 Using MAIL_SENDER_EMAIL:', process.env.MAIL_SENDER_EMAIL);
-console.log(
-    '🔑 MAIL_SENDER_PASSWORD starts with:',
-    process.env.MAIL_SENDER_PASSWORD?.slice(0, 5)
-);
-
-let transporter = null;
-
-async function generateTransporter() {
-    if (transporter) return transporter;
-
-    try {
-        transporter = nodemailer.createTransport({
-            host: 'smtp-relay.brevo.com',
-            port: 587,
-            secure: false,
-            auth: {
-                user: process.env.MAIL_SENDER_EMAIL,
-                pass: process.env.MAIL_SENDER_PASSWORD,
-            },
-        });
-
-        await transporter.verify();
-        console.log('✅ Mail transporter ready.');
-        return transporter;
-    } catch (err) {
-        console.error(`❌ Error generating mail transporter: ${err.message}`);
-        transporter = null;
-        throw err;
-    }
-}
+import axios from 'axios';
 
 async function sendMail({ to, subject, text, html }) {
-    if (!transporter) throw new Error('❌ Transporter not initialized.');
+    if (!process.env.BREVO_API_KEY) {
+        throw new Error('❌ BREVO_API_KEY not set in environment variables');
+    }
 
     try {
-        return await transporter.sendMail({
-            from: `Snack Track <no-reply@snacktrack.me>`,
-            to,
-            subject: subject || 'No particular subject',
-            text,
-            html,
-        });
+        const response = await axios.post(
+            'https://api.sendinblue.com/v3/smtp/email',
+            {
+                sender: {
+                    name: 'Snack Track',
+                    email: 'no-reply@snacktrack.me',
+                },
+                to: [{ email: to }],
+                subject: subject || 'No particular subject',
+                textContent: text,
+                htmlContent: html,
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'api-key': process.env.BREVO_API_KEY,
+                },
+            }
+        );
+
+        return response.data;
     } catch (err) {
-        console.error(`❌ Error sending mail: ${err.message}`);
-        throw err;
+        throw new Error(
+            `❌ Error sending Brevo email: ${err.response?.data?.message || err.message}`
+        );
     }
 }
 
-export { generateTransporter, sendMail };
+export { sendMail };

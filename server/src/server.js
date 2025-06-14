@@ -1,26 +1,30 @@
 import './Config/envLoader.js';
 import { connectDB } from './DB/connectMongoDB.js';
-import { generateTransporter } from './mailer.js';
 import { http } from './socket.js';
 import { connectRedis } from './DB/connectRedis.js';
 // import { seedDatabase } from './seeder.js';
 
 const PORT = process.env.PORT || 3001;
 
-// MongoDB connection
-await connectDB();
+// Initialize redisClient to export later
+let redisClient;
 
-// Redis connection
-const redisClient = await connectRedis();
+try {
+    // MongoDB connection
+    await connectDB();
 
-// nodemailer transporter
-const transporter = await generateTransporter();
+    // Redis connection
+    redisClient = await connectRedis();
 
-// await seedDatabase();
+    // Optional: await seedDatabase();
 
-// start the server
-http.listen(PORT, '0.0.0.0', () =>
-    console.log(`✅ server listening on port ${PORT}...`)
-);
+    // Start the server
+    http.listen(PORT, '0.0.0.0', () =>
+        console.log(`✅ server listening on port ${PORT}...`)
+    );
+} catch (err) {
+    console.error('❌ Server startup failed:', err.message);
+    process.exit(1);
+}
 
-export { transporter, redisClient };
+export { redisClient };

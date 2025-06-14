@@ -16,7 +16,7 @@ export const useSocket = (canteen) => {
             console.log('Connecting to socket with student ID:', user._id);
         }
 
-        const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
+        const newSocket = io('https://snacktrack.me', {
             auth: { userId: userId },
             reconnection: true,
             transports: ['websocket'],

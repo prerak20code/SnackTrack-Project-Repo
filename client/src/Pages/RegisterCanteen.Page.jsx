@@ -137,29 +137,41 @@ export default function RegisterCanteenPage() {
         },
     ];
 
-    const inputElements = inputFields.map((field) => (
-        <div className="w-full" key={field.name}>
+const inputElements = inputFields.map((field) => {
+    const isPasswordField = field.name === 'password' || field.name === 'kitchenKey';
+    const show = field.name === 'kitchenKey' ? showkitchenKey : showPassword;
+    const toggle = field.name === 'kitchenKey' ? setShowKitchenKey : setShowPassword;
+
+    return (
+        <div className="w-full relative" key={field.name}>
             <InputField
                 field={field}
                 handleBlur={handleBlur}
                 handleChange={handleChange}
                 inputs={inputs}
-                showPassword={
-                    field.name === 'kitchenKey' ? showkitchenKey : showPassword
-                }
-                setShowPassword={
-                    field.name === 'kitchenKey'
-                        ? setShowKitchenKey
-                        : setShowPassword
-                }
+                showPassword={show}
+                setShowPassword={toggle}
             />
+
+            {/* 👁 Show/Hide password icon logic */}
+            {isPasswordField && (
+                <span
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                    onClick={() => toggle((prev) => !prev)}
+                >
+                    {show ? icons.eyeOff : icons.eye}
+                </span>
+            )}
+
             {error[field.name] && (
-                <div className="text-red-500 text-xs font-medium">
+                <div className="text-red-500 text-xs font-medium mt-1">
                     {error[field.name]}
                 </div>
             )}
         </div>
-    ));
+    );
+});
+
 
     return (
         <div className="py-10 text-black flex flex-col items-center justify-center gap-4 min-h-screen">

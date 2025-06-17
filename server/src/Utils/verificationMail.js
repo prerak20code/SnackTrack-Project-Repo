@@ -9,7 +9,7 @@ async function sendVerificationEmail(email) {
     await sendMail({
         to: email,
         subject: 'Welcome to SnackTrack',
-        html: `Your Email verification code is ${randomCode}. This code will expire in 1 minute`,
+        html: `Your Email verification code is ${randomCode}. This code will expire in 5 minute`,
     });
 
     // save record in db

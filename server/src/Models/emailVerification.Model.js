@@ -12,7 +12,7 @@ const emailVerificationSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now(),
-        expires: 60, // Automatically deletes the document after 60 seconds (1 minute)
+        expires: 300, // Automatically deletes the document after 60 seconds (1 minute)
     },
 });
 

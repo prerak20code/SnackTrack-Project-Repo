@@ -138,7 +138,7 @@ export default function RegisterCanteenPage() {
     ];
 
 const inputElements = inputFields.map((field) => {
-    const isPasswordField = field.name === 'password' || field.name === 'kitchenKey';
+    const isPasswordType = field.name === 'password' || field.name === 'kitchenKey';
     const show = field.name === 'kitchenKey' ? showkitchenKey : showPassword;
     const toggle = field.name === 'kitchenKey' ? setShowKitchenKey : setShowPassword;
 
@@ -153,10 +153,10 @@ const inputElements = inputFields.map((field) => {
                 setShowPassword={toggle}
             />
 
-            {/* 👁 Show/Hide password icon logic */}
-            {isPasswordField && (
+            {/* 👁 Eye icon for password/kitchenKey */}
+            {isPasswordType && (
                 <span
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
                     onClick={() => toggle((prev) => !prev)}
                 >
                     {show ? icons.eyeOff : icons.eye}

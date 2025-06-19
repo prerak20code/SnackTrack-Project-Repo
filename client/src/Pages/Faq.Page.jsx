@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { icons } from '../Assets/icons';
 import { useDarkMode } from '../Contexts/DarkMode';
 
@@ -55,44 +54,33 @@ export default function FAQpage() {
     ];
 
     return (
-        <div className="w-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-[#f9f9f9] to-[#f2f2f2] rounded-xl">
+        <div
+            className={`w-full flex flex-col items-center justify-center p-4 rounded-xl min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-b from-[#f9f9f9] to-[#f2f2f2]'}`}
+        >
             {/* Page Header */}
-            <motion.h1
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`text-4xl font-bold text-center ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}
+            <h1
+                className={`text-4xl font-bold text-center mb-2 ${isDarkMode ? 'text-[#4977ec]' : 'text-gray-900'}`}
             >
                 Frequently Asked Questions
-            </motion.h1>
+            </h1>
 
-            <motion.p
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-                className={`text-lg text-center mt-2 max-w-2xl ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                }`}
+            <p
+                className={`text-lg text-center mt-2 max-w-2xl mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
             >
                 Find answers to the most commonly asked questions about our
                 services.
-            </motion.p>
+            </p>
 
             {/* FAQ List */}
-            <div className="w-full max-w-3xl mt-8 space-y-4">
+            <div className="w-full max-w-3xl mt-4 space-y-4">
                 {faqs.map((faq, index) => (
-                    <motion.div
+                    <div
                         key={index}
                         className={`backdrop-blur-lg border shadow-lg p-5 rounded-lg cursor-pointer transition-transform hover:scale-[1.02] ${
                             isDarkMode
-                                ? 'bg-gray-800/50 border-gray-700'
+                                ? 'bg-gray-800/70 border-gray-700'
                                 : 'bg-white/50 border-gray-200'
                         }`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: index * 0.1 }}
                         onClick={() => toggleExpand(index)}
                     >
                         <div className="flex items-center justify-between">
@@ -103,17 +91,19 @@ export default function FAQpage() {
                             >
                                 {faq.question}
                             </h2>
-
-                            <motion.div
-                                animate={{
-                                    rotate: expanded === index ? -45 : 0,
-                                }}
-                                transition={{ duration: 0.1 }}
+                            <div
                                 className={`p-2 rounded-full transition ${
                                     isDarkMode
                                         ? 'bg-gray-700 hover:bg-gray-600'
                                         : 'bg-gray-200 hover:bg-gray-300'
                                 }`}
+                                style={{
+                                    transform:
+                                        expanded === index
+                                            ? 'rotate(-45deg)'
+                                            : 'rotate(0deg)',
+                                    transition: 'transform 0.1s',
+                                }}
                             >
                                 <div
                                     className={`size-[16px] ${
@@ -122,30 +112,20 @@ export default function FAQpage() {
                                 >
                                     {icons.plus}
                                 </div>
-                            </motion.div>
+                            </div>
                         </div>
-
-                        <AnimatePresence>
-                            {expanded === index && (
-                                <motion.div
-                                    className={`mt-2 overflow-hidden ${
-                                        isDarkMode
-                                            ? 'text-gray-300'
-                                            : 'text-gray-600'
-                                    }`}
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{
-                                        opacity: { duration: 0.2 },
-                                        height: { duration: 0.2 },
-                                    }}
-                                >
-                                    {faq.answer}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </motion.div>
+                        {expanded === index && (
+                            <div
+                                className={`mt-2 overflow-hidden transition-all duration-200 ${
+                                    isDarkMode
+                                        ? 'text-gray-300'
+                                        : 'text-gray-600'
+                                }`}
+                            >
+                                {faq.answer}
+                            </div>
+                        )}
+                    </div>
                 ))}
             </div>
         </div>

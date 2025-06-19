@@ -23,6 +23,18 @@ const placeOrder = tryCatch('place order', async (req, res) => {
         specialInstructions,
     });
 
+    const snackItems = cartItems.filter((item) => item.itemType === 'Snack');
+
+    await Promise.all(
+        snackItems.map((item) =>
+            Snack.findByIdAndUpdate(
+                item.itemId,
+                { $inc: { orderCount: item.quantity } },
+                { new: true }
+            )
+        )
+    );
+
     const studentinfo = {
         fullName: student.fullName,
         phoneNumber: student.phoneNumber,
@@ -70,7 +82,12 @@ const getStudentOrders = tryCatch('get student orders', async (req, res) => {
                         $cond: [
                             { $eq: ['$items.itemType', 'Snack'] },
                             { $arrayElemAt: ['$snackDetails.name', 0] },
-                            null,
+                            {
+                                $arrayElemAt: [
+                                    '$packagedFoodDetails.category',
+                                    0,
+                                ],
+                            },
                         ],
                     },
                     'items.image': {
@@ -139,23 +156,88 @@ const getStudentMonthlyBill = async (req, res) => {
     }
 
     try {
-        // Convert studentId to ObjectId
         const objectIdStudentId = new mongoose.Types.ObjectId(studentId);
-
-        // Create proper date range for the month
         const startDate = new Date(year, parseInt(month) - 1, 1);
-        const endDate = new Date(year, parseInt(month), 0); // Last day of the specified month
+        const endDate = new Date(year, parseInt(month), 0, 23, 59, 59, 999);
 
-        const bills = await Order.find({
-            studentId: objectIdStudentId,
-            createdAt: {
-                $gte: startDate,
-                $lte: endDate,
+        const bills = await Order.aggregate([
+            {
+                $match: {
+                    studentId: objectIdStudentId,
+                    createdAt: {
+                        $gte: startDate,
+                        $lte: endDate,
+                    },
+                },
             },
-        }).populate('items.itemId', 'name');
+            { $unwind: '$items' },
+            // Lookup for Snack
+            {
+                $lookup: {
+                    from: 'snacks',
+                    localField: 'items.itemId',
+                    foreignField: '_id',
+                    as: 'snackDetails',
+                },
+            },
+            // Lookup for PackagedFood
+            {
+                $lookup: {
+                    from: 'packagedfoods',
+                    localField: 'items.itemId',
+                    foreignField: '_id',
+                    as: 'packagedFoodDetails',
+                },
+            },
+            // Add itemName field based on itemType
+            {
+                $addFields: {
+                    'items.itemName': {
+                        $cond: [
+                            { $eq: ['$items.itemType', 'Snack'] },
+                            {
+                                $ifNull: [
+                                    { $arrayElemAt: ['$snackDetails.name', 0] },
+                                    'Unknown',
+                                ],
+                            },
+                            {
+                                $ifNull: [
+                                    {
+                                        $arrayElemAt: [
+                                            '$packagedFoodDetails.category',
+                                            0,
+                                        ],
+                                    },
+                                    'Unknown',
+                                ],
+                            },
+                        ],
+                    },
+                },
+            },
+            // Re-group items back into orders
+            {
+                $group: {
+                    _id: '$_id',
+                    amount: { $first: '$amount' },
+                    status: { $first: '$status' },
+                    canteenId: { $first: '$canteenId' },
+                    studentId: { $first: '$studentId' },
+                    tableNumber: { $first: '$tableNumber' },
+                    items: { $push: '$items' },
+                    createdAt: { $first: '$createdAt' },
+                    updatedAt: { $first: '$updatedAt' },
+                },
+            },
+            { $sort: { createdAt: -1 } },
+        ]);
 
         // Calculate total amount
-        const totalAmount = bills.reduce((sum, bill) => sum + bill.amount, 0);
+        const totalAmount = bills.reduce(
+            (sum, bill) => sum + (bill.amount || 0),
+            0
+        );
 
         res.json({ orders: bills, totalAmount });
     } catch (error) {
@@ -343,7 +425,12 @@ const getCanteenOrders = tryCatch('get canteen orders', async (req, res) => {
                         $cond: [
                             { $eq: ['$items.itemType', 'Snack'] },
                             { $arrayElemAt: ['$snackDetails.name', 0] },
-                            null,
+                            {
+                                $arrayElemAt: [
+                                    '$packagedFoodDetails.category',
+                                    0,
+                                ],
+                            },
                         ],
                     },
                     'items.image': {

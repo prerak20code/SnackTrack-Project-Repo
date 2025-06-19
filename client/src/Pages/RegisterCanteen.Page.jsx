@@ -162,7 +162,7 @@ export default function RegisterCanteenPage() {
     ));
 
     return (
-        <div className="py-10 text-black flex flex-col items-center justify-center gap-4 min-h-screen">
+        <div className="py-10 text-black flex flex-col items-center justify-center gap-4 min-h-screen bg-white">
             <Link to={'/'}>
                 <div className="overflow-hidden rounded-full size-[90px] hover:brightness-95 drop-shadow-md">
                     <img
@@ -173,7 +173,7 @@ export default function RegisterCanteenPage() {
                 </div>
             </Link>
             <div>
-                <p className="text-center px-2 text-[28px] font-medium">
+                <p className="text-center px-2 text-[28px] font-medium text-gray-800">
                     Register a New Canteen
                 </p>
                 <motion.div
@@ -211,7 +211,7 @@ export default function RegisterCanteenPage() {
                             onMouseOver={onMouseOver}
                             btnText={
                                 loading ? (
-                                    <div className="size-5 fill-[#4977ec] dark:text-[#a2bdff]">
+                                    <div className="size-5 fill-[#4977ec]">
                                         {icons.loading}
                                     </div>
                                 ) : (

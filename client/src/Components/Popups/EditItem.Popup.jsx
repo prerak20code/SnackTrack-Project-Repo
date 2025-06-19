@@ -2,14 +2,13 @@ import { useState, useEffect } from 'react';
 import { contractorService } from '../../Services';
 import { usePopupContext, useSnackContext } from '../../Contexts';
 import { useNavigate } from 'react-router-dom';
-import { Button, InputField } from '..';
+import { Button, InputField1 } from '..';
 import { verifyExpression } from '../../Utils';
 import toast from 'react-hot-toast';
 import { useDarkMode } from '../../Contexts/DarkMode';
-
 import { icons } from '../../Assets/icons';
 
-export default function AddItemPopup() {
+export default function EditItemPopup() {
     const { setItems } = useSnackContext();
     const { setShowPopup, popupInfo } = usePopupContext();
     const { isDarkMode } = useDarkMode();
@@ -21,7 +20,6 @@ export default function AddItemPopup() {
     const [variants, setVariants] = useState(popupInfo.target.variants);
     const [error, setError] = useState({});
     const [variantErrors, setVariantErrors] = useState({});
-    const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
@@ -45,7 +43,7 @@ export default function AddItemPopup() {
         setVariantErrors(newVariantErrors);
     }, [variants]);
 
-    async function handleChange(e) {
+    function handleChange(e) {
         const { value, name } = e.target;
         setInputs((prev) => ({ ...prev, [name]: value }));
     }
@@ -75,21 +73,6 @@ export default function AddItemPopup() {
         if (value) verifyExpression(name, value, setError);
     };
 
-    function onMouseOver() {
-        if (
-            Object.values(inputs).some((value) => !value) ||
-            variants.some(
-                (variant) => !variant.price || !variant.availableCount
-            ) ||
-            Object.entries(error).some(
-                ([key, value]) => value && key !== 'root'
-            ) ||
-            Object.values(variantErrors).some((error) => error)
-        ) {
-            setDisabled(true);
-        } else setDisabled(false);
-    }
-
     async function handleSubmit(e) {
         e.preventDefault();
         if (!variants.length) {
@@ -97,7 +80,6 @@ export default function AddItemPopup() {
             return;
         }
         setLoading(true);
-        setDisabled(true);
         try {
             const res = await contractorService.updateItemDetails(
                 {
@@ -110,7 +92,9 @@ export default function AddItemPopup() {
                 toast.success('Item details updated successfully 👍');
                 setItems((prev) =>
                     prev.map((item) =>
-                        item._id === popupInfo.target._id ? res : item
+                        item._id === popupInfo.target._id
+                            ? { ...item, ...res }
+                            : item
                     )
                 );
                 setShowPopup(false);
@@ -118,7 +102,6 @@ export default function AddItemPopup() {
         } catch (err) {
             navigate('/server-error');
         } finally {
-            setDisabled(false);
             setLoading(false);
         }
     }
@@ -126,7 +109,7 @@ export default function AddItemPopup() {
     const variantElements = variants.map((variant, i) => (
         <div key={i || variant._id} className="flex gap-2">
             <div className="w-full">
-                <InputField
+                <InputField1
                     inputs={variant}
                     field={{
                         type: 'number',
@@ -144,7 +127,7 @@ export default function AddItemPopup() {
                     </p>
                 )}
             </div>
-            <InputField
+            <InputField1
                 inputs={variant}
                 field={{
                     type: 'number',
@@ -167,6 +150,15 @@ export default function AddItemPopup() {
             />
         </div>
     ));
+
+    // Validation for disabling the button
+    const isDisabled =
+        loading ||
+        !inputs.category ||
+        !inputs.password ||
+        variants.some((variant) => !variant.price || !variant.availableCount) ||
+        Object.values(error).some(Boolean) ||
+        Object.values(variantErrors).some(Boolean);
 
     return (
         <div
@@ -209,7 +201,7 @@ export default function AddItemPopup() {
                     className="flex flex-col items-start justify-center gap-4 w-full"
                 >
                     <div className="w-full">
-                        <InputField
+                        <InputField1
                             field={{
                                 type: 'text',
                                 name: 'category',
@@ -250,7 +242,7 @@ export default function AddItemPopup() {
                         )}
                     </div>
 
-                    <InputField
+                    <InputField1
                         field={{
                             type: showPassword ? 'text' : 'password',
                             name: 'password',
@@ -270,8 +262,7 @@ export default function AddItemPopup() {
                         <Button
                             type="submit"
                             className="text-white rounded-md py-2 flex items-center justify-center text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
-                            disabled={disabled}
-                            onMouseOver={onMouseOver}
+                            disabled={isDisabled}
                             btnText={
                                 loading ? (
                                     <div className="flex items-center justify-center w-full">

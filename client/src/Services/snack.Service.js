@@ -48,6 +48,32 @@ class SnackService {
             }
         }
     }
+    async getTopSnacks(signal) {
+        try {
+            const res = await fetch(`/api/snacks/top-snacks`, {
+                method: 'GET',
+                signal,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Failed to fetch top snacks');
+            }
+
+            return data;
+        } catch (err) {
+            if (err.name === 'AbortError') {
+                console.log('getTopSnacks request aborted.');
+            } else {
+                console.error('Error in getTopSnacks service:', err.message);
+                throw err;
+            }
+        }
+    }
 }
 
 export const snackService = new SnackService();

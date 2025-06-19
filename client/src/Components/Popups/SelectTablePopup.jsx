@@ -30,6 +30,7 @@ export default function SelectTablePopup({ onConfirm, onCancel }) {
     const tableOptions = [
         ...Array.from({ length: 5 }, (_, i) => `T${i + 1}`),
         'At the Counter',
+        'Guest Room',
     ];
 
     return (

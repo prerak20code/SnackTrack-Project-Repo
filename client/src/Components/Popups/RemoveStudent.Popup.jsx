@@ -1,4 +1,4 @@
-import { Button, InputField } from '..';
+import { Button, InputField1 } from '..';
 import { usePopupContext, useStudentContext } from '../../Contexts';
 import { icons } from '../../Assets/icons';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +19,12 @@ export default function RemoveStudentPopup() {
     const [showPassword, setShowPassword] = useState(false);
     const { isDarkMode } = useDarkMode();
 
-    async function removeStudent() {
+    async function removeStudent(e) {
+        e.preventDefault();
+        if (!check || !password) {
+            toast.error('Please confirm deletion and enter password');
+            return;
+        }
         setLoading(true);
         setDisabled(true);
         try {
@@ -32,13 +37,16 @@ export default function RemoveStudentPopup() {
                     prev.filter((student) => student._id !== targetStudent._id)
                 );
                 toast.success('Account Deleted Successfully 😕');
-            } else toast.error(res?.message);
+                setShowPopup(false);
+            } else {
+                toast.error(res?.message || 'Failed to delete student');
+            }
         } catch (err) {
+            toast.error('Something went wrong');
             navigate('/server-error');
         } finally {
             setDisabled(false);
             setLoading(false);
-            setShowPopup(false);
         }
     }
 
@@ -68,7 +76,10 @@ export default function RemoveStudentPopup() {
                 className="absolute top-2 right-2"
             />
 
-            <div className="flex flex-col gap-3">
+            <form
+                className="flex flex-col gap-3 w-full"
+                onSubmit={removeStudent}
+            >
                 <p className="text-2xl font-bold text-center">
                     Remove Student Account
                 </p>
@@ -77,6 +88,21 @@ export default function RemoveStudentPopup() {
                     {getRollNo(targetStudent.userName)}
                 </p>
 
+                <div className="w-full relative -top-4">
+                    <InputField1
+                        field={{
+                            type: showPassword ? 'text' : 'password',
+                            name: 'password',
+                            label: 'Password',
+                            required: true,
+                            placeholder: 'Enter password to confirm delete',
+                        }}
+                        inputs={{ password }}
+                        setShowPassword={setShowPassword}
+                        showPassword={showPassword}
+                        handleChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
                 <div className="w-full flex flex-row-reverse gap-3 mt-2 items-start">
                     <label
                         htmlFor="delete-confirm"
@@ -95,30 +121,22 @@ export default function RemoveStudentPopup() {
                         onChange={(e) => setCheck(e.target.checked)}
                     />
                 </div>
-
-                <div className="w-full relative -top-4">
-                    <InputField
-                        field={{
-                            type: showPassword ? 'text' : 'password',
-                            name: 'password',
-                            label: 'Password',
-                            required: true,
-                            placeholder: 'Enter password to confirm delete',
-                        }}
-                        inputs={{ password }}
-                        setShowPassword={setShowPassword}
-                        showPassword={showPassword}
-                        handleChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
                 <Button
-                    btnText="Delete"
-                    onClick={handleDelete}
+                    type="submit"
+                    btnText={
+                        loading ? (
+                            <div className="size-5 fill-white animate-spin">
+                                {icons.loading}
+                            </div>
+                        ) : (
+                            'Delete'
+                        )
+                    }
                     onMouseOver={onMouseOver}
-                    disabled={disabled}
-                    className="text-white relative -top-2 rounded-md w-full py-2 px-3 bg-red-700 hover:bg-red-800"
+                    disabled={disabled || !check || !password}
+                    className="text-white relative -top-2 rounded-md w-full py-2 px-3 bg-red-700 hover:bg-red-800 disabled:bg-red-400 disabled:cursor-not-allowed"
                 />
-            </div>
+            </form>
         </div>
     );
 }

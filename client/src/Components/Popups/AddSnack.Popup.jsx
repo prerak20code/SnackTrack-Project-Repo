@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { contractorService } from '../../Services';
 import { usePopupContext, useSnackContext } from '../../Contexts';
 import { useNavigate } from 'react-router-dom';
-import { Button, InputField } from '..';
+import { Button, InputField1 } from '..';
 import { verifyExpression, fileRestrictions } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
@@ -121,7 +121,7 @@ export default function AddSnackPopup() {
 
     const inputElements = inputFields.map((field) =>
         field.name === 'password' ? (
-            <InputField
+            <InputField1
                 key={field.name}
                 field={field}
                 handleChange={handleChange}
@@ -132,7 +132,7 @@ export default function AddSnackPopup() {
             />
         ) : (
             <div className="w-full" key={field.name}>
-                <InputField
+                <InputField1
                     field={field}
                     handleChange={handleChange}
                     error={error}

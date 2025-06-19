@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { contractorService } from '../../Services';
 import { usePopupContext, useSnackContext } from '../../Contexts';
 import { useNavigate } from 'react-router-dom';
-import { Button, InputField } from '..';
+import { Button, InputField1 } from '..';
 import { verifyExpression, fileRestrictions } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
@@ -81,16 +81,11 @@ export default function EditSnackPopup() {
             if (res && !res.message) {
                 toast.success('Details updated successfully 👍');
                 setSnacks((prev) =>
-                    prev.map((snack) => {
-                        if (snack._id === popupInfo.target._id) {
-                            return {
-                                ...snack,
-                                name: inputs.name,
-                                price: inputs.price,
-                                image: res.image,
-                            };
-                        } else return snack;
-                    })
+                    prev.map((snack) =>
+                        snack._id === popupInfo.target._id
+                            ? { ...snack, ...res }
+                            : snack
+                    )
                 );
                 setShowPopup(false);
             } else setError((prev) => ({ ...prev, root: res.message }));
@@ -128,7 +123,7 @@ export default function EditSnackPopup() {
 
     const inputElements = inputFields.map((field) =>
         field.name === 'password' ? (
-            <InputField
+            <InputField1
                 key={field.name}
                 field={field}
                 handleChange={handleChange}
@@ -139,7 +134,7 @@ export default function EditSnackPopup() {
             />
         ) : (
             <div className="w-full" key={field.name}>
-                <InputField
+                <InputField1
                     field={field}
                     handleChange={handleChange}
                     error={error}
@@ -239,8 +234,17 @@ export default function EditSnackPopup() {
                         <Button
                             type="submit"
                             className="text-white rounded-md py-2 mt-4 h-[45px] flex items-center justify-center text-lg w-full bg-[#4977ec] hover:bg-[#3b62c2]"
-                            disabled={disabled}
-                            onMouseOver={onMouseOver}
+                            disabled={
+                                loading ||
+                                !inputs.name ||
+                                !inputs.price ||
+                                !inputs.password ||
+                                !!error.name ||
+                                !!error.price ||
+                                !!error.password ||
+                                !!error.image
+                            }
+                            // onMouseOver={onMouseOver}
                             btnText={
                                 loading ? (
                                     <div className="flex items-center justify-center w-full">

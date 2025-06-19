@@ -359,7 +359,7 @@ const removeAllStudents = tryCatch(
                 canteenId: new Types.ObjectId(contractor.canteenId),
             }),
             Order.deleteMany({
-                cateenId: new Types.ObjectId(contractor.canteenId),
+                canteenId: new Types.ObjectId(contractor.canteenId),
             }),
         ]);
         return res
@@ -381,7 +381,7 @@ const removeStudent = tryCatch(
         }
 
         // a contractor can remove the student only if the student belongs to his canteen
-        const student = await Promise.all([
+        const [deletedStudent] = await Promise.all([
             Student.findOneAndDelete({
                 _id: new Types.ObjectId(studentId),
                 canteenId: new Types.ObjectId(contractor.canteenId),
@@ -390,12 +390,15 @@ const removeStudent = tryCatch(
                 studentId: new Types.ObjectId(studentId),
             }),
         ]);
-        if (!student) {
+        if (!deletedStudent) {
             return next(new ErrorHandler('student not found', NOT_FOUND));
         }
 
-        if (student.avatar !== USER_PLACEHOLDER_IMAGE_URL) {
-            await deleteFromCloudinary(student.avatar);
+        if (
+            deletedStudent.avatar &&
+            deletedStudent.avatar !== USER_PLACEHOLDER_IMAGE_URL
+        ) {
+            await deleteFromCloudinary(deletedStudent.avatar);
         }
 
         return res.status(OK).json({ message: 'account deleted successfully' });

@@ -102,19 +102,21 @@ export default function AdminPage() {
                     Enter the Admin Secret key to navigate to control panel
                 </p>
 
-                <div className="relative flex items-center w-full justify-center mb-3">
-                    <input
-                        type={showKey ? 'text' : 'password'}
-                        value={key}
-                        autoFocus
-                        onChange={(e) => setKey(e.target.value)}
-                        className="w-full text-xl text-center border-[0.01rem] indent-3 pr-12 rounded-md py-[5px] border-gray-600 focus:border-[#4977ec] focus:outline-none"
-                    />
-                    <div
-                        onClick={() => setShowKey((prev) => !prev)}
-                        className="size-[20px] absolute right-3 top-[50%] transform translate-y-[-50%] cursor-pointer fill-gray-700"
-                    >
-                        {showKey ? icons.eyeOff : icons.eye}
+                <div className="relative flex items-center w-full justify-center mb-4">
+                    <div className=" w-full mb-3">
+                        <input
+                            type={showKey ? 'text' : 'password'}
+                            value={key}
+                            autoFocus
+                            onChange={(e) => setKey(e.target.value)}
+                            className="w-full text-xl text-center border-[0.01rem] pl-12 rounded-md py-[5px] border-gray-600 focus:border-[#4977ec] focus:outline-none"
+                        />
+                        <div
+                            onClick={() => setShowKey((prev) => !prev)}
+                            className="size-[20px] absolute right-4 top-[38%] transform translate-y-[-50%] cursor-pointer fill-gray-700"
+                        >
+                            {showKey ? icons.eyeOff : icons.eye}
+                        </div>
                     </div>
                 </div>
 

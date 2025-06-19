@@ -19,104 +19,136 @@ export default function RemoveSnackPopup() {
 
     const [showPassword, setShowPassword] = useState(false);
 
-    async function removeSnack() {
-        setLoading(true);
-        setDisabled(true);
+    async function removeSnack(e) {
+        e.preventDefault();
+
+        if (!check || !password) {
+            toast.error('Please confirm deletion and enter password');
+            return;
+        }
+
         try {
-            const res = await contractorService.removeSnack(
+            setLoading(true);
+            setDisabled(true);
+
+            const response = await contractorService.removeSnack(
                 popupInfo.target._id,
                 password
             );
-            if (res && res.message === 'snack deleted successfully') {
+
+            console.log('Server response:', response); // Debug log
+
+            // Check if the message indicates success
+            if (response && response.message === 'snack deleted successfully') {
+                // Update local state immediately
                 setSnacks((prev) =>
                     prev.filter((snack) => snack._id !== popupInfo.target._id)
                 );
-                toast.success('Snack Deleted Successfully 😕');
-            } else toast.error(res?.message);
-        } catch (err) {
-            navigate('/server-error');
+                toast.success('Snack removed successfully 👍');
+                setShowPopup(false);
+            } else {
+                console.log('Deletion failed:', response); // Debug log
+                toast.error(response?.message || 'Failed to remove snack');
+            }
+        } catch (error) {
+            console.error('Error removing snack:', error);
+            toast.error('Something went wrong');
+            if (error.response?.status === 500) {
+                navigate('/server-error');
+            }
         } finally {
-            setDisabled(false);
             setLoading(false);
-            setShowPopup(false);
+            setDisabled(false);
         }
     }
 
-    function onMouseOver() {
-        if (!check || !password) setDisabled(true);
-        else setDisabled(false);
-    }
-
     return (
-        <div
-            className={`relative w-[350px] sm:w-[450px] transition-all duration-300 rounded-xl overflow-hidden p-5 flex flex-col items-center justify-center gap-4 ${
-                isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'
-            }`}
+        <form
+            onSubmit={removeSnack}
+            className={`w-[90%] max-w-[450px] p-6 rounded-2xl shadow-xl transform 
+                transition-all duration-300 ease-in-out
+                ${
+                    isDarkMode
+                        ? 'bg-gray-800 text-white shadow-gray-900/30'
+                        : 'bg-white text-gray-800 shadow-gray-300/30'
+                }`}
         >
-            <Button
-                btnText={
-                    <div
-                        className={`size-[20px] ${
-                            isDarkMode ? 'stroke-white' : 'stroke-black'
+            <h2 className="text-xl font-bold text-center mb-4">Remove Snack</h2>
+
+            <p
+                className={`text-sm text-center mb-6 
+                ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+            >
+                Are you sure you want to remove{' '}
+                <span className="font-semibold">{popupInfo.target.name}</span>?
+            </p>
+
+            <div className="relative w-full mb-4">
+                <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password to confirm"
+                    className={`w-full text-sm px-4 py-3 rounded-lg transition-all duration-200
+                        focus:ring-2 focus:outline-none
+                        ${
+                            isDarkMode
+                                ? 'bg-gray-700 border-gray-600 focus:ring-purple-500/30'
+                                : 'bg-gray-50 border-gray-200 focus:ring-purple-500/20'
                         }`}
-                    >
-                        {icons.cross}
-                    </div>
-                }
-                title="Close"
-                onClick={() => setShowPopup(false)}
-                className="absolute top-2 right-2"
-            />
-
-            <div className="flex flex-col gap-3">
-                <p className="text-2xl font-bold text-center">Remove Snack</p>
-                <p className="text-[15px] text-center">
-                    <span className="font-medium">Name: </span>
-                    {popupInfo.target.name}
-                </p>
-
-                <div className="w-full flex flex-row-reverse gap-3 mt-2 items-start">
-                    <label
-                        htmlFor="delete-confirm"
-                        className={`text-sm cursor-pointer relative -top-2 ${
-                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}
-                    >
-                        are you sure you want to remove this snack ? although
-                        you can add it again in the future.
-                    </label>
-                    <input
-                        type="checkbox"
-                        checked={check}
-                        id="delete snack"
-                        className="cursor-pointer"
-                        onChange={(e) => setCheck(e.target.checked)}
-                    />
-                </div>
-
-                <div className="w-full relative -top-4">
-                    <InputField
-                        field={{
-                            type: showPassword ? 'text' : 'password',
-                            name: 'password',
-                            label: 'Password',
-                            required: true,
-                            placeholder: 'Enter password to confirm delete',
-                        }}
-                        inputs={{ password }}
-                        setShowPassword={setShowPassword}
-                        showPassword={showPassword}
-                        handleChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
-                <Button
-                    btnText="Delete"
-                    onClick={handleDelete}
-                    onMouseOver={onMouseOver}
-                    disabled={disabled}
-                    className="text-white relative -top-2 rounded-md w-full py-2 px-3 bg-red-700 hover:bg-red-800"
                 />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className={`absolute right-4 top-1/2 -translate-y-1/2 
+                        transition-colors duration-200 hover:text-purple-500
+                        ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                >
+                    <div className="size-5">
+                        {showPassword ? icons.eyeOff : icons.eye}
+                    </div>
+                </button>
             </div>
-        </div>
+
+            <div className="flex items-center gap-3 mb-6">
+                <input
+                    type="checkbox"
+                    checked={check}
+                    onChange={(e) => setCheck(e.target.checked)}
+                    className={`size-4 rounded border-2 transition-all duration-200
+                        ${
+                            isDarkMode
+                                ? 'border-gray-600 checked:bg-purple-500'
+                                : 'border-gray-300 checked:bg-purple-500'
+                        }`}
+                />
+                <span
+                    className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+                >
+                    I understand this action cannot be undone
+                </span>
+            </div>
+
+            <Button
+                type="submit"
+                btnText={
+                    loading ? (
+                        <div className="size-5 fill-white animate-spin">
+                            {icons.loading}
+                        </div>
+                    ) : (
+                        'Remove Snack'
+                    )
+                }
+                disabled={disabled || !check || !password}
+                className={`w-full py-3 px-4 rounded-lg font-medium text-white 
+                    transition-all duration-200 transform
+                    ${
+                        disabled || !check || !password
+                            ? 'bg-red-400 cursor-not-allowed opacity-70'
+                            : 'bg-red-500 hover:bg-red-600 active:scale-[0.98] hover:shadow-lg'
+                    }`}
+            />
+        </form>
     );
 }

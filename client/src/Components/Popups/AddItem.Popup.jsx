@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { contractorService } from '../../Services';
 import { usePopupContext, useSnackContext } from '../../Contexts';
 import { useNavigate } from 'react-router-dom';
-import { Button, InputField } from '..';
+import { Button, InputField1 } from '..';
 import { verifyExpression } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
@@ -119,7 +119,7 @@ export default function AddItemPopup() {
     const variantElements = variants.map((variant, i) => (
         <div key={i} className="flex gap-2">
             <div className="w-full">
-                <InputField
+                <InputField1
                     inputs={variant}
                     field={{
                         type: 'number',
@@ -136,7 +136,7 @@ export default function AddItemPopup() {
                     </p>
                 )}
             </div>
-            <InputField
+            <InputField1
                 inputs={variant}
                 field={{
                     type: 'number',
@@ -194,7 +194,7 @@ export default function AddItemPopup() {
                     className="flex flex-col items-start justify-center gap-4 w-full"
                 >
                     <div className="w-full">
-                        <InputField
+                        <InputField1
                             field={{
                                 type: 'text',
                                 name: 'category',
@@ -235,7 +235,7 @@ export default function AddItemPopup() {
                         )}
                     </div>
 
-                    <InputField
+                    <InputField1
                         field={{
                             type: showPassword ? 'text' : 'password',
                             name: 'password',

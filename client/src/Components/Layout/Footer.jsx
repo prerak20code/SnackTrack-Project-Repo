@@ -58,7 +58,7 @@ export default function Footer() {
         </p>
     ));
 
-    function handleChange() {
+    function handleChange(e) {
         const { name, value } = e.target;
         setFeedback((prev) => ({ ...prev, [name]: value }));
     }
@@ -119,13 +119,16 @@ export default function Footer() {
                     onSubmit={submitFeedback}
                     className="flex flex-col gap-4 max-w-[350px] w-full"
                 >
-                    <p className="text-white text-center font-semibold text-[18px] underline underline-offset-2">
+                    <p
+                        className={`text-center font-semibold text-[18px] underline underline-offset-2 ${isDarkMode ? 'text-white' : 'text-black'}`}
+                    >
                         Provide Feedback
                     </p>
                     <div className="flex flex-col items-center w-full gap-2">
                         <div>
                             <input
                                 type="text"
+                                name="content"
                                 placeholder="Your Feedback..."
                                 value={feedback.content}
                                 onChange={handleChange}
@@ -139,7 +142,8 @@ export default function Footer() {
                         <div>
                             <input
                                 type="email"
-                                placeholder="Your Email"
+                                name="email"
+                                placeholder="Email"
                                 value={feedback.email}
                                 onChange={handleChange}
                                 className={`flex-1 shadow-sm border rounded-lg px-3 h-[32px] text-sm focus:outline-none ${

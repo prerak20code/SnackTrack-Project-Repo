@@ -32,4 +32,20 @@ const getPackagedFoodItems = tryCatch(
     }
 );
 
-export { getSnacks, getPackagedFoodItems };
+const getTopSnacks = tryCatch('get top snacks', async (req, res) => {
+    const user = req.user; // could be student or contractor
+    const topSnacks = await Snack.find({
+        canteenId: new Types.ObjectId(user.canteenId),
+        isAvailable: true,
+    })
+        .sort({ orderCount: -1 }) // Most ordered first
+        .limit(3);
+
+    if (topSnacks.length) {
+        return res.status(OK).json(topSnacks);
+    } else {
+        return res.status(OK).json({ message: 'no top snacks found' });
+    }
+});
+
+export { getSnacks, getPackagedFoodItems, getTopSnacks };

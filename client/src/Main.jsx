@@ -15,26 +15,29 @@ import {
 } from './Contexts';
 import { NotificationsProvider } from './Contexts/notifications.Context';
 import { DarkModeProvider } from './Contexts/DarkMode';
+import { AuthContextProvider } from './Contexts/AuthContext';
 
 function Root() {
     return (
-        <NotificationsProvider>
-            <DarkModeProvider>
-                <UserContextProvider>
-                    <SnackContextProvider>
-                        <StudentContextProvider>
-                            <PopupContextProvider>
-                                <SideBarContextProvider>
-                                    <SearchContextProvider>
-                                        <RouterProvider router={router} />
-                                    </SearchContextProvider>
-                                </SideBarContextProvider>
-                            </PopupContextProvider>
-                        </StudentContextProvider>
-                    </SnackContextProvider>
-                </UserContextProvider>
-            </DarkModeProvider>
-        </NotificationsProvider>
+        <AuthContextProvider>
+            <NotificationsProvider>
+                <DarkModeProvider>
+                    <UserContextProvider>
+                        <SnackContextProvider>
+                            <StudentContextProvider>
+                                <PopupContextProvider>
+                                    <SideBarContextProvider>
+                                        <SearchContextProvider>
+                                            <RouterProvider router={router} />
+                                        </SearchContextProvider>
+                                    </SideBarContextProvider>
+                                </PopupContextProvider>
+                            </StudentContextProvider>
+                        </SnackContextProvider>
+                    </UserContextProvider>
+                </DarkModeProvider>
+            </NotificationsProvider>
+        </AuthContextProvider>
     );
 }
 

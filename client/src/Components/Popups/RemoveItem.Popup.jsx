@@ -1,4 +1,4 @@
-import { Button, InputField } from '..';
+import { Button, InputField1 } from '..';
 import { usePopupContext, useSnackContext } from '../../Contexts';
 import { icons } from '../../Assets/icons';
 import { useNavigate } from 'react-router-dom';
@@ -18,26 +18,40 @@ export default function RemoveItemPopup() {
     const [showPassword, setShowPassword] = useState(false);
     const { isDarkMode } = useDarkMode();
 
-    async function removeItem() {
-        setLoading(true);
-        setDisabled(true);
+    async function removeItem(e) {
+        e.preventDefault();
+        if (!check || !password) {
+            toast.error('Please confirm deletion and enter password');
+            return;
+        }
         try {
-            const res = await contractorService.removeItem(
+            setLoading(true);
+            setDisabled(true);
+
+            const response = await contractorService.removeItem(
                 popupInfo.target._id,
                 password
             );
-            if (res && res.message === 'item deleted successfully') {
+
+            // Check for the correct success message
+            if (response && response.message === 'item deleted successfully') {
                 setItems((prev) =>
                     prev.filter((item) => item._id !== popupInfo.target._id)
                 );
-                toast.success('Item Deleted Successfully 😕');
-            } else toast.error(res?.message);
-        } catch (err) {
-            navigate('/server-error');
+                toast.success('Item removed successfully 👍');
+                setShowPopup(false);
+            } else {
+                toast.error(response?.message || 'Failed to remove item');
+            }
+        } catch (error) {
+            console.error('Error removing item:', error);
+            toast.error('Something went wrong');
+            if (error.response?.status === 500) {
+                navigate('/server-error');
+            }
         } finally {
-            setDisabled(false);
             setLoading(false);
-            setShowPopup(false);
+            setDisabled(false);
         }
     }
 
@@ -67,34 +81,15 @@ export default function RemoveItemPopup() {
                 className="absolute top-2 right-2"
             />
 
-            <div className="flex flex-col gap-3">
+            <form onSubmit={removeItem} className="flex flex-col gap-3 w-full">
                 <p className="text-2xl font-bold text-center">Remove Item</p>
                 <p className="text-[15px] text-center">
                     <span className="font-medium">Category: </span>
                     {popupInfo.target.category}
                 </p>
 
-                <div className="w-full flex flex-row-reverse gap-3 mt-2 items-start">
-                    <label
-                        htmlFor="delete-confirm"
-                        className={`text-sm cursor-pointer relative -top-2 ${
-                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}
-                    >
-                        are you sure you want to remove this item ? Note: It
-                        will delete it along with its variants.
-                    </label>
-                    <input
-                        type="checkbox"
-                        checked={check}
-                        id="delete item"
-                        className="cursor-pointer"
-                        onChange={(e) => setCheck(e.target.checked)}
-                    />
-                </div>
-
                 <div className="w-full relative -top-4">
-                    <InputField
+                    <InputField1
                         field={{
                             type: showPassword ? 'text' : 'password',
                             name: 'password',
@@ -108,14 +103,46 @@ export default function RemoveItemPopup() {
                         handleChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
+                <div className="flex items-center gap-3 mb-6">
+                    <input
+                        type="checkbox"
+                        checked={check}
+                        onChange={(e) => setCheck(e.target.checked)}
+                        className={`size-4 rounded border-2 transition-all duration-200
+                            ${
+                                isDarkMode
+                                    ? 'border-gray-600 checked:bg-purple-500'
+                                    : 'border-gray-300 checked:bg-purple-500'
+                            }`}
+                    />
+                    <span
+                        className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+                    >
+                        are you sure you want to remove this item ?
+                    </span>
+                </div>
+
                 <Button
-                    btnText="Delete"
-                    onClick={handleDelete}
-                    onMouseOver={onMouseOver}
-                    disabled={disabled}
-                    className="text-white relative -top-2 rounded-md w-full py-2 px-3 bg-red-700 hover:bg-red-800"
+                    type="submit"
+                    btnText={
+                        loading ? (
+                            <div className="size-5 fill-white animate-spin">
+                                {icons.loading}
+                            </div>
+                        ) : (
+                            'Remove Item'
+                        )
+                    }
+                    disabled={disabled || !check || !password}
+                    className={`w-full py-3 px-4 rounded-lg font-medium text-white 
+                        transition-all duration-200 transform
+                        ${
+                            disabled || !check || !password
+                                ? 'bg-red-400 cursor-not-allowed opacity-70'
+                                : 'bg-red-500 hover:bg-red-600 active:scale-[0.98] hover:shadow-lg'
+                        }`}
                 />
-            </div>
+            </form>
         </div>
     );
 }

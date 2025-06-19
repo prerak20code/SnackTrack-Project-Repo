@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { contractorService } from '../../Services';
 import { usePopupContext, useStudentContext } from '../../Contexts';
 import { useNavigate } from 'react-router-dom';
-import { Button, InputField } from '..';
+import { Button, InputField1 } from '..';
 import { verifyExpression, getRollNo } from '../../Utils';
 import toast from 'react-hot-toast';
 import { icons } from '../../Assets/icons';
@@ -123,7 +123,7 @@ export default function EditStudentPopup() {
 
     const inputElements = inputFields.map((field) =>
         field.name === 'password' || field.name === 'contractorPassword' ? (
-            <InputField
+            <InputField1
                 key={field.name}
                 field={field}
                 handleChange={handleChange}
@@ -142,7 +142,7 @@ export default function EditStudentPopup() {
             />
         ) : (
             <div className="w-full" key={field.name}>
-                <InputField
+                <InputField1
                     field={field}
                     handleChange={handleChange}
                     error={error}

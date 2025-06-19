@@ -1,4 +1,4 @@
-import { Button, InputField } from '..';
+import { Button, InputField1 } from '..';
 import {
     usePopupContext,
     useStudentContext,
@@ -23,7 +23,12 @@ export default function RemoveAllStudentsPopup() {
     const [showPassword, setShowPassword] = useState(false);
     const { isDarkMode } = useDarkMode();
 
-    async function removeStudents() {
+    async function removeStudents(e) {
+        e.preventDefault();
+        if (!check || !password) {
+            toast.error('Please confirm deletion and enter password');
+            return;
+        }
         setLoading(true);
         setDisabled(true);
         try {
@@ -31,13 +36,16 @@ export default function RemoveAllStudentsPopup() {
             if (res && res.message === 'all students removed successfully') {
                 setStudents([]);
                 toast.success('All students removed successfully');
-            } else toast.error(res?.message);
+                setShowPopup(false);
+            } else {
+                toast.error(res?.message || 'Failed to remove students');
+            }
         } catch (err) {
+            toast.error('Something went wrong');
             navigate('/server-error');
         } finally {
             setDisabled(false);
             setLoading(false);
-            setShowPopup(false);
         }
     }
 
@@ -67,7 +75,10 @@ export default function RemoveAllStudentsPopup() {
                 className="absolute top-2 right-2"
             />
 
-            <div className="flex flex-col gap-3">
+            <form
+                className="flex flex-col gap-3 w-full"
+                onSubmit={removeStudents}
+            >
                 <p className="text-2xl font-bold text-center">
                     Remove All Students
                 </p>
@@ -76,27 +87,8 @@ export default function RemoveAllStudentsPopup() {
                     {user.hostelNumber} - {user.hostelName}
                 </p>
 
-                <div className="w-full flex flex-row-reverse gap-3 mt-2 items-start">
-                    <label
-                        htmlFor="delete-confirm"
-                        className={`text-sm cursor-pointer relative -top-2 ${
-                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}
-                    >
-                        are you sure you want to remove all student accounts ?
-                        although you can register them again in the future.
-                    </label>
-                    <input
-                        type="checkbox"
-                        checked={check}
-                        id="delete student"
-                        className="cursor-pointer"
-                        onChange={(e) => setCheck(e.target.checked)}
-                    />
-                </div>
-
                 <div className="w-full relative -top-4">
-                    <InputField
+                    <InputField1
                         field={{
                             type: showPassword ? 'text' : 'password',
                             name: 'password',
@@ -110,14 +102,39 @@ export default function RemoveAllStudentsPopup() {
                         handleChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
+                <div className="w-full flex flex-row-reverse gap-3 mt-2 items-start">
+                    <label
+                        htmlFor="delete-confirm"
+                        className={`text-sm cursor-pointer relative -top-2 ${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}
+                    >
+                        are you sure you want to remove all student accounts ?
+                    </label>
+                    <input
+                        type="checkbox"
+                        checked={check}
+                        id="delete student"
+                        className="cursor-pointer"
+                        onChange={(e) => setCheck(e.target.checked)}
+                    />
+                </div>
                 <Button
-                    btnText="Delete"
-                    onClick={handleDelete}
+                    type="submit"
+                    btnText={
+                        loading ? (
+                            <div className="size-5 fill-white animate-spin">
+                                {icons.loading}
+                            </div>
+                        ) : (
+                            'Delete'
+                        )
+                    }
                     onMouseOver={onMouseOver}
-                    disabled={disabled}
-                    className="text-white relative -top-2 rounded-md w-full py-2 px-3 bg-red-700 hover:bg-red-800"
+                    disabled={disabled || !check || !password}
+                    className="text-white relative -top-2 rounded-md w-full py-2 px-3 bg-red-700 hover:bg-red-800 disabled:bg-red-400 disabled:cursor-not-allowed"
                 />
-            </div>
+            </form>
         </div>
     );
 }

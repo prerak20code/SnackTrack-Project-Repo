@@ -19,6 +19,7 @@ const CORS_OPTIONS = {
     credentials: true,
     optionsSuccessStatus: 200,
     allowedHeaders: ['Content-Type', 'authorization'],
+    transports: ['websocket'],
 };
 
 export { COOKIE_OPTIONS, CORS_OPTIONS, WHITELIST };

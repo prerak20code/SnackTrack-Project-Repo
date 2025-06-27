@@ -25,7 +25,7 @@ userRouter.route('/contractors').post(verifyAdminKeyJwt, getContractors);
 
 userRouter.route('/orders').post(verifyStaffKeyJwt, getOrders);
 
-// userRouter.use(verifyJwt);
+userRouter.use(verifyJwt);
 
 userRouter.route('/password').patch(updatePassword);
 

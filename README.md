@@ -30,13 +30,17 @@ SnackTrack is a **real-time food ordering and tracking system** designed for cam
 
 SnackTrack/
 │── backend/
+
 │ ├── models/ # MongoDB models (Orders, Users, etc.)
+
 │ ├── routes/ # API routes
+
 │ ├── socket.js # Socket.IO + Redis real-time logic
+
 │ └── server.js # Express server entry
-│
+
 │── frontend/ # React app (if applicable)
-│
+
 
 │── README.md
 

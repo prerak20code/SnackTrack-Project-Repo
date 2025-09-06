@@ -26,27 +26,6 @@ SnackTrack is a **real-time food ordering and tracking system** designed for cam
 - **Deployment**: Heroku / Vercel / AWS (to be added)  
 
 ---
-
-## ⚡ System Flow  
-
-```mermaid
-sequenceDiagram
-    participant S as Student
-    participant B as Backend (Node.js + Express)
-    participant R as Redis
-    participant C as Contractor
-
-    S->>B: Place Order
-    B->>R: Store order + socket mapping
-    B-->>C: Notify Contractor (New Order)
-
-    C->>B: Update Order Status
-    B->>R: Fetch student socket
-    B-->>S: Notify Student (Status Update)
-
-    S->>B: Cancel Order
-    B->>R: Update / remove order
-    B-->>C: Notify Contractor (Order Cancelled)
 ## 📂 Project Structure  
 
 SnackTrack/
